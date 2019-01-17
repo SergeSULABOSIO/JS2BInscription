@@ -6,7 +6,9 @@
 package SOURCES.ModeleTable;
 
 import SOURCES.Callback.EcouteurValeursChangees;
+import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
+import java.util.Date;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -18,14 +20,16 @@ import javax.swing.table.AbstractTableModel;
  */
 public class ModeleListeEleve extends AbstractTableModel {
 
-    private String[] titreColonnes = {"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"};
+    private String[] titreColonnes = {"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone"};
     private Vector<InterfaceEleve> listeData = new Vector<>();
     private JScrollPane parent;
     private EcouteurValeursChangees ecouteurModele;
+    private Vector<InterfaceClasse> listeClasses = new Vector<>();
 
-    public ModeleListeEleve(JScrollPane parent, EcouteurValeursChangees ecouteurModele) {
+    public ModeleListeEleve(JScrollPane parent, Vector<InterfaceClasse> listeClasses, EcouteurValeursChangees ecouteurModele) {
         this.parent = parent;
         this.ecouteurModele = ecouteurModele;
+        this.listeClasses = listeClasses;
     }
 
     public void setListeEleves(Vector<InterfaceEleve> listeData) {
@@ -56,7 +60,7 @@ public class ModeleListeEleve extends AbstractTableModel {
         }
         return null;
     }
-    
+
     public InterfaceEleve getEleve_signature(long signature) {
         if (signature != -1) {
             for (InterfaceEleve art : listeData) {
@@ -125,7 +129,8 @@ public class ModeleListeEleve extends AbstractTableModel {
     public String getColumnName(int column) {
         return titreColonnes[column];
     }
-
+    
+    
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"}
@@ -155,20 +160,26 @@ public class ModeleListeEleve extends AbstractTableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Niveau d'étude"};
+        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"}
         switch (columnIndex) {
-            case 0:
-                return String.class;//N°
-            case 1:
-                return String.class;//Nom
-            case 2:
-                return String.class;//postnom
-            case 3:
-                return String.class;//prenom
-            case 4:
-                return Integer.class;//sexe
-            case 5:
-                return Integer.class;//niveau d'étude
+            case 0: //N°
+                return String.class;
+            case 1: //Nom
+                return String.class;
+            case 2: //Postnom
+                return String.class;
+            case 3: //Prenom
+                return String.class;
+            case 4: // Sexe
+                return Integer.class;
+            case 5: // Classe
+                return Integer.class;
+            case 6: // Date de naissance
+                return Date.class;
+            case 7: //Lieu de naissance
+                return String.class;
+            case 8: //Téléphone des parents
+                return String.class;
             default:
                 return Object.class;
         }
@@ -177,37 +188,65 @@ public class ModeleListeEleve extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        if(columnIndex == 0){
+        if (columnIndex == 0) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
+    
+    private InterfaceClasse getClasse(int idClasse){
+        for(InterfaceClasse clss : this.listeClasses){
+            if(clss.getId() == idClasse){
+                return clss;
+            }
+        }
+        return null;
+    }
+    
+    private void updateClasse(InterfaceEleve Ieleve){
+        InterfaceClasse newClasse = getClasse(Ieleve.getIdClasse());
+        if(newClasse != null){
+            Ieleve.setClasse(newClasse.getNom());
+        }
+    }
+    
+
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Niveau d'étude"};
-        InterfaceEnseignant Iclasse = listeData.get(rowIndex);
+        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone"}
+        InterfaceEleve Ieleve = listeData.get(rowIndex);
         switch (columnIndex) {
-            case 1:
-                Iclasse.setNom(aValue + "");
+            case 1: //Nom
+                Ieleve.setNom(aValue + "");
                 break;
-            case 2:
-                Iclasse.setPostnom(aValue + "");
+            case 2: //Postnom
+                Ieleve.setPostnom(aValue + "");
                 break;
-            case 3:
-                Iclasse.setPrenom(aValue + "");
+            case 3: //Prenom
+                Ieleve.setPrenom(aValue + "");
                 break;
-            case 4:
-                Iclasse.setSexe(Integer.parseInt(aValue + ""));
+            case 4: //Sexe
+                Ieleve.setSexe(Integer.parseInt(aValue + ""));
                 break;
-            case 5:
-                Iclasse.setNiveauEtude(Integer.parseInt(aValue + ""));
+            case 5: //Classe
+                Ieleve.setIdClasse(Integer.parseInt(aValue + ""));
+                updateClasse(Ieleve);
+                break;
+            case 6: //Date de naissance
+                Ieleve.setDateNaissance((Date)aValue);
+                break;
+            case 7: //Lieu de naissance
+                Ieleve.setLieuNaissance(aValue + "");
+                break;
+            case 8: //Téléphone des parents
+                Ieleve.setTelephonesParents(aValue + "");
                 break;
             default:
                 break;
         }
-        listeData.set(rowIndex, Iclasse);
+        listeData.set(rowIndex, Ieleve);
         ecouteurModele.onValeurChangee();
         fireTableDataChanged();
     }

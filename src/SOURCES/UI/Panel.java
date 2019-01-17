@@ -13,15 +13,28 @@ import BEAN_MenuContextuel.RubriqueListener;
 import BEAN_MenuContextuel.RubriqueSimple;
 import ICONES.Icones;
 import SOURCES.Callback.EcouteurAjout;
+import SOURCES.Callback.EcouteurEleveAyantDroit;
+import SOURCES.Callback.EcouteurEnregistrement;
 import SOURCES.Callback.EcouteurUpdateClose;
+import SOURCES.Callback.EcouteurValeursChangees;
+import SOURCES.EditeurTable.EditeurClasse;
+import SOURCES.EditeurTable.EditeurDate;
+import SOURCES.EditeurTable.EditeurSexe;
+import SOURCES.Interfaces.InterfaceClasse;
+import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.ModeleTable.ModeleListeAyantDroit;
 import SOURCES.ModeleTable.ModeleListeEleve;
+import SOURCES.RenduTable.RenduTableEleve;
+import SOURCES.Utilitaires.SortiesEleveAyantDroit;
+import SOURCES.Utilitaires.XX_Eleve;
 import java.awt.event.MouseEvent;
 import java.util.Date;
+import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
+import javax.swing.table.TableColumn;
 
 /**
  *
@@ -42,11 +55,74 @@ public class Panel extends javax.swing.JPanel {
     private RubriqueSimple mEnregistrer, mAjouter, mSupprimer, mVider, mImprimer, mPDF, mFermer, mActualiser;
     private MenuContextuel menuContextuel = null;
     private BarreOutils bOutils = null;
+    private Vector<InterfaceClasse> listeClasses;
+    private EcouteurEleveAyantDroit ecouteurEleveAyantDroit = null;
+    public int idUtilisateur;
+    public int idEntreprise;
+    public int idExercice;
+    
+    private ModeleListeEleve modeleListeEleve;
 
-    public Panel(JTabbedPane parent) {
+    public Panel(JTabbedPane parent, int idUtilisateur, int idEntreprise, int idExercice, Vector<InterfaceClasse> listeClasses, EcouteurEleveAyantDroit ecouteurEleveAyantDroit) {
         initComponents();
         init(parent);
+        this.listeClasses = listeClasses;
+        this.ecouteurEleveAyantDroit = ecouteurEleveAyantDroit;
+        this.idEntreprise = idEntreprise;
+        this.idUtilisateur = idUtilisateur;
+        this.idExercice = idExercice;
+        parametrerTableEleves();
         setIconesTabs();
+    }
+    
+    private void parametrerTableEleves() {
+        this.modeleListeEleve = new ModeleListeEleve(scrollListeEleves, this.listeClasses, new EcouteurValeursChangees() {
+            @Override
+            public void onValeurChangee() {
+                
+            }
+        });
+        
+        //Parametrage du modele contenant les données de la table
+        this.tableListeEleves.setModel(this.modeleListeEleve);
+
+        //Parametrage du rendu de la table
+        this.tableListeEleves.setDefaultRenderer(Object.class, new RenduTableEleve(icones.getModifier_01(), this.listeClasses));
+        this.tableListeEleves.setRowHeight(25);
+        
+        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"}
+        TableColumn col_No = this.tableListeEleves.getColumnModel().getColumn(0);
+        col_No.setPreferredWidth(40);
+        col_No.setMaxWidth(40);
+
+        TableColumn colNom = this.tableListeEleves.getColumnModel().getColumn(1);
+        colNom.setPreferredWidth(150);
+
+        TableColumn colPostnom = this.tableListeEleves.getColumnModel().getColumn(2);
+        colPostnom.setPreferredWidth(150);
+        
+        TableColumn colPrenom = this.tableListeEleves.getColumnModel().getColumn(3);
+        colPrenom.setPreferredWidth(150);
+        
+        TableColumn colSexe = this.tableListeEleves.getColumnModel().getColumn(4);
+        colSexe.setCellEditor(new EditeurSexe());
+        colSexe.setPreferredWidth(130);
+        colSexe.setMaxWidth(130);
+        
+        TableColumn colClasse = this.tableListeEleves.getColumnModel().getColumn(5);
+        colClasse.setCellEditor(new EditeurClasse(this.listeClasses));
+        colClasse.setPreferredWidth(100);
+        colClasse.setMaxWidth(100);
+        
+        TableColumn colDateNaissance = this.tableListeEleves.getColumnModel().getColumn(6);
+        colDateNaissance.setCellEditor(new EditeurDate());
+        colDateNaissance.setPreferredWidth(150);
+        
+        TableColumn colLieuNaissance = this.tableListeEleves.getColumnModel().getColumn(7);
+        colLieuNaissance.setPreferredWidth(150);
+        
+        TableColumn colTelephone = this.tableListeEleves.getColumnModel().getColumn(8);
+        colTelephone.setPreferredWidth(150);
     }
 
     private void setBoutons() {
@@ -123,21 +199,21 @@ public class Panel extends javax.swing.JPanel {
         if (evt.getButton() == MouseEvent.BUTTON3) {
             switch (tab) {
                 case 0: //Tab Monnaie
-                    menuContextuel.afficher(scrollListeMonnaie, evt.getX(), evt.getY());
+                    menuContextuel.afficher(scrollListeEleves, evt.getX(), evt.getY());
                     break;
                 case 1: //Tab classe
-                    menuContextuel.afficher(scrollListeClasse, evt.getX(), evt.getY());
+                    menuContextuel.afficher(scrollListeAyantDroit, evt.getX(), evt.getY());
                     break;
             }
         }
         switch (tab) {
-            case 0://Tab Monnaie
-                //InterfaceMonnaie artcl = modeleListeMonnaie.getMonnaie(tableListeMonnaie.getSelectedRow());
-                //if (artcl != null) {
-                //    this.ecouteurClose.onActualiser(artcl.getCode() + ", " + artcl.getNom() + ", Taux en Devise loacale : " + Util.getMontantFrancais(artcl.getTauxMonnaieLocale()), icones.getArgent_01());
-                //}
+            case 0://Tab Eleve
+                InterfaceEleve eleve = modeleListeEleve.getEleve(tableListeEleves.getSelectedRow());
+                if (eleve != null) {
+                    this.ecouteurClose.onActualiser(eleve.getNom() + " " + eleve.getPostnom()+ " " + eleve.getPrenom()+".", icones.getClient_01());
+                }
                 break;
-            case 1://Tab classe
+            case 1://Tab Ayant-Droit
                 //InterfaceClasse clss = modeleListeClasse.getClasse(tableListeClasses.getSelectedRow());
                 //if (clss != null) {
                 //    this.ecouteurClose.onActualiser(clss.getNom() + ", nombre des sièges : " + Util.getMontantFrancais((double) clss.getCapacite()), icones.getClasse_01());
@@ -171,7 +247,11 @@ public class Panel extends javax.swing.JPanel {
         this.ecouteurAjout = new EcouteurAjout() {
             @Override
             public void setAjoutEleve(ModeleListeEleve modeleListeEleve) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                if (modeleListeEleve != null) {
+                    int index = (modeleListeEleve.getRowCount() + 1);
+                    Date date = new Date();
+                    modeleListeEleve.AjouterEleve(new XX_Eleve(-1, idEntreprise, idUtilisateur, idExercice, -1, date.getTime(), "", "", "(+243)", "Eleve_"+index, "", "", "", InterfaceEleve.SEXE_MASCULIN, date));
+                }
             }
 
             @Override
@@ -191,7 +271,7 @@ public class Panel extends javax.swing.JPanel {
     public void ajouter() {
         switch (indexTabSelected) {
             case 0: //Tab eleve
-                //this.ecouteurAjout.setAjoutMonnaie(modeleListeMonnaie);
+                this.ecouteurAjout.setAjoutEleve(modeleListeEleve);
                 break;
             case 1: //Tab ayantdroit
                 //this.ecouteurAjout.setAjoutClasse(modeleListeClasse);
@@ -202,7 +282,7 @@ public class Panel extends javax.swing.JPanel {
     public void supprimer() {
         switch (indexTabSelected) {
             case 0: //Tab eleve
-                //modeleListeMonnaie.SupprimerMonnaie(tableListeMonnaie.getSelectedRow());
+                modeleListeEleve.SupprimerEleve(tableListeEleves.getSelectedRow());
                 break;
             case 1: //Tab ayantdroit
                 //modeleListeClasse.SupprimerClasse(tableListeClasses.getSelectedRow(), this.modeleListeFrais);
@@ -216,7 +296,7 @@ public class Panel extends javax.swing.JPanel {
         Date date = new Date();
         switch (indexTabSelected) {
             case 0: //eleve
-                //modeleListeMonnaie.viderListe();
+                modeleListeEleve.viderListe();
                 break;
             case 1: //ayantdroit
                 //modeleListeClasse.viderListe();
@@ -318,13 +398,55 @@ public class Panel extends javax.swing.JPanel {
             }
         }
     }
+    
+    private SortiesEleveAyantDroit getSortieEleveAyantDroit(Bouton boutonDeclencheur, RubriqueSimple rubriqueDeclencheur) {
+        SortiesEleveAyantDroit sortieEA = new SortiesEleveAyantDroit(
+                this.modeleListeEleve.getListeData(), 
+                null, //ici il faut faire la même chose aussi en ce qui concerne les Ayant-droits. C'est null puisque le modele Ayantdroit n'existe pas encore
+                new EcouteurEnregistrement() {
+            @Override
+            public void onDone(String message) {
+                ecouteurClose.onActualiser(message, icones.getAimer_01());
+                if (boutonDeclencheur != null) {
+                    boutonDeclencheur.appliquerDroitAccessDynamique(true);
+                }
+                if (rubriqueDeclencheur != null) {
+                    rubriqueDeclencheur.appliquerDroitAccessDynamique(true);
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                ecouteurClose.onActualiser(message, icones.getAlert_01());
+                if (boutonDeclencheur != null) {
+                    boutonDeclencheur.appliquerDroitAccessDynamique(true);
+                }
+                if (rubriqueDeclencheur != null) {
+                    rubriqueDeclencheur.appliquerDroitAccessDynamique(true);
+                }
+            }
+
+            @Override
+            public void onUploading(String message) {
+                ecouteurClose.onActualiser(message, icones.getInfos_01());
+                if (boutonDeclencheur != null) {
+                    boutonDeclencheur.appliquerDroitAccessDynamique(false);
+                }
+                if (rubriqueDeclencheur != null) {
+                    rubriqueDeclencheur.appliquerDroitAccessDynamique(false);
+                }
+            }
+        });
+        
+        return sortieEA;
+    }
+
 
     public void enregistrer() {
-        //if (this.ecouteurExercice != null) {
-        //SortiesAnneeScolaire sortie = getSortieAnneeScolaire(btEnregistrer, mEnregistrer);
-        //this.ecouteurExercice.onEnregistre(sortie);
-        //this.chNom.setBackground(Color.WHITE);
-        //}
+        if (this.ecouteurEleveAyantDroit != null) {
+            SortiesEleveAyantDroit sortie = getSortieEleveAyantDroit(btEnregistrer, mEnregistrer);
+            this.ecouteurEleveAyantDroit.onEnregistre(sortie);
+        }
     }
 
     public void exporterPDF() {
@@ -342,7 +464,7 @@ public class Panel extends javax.swing.JPanel {
     public void actualiser() {
         switch (indexTabSelected) {
             case 0: //Monnaie
-                //modeleListeMonnaie.actualiser();
+                modeleListeEleve.actualiser();
                 break;
             case 1: //Classe
                 //modeleListeClasse.actualiser();
@@ -362,14 +484,15 @@ public class Panel extends javax.swing.JPanel {
         barreOutils = new javax.swing.JToolBar();
         jButton5 = new javax.swing.JButton();
         tabPrincipal = new javax.swing.JTabbedPane();
-        scrollListeMonnaie = new javax.swing.JScrollPane();
-        tableListeMonnaie = new javax.swing.JTable();
-        scrollListeClasse = new javax.swing.JScrollPane();
-        tableListeClasses = new javax.swing.JTable();
+        scrollListeEleves = new javax.swing.JScrollPane();
+        tableListeEleves = new javax.swing.JTable();
+        scrollListeAyantDroit = new javax.swing.JScrollPane();
+        tableListeAyantDroit = new javax.swing.JTable();
         labInfos = new javax.swing.JLabel();
         chRecherche = new UI.JS2bTextField();
 
         setBackground(new java.awt.Color(255, 255, 255));
+        setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
         barreOutils.setBackground(new java.awt.Color(255, 255, 255));
         barreOutils.setRollover(true);
@@ -391,15 +514,15 @@ public class Panel extends javax.swing.JPanel {
             }
         });
 
-        scrollListeMonnaie.setBackground(new java.awt.Color(255, 255, 255));
-        scrollListeMonnaie.setAutoscrolls(true);
-        scrollListeMonnaie.addMouseListener(new java.awt.event.MouseAdapter() {
+        scrollListeEleves.setBackground(new java.awt.Color(255, 255, 255));
+        scrollListeEleves.setAutoscrolls(true);
+        scrollListeEleves.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                scrollListeMonnaieMouseClicked(evt);
+                scrollListeElevesMouseClicked(evt);
             }
         });
 
-        tableListeMonnaie.setModel(new javax.swing.table.DefaultTableModel(
+        tableListeEleves.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null}
             },
@@ -407,24 +530,24 @@ public class Panel extends javax.swing.JPanel {
                 "Article", "Qunatité", "Unités", "Prix Unitaire HT", "Tva %", "Tva", "Total TTC"
             }
         ));
-        tableListeMonnaie.addMouseListener(new java.awt.event.MouseAdapter() {
+        tableListeEleves.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tableListeMonnaieMouseClicked(evt);
+                tableListeElevesMouseClicked(evt);
             }
         });
-        scrollListeMonnaie.setViewportView(tableListeMonnaie);
+        scrollListeEleves.setViewportView(tableListeEleves);
 
-        tabPrincipal.addTab("Elèves", scrollListeMonnaie);
+        tabPrincipal.addTab("Elèves", scrollListeEleves);
 
-        scrollListeClasse.setBackground(new java.awt.Color(255, 255, 255));
-        scrollListeClasse.setAutoscrolls(true);
-        scrollListeClasse.addMouseListener(new java.awt.event.MouseAdapter() {
+        scrollListeAyantDroit.setBackground(new java.awt.Color(255, 255, 255));
+        scrollListeAyantDroit.setAutoscrolls(true);
+        scrollListeAyantDroit.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                scrollListeClasseMouseClicked(evt);
+                scrollListeAyantDroitMouseClicked(evt);
             }
         });
 
-        tableListeClasses.setModel(new javax.swing.table.DefaultTableModel(
+        tableListeAyantDroit.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null}
             },
@@ -432,14 +555,14 @@ public class Panel extends javax.swing.JPanel {
                 "Article", "Qunatité", "Unités", "Prix Unitaire HT", "Tva %", "Tva", "Total TTC"
             }
         ));
-        tableListeClasses.addMouseListener(new java.awt.event.MouseAdapter() {
+        tableListeAyantDroit.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tableListeClassesMouseClicked(evt);
+                tableListeAyantDroitMouseClicked(evt);
             }
         });
-        scrollListeClasse.setViewportView(tableListeClasses);
+        scrollListeAyantDroit.setViewportView(tableListeAyantDroit);
 
-        tabPrincipal.addTab("Ayant-droit", scrollListeClasse);
+        tabPrincipal.addTab("Ayant-droit", scrollListeAyantDroit);
 
         labInfos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Facture01.png"))); // NOI18N
         labInfos.setText("Prêt.");
@@ -451,8 +574,8 @@ public class Panel extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(barreOutils, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
-            .addComponent(tabPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
+            .addComponent(barreOutils, javax.swing.GroupLayout.DEFAULT_SIZE, 636, Short.MAX_VALUE)
+            .addComponent(tabPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, 636, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -466,33 +589,33 @@ public class Panel extends javax.swing.JPanel {
                 .addComponent(barreOutils, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(chRecherche, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(tabPrincipal, javax.swing.GroupLayout.PREFERRED_SIZE, 338, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(tabPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(labInfos)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tableListeMonnaieMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableListeMonnaieMouseClicked
+    private void tableListeElevesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableListeElevesMouseClicked
         // TODO add your handling code here:
         ecouterMenContA(evt, 0);
-    }//GEN-LAST:event_tableListeMonnaieMouseClicked
+    }//GEN-LAST:event_tableListeElevesMouseClicked
 
-    private void scrollListeMonnaieMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_scrollListeMonnaieMouseClicked
+    private void scrollListeElevesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_scrollListeElevesMouseClicked
         // TODO add your handling code here:
         ecouterMenContA(evt, 0);
-    }//GEN-LAST:event_scrollListeMonnaieMouseClicked
+    }//GEN-LAST:event_scrollListeElevesMouseClicked
 
-    private void tableListeClassesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableListeClassesMouseClicked
+    private void tableListeAyantDroitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableListeAyantDroitMouseClicked
         // TODO add your handling code here:
         ecouterMenContA(evt, 1);
-    }//GEN-LAST:event_tableListeClassesMouseClicked
+    }//GEN-LAST:event_tableListeAyantDroitMouseClicked
 
-    private void scrollListeClasseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_scrollListeClasseMouseClicked
+    private void scrollListeAyantDroitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_scrollListeAyantDroitMouseClicked
         // TODO add your handling code here:
         ecouterMenContA(evt, 1);
-    }//GEN-LAST:event_scrollListeClasseMouseClicked
+    }//GEN-LAST:event_scrollListeAyantDroitMouseClicked
 
     private void tabPrincipalStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tabPrincipalStateChanged
         // TODO add your handling code here:
@@ -505,10 +628,10 @@ public class Panel extends javax.swing.JPanel {
     private UI.JS2bTextField chRecherche;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel labInfos;
-    private javax.swing.JScrollPane scrollListeClasse;
-    private javax.swing.JScrollPane scrollListeMonnaie;
+    private javax.swing.JScrollPane scrollListeAyantDroit;
+    private javax.swing.JScrollPane scrollListeEleves;
     private javax.swing.JTabbedPane tabPrincipal;
-    private javax.swing.JTable tableListeClasses;
-    private javax.swing.JTable tableListeMonnaie;
+    private javax.swing.JTable tableListeAyantDroit;
+    private javax.swing.JTable tableListeEleves;
     // End of variables declaration//GEN-END:variables
 }

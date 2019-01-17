@@ -5,7 +5,13 @@
  */
 package TESTS_EXEMPLES;
 
+import SOURCES.Callback.EcouteurEleveAyantDroit;
+import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.UI.Panel;
+import SOURCES.Utilitaires.SortiesEleveAyantDroit;
+import static java.lang.Thread.sleep;
+import java.util.Date;
+import java.util.Vector;
 
 /**
  *
@@ -17,13 +23,54 @@ public class TEST_Principal extends javax.swing.JFrame {
      * Creates new form TEST_Principal
      */
     public Panel gestionnaireExercice = null;
+    public Vector<InterfaceClasse> listeClasses = null;
+    public int idUtilisateur = 1;
+    public int idEntreprise = 1;
+    public int idExercice = 1;
+    
 
     public TEST_Principal() {
         initComponents();
     }
 
     private void initParametres() {
-        gestionnaireExercice = new Panel(tabPrincipale);
+        this.listeClasses = new Vector<>();
+        
+        //Chargement des classes
+        this.listeClasses.add(new TEST_Classe(10, idUtilisateur, idEntreprise, idExercice, "G1", 50, "Local 2", new Date().getTime()));
+        this.listeClasses.add(new TEST_Classe(11, idUtilisateur, idEntreprise, idExercice, "G2", 50, "Local 3", new Date().getTime()+1));
+        this.listeClasses.add(new TEST_Classe(12, idUtilisateur, idEntreprise, idExercice, "G3", 50, "Local 4", new Date().getTime()+2));
+        this.listeClasses.add(new TEST_Classe(13, idUtilisateur, idEntreprise, idExercice, "L2", 50, "Local 5", new Date().getTime()+3));
+        
+        this.gestionnaireExercice = new Panel(this.tabPrincipale, this.idUtilisateur, this.idEntreprise, this.idExercice, this.listeClasses, new EcouteurEleveAyantDroit() {
+            @Override
+            public void onEnregistre(SortiesEleveAyantDroit sortiesEleveAyantDroit) {
+                
+                
+                Thread th = new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            sortiesEleveAyantDroit.getEcouteurEnregistrement().onUploading("Chargement...");
+                            sleep(5000);
+                            
+                            System.out.println("MONNAIES :");
+                            sortiesEleveAyantDroit.getListeEleves().forEach((Oeleve) -> {
+                                System.out.println(" * " + Oeleve.getNom() + ", " + Oeleve.getPostnom()+", " + Oeleve.getPrenom()+", Classe : " + Oeleve.getClasse());
+                            });
+
+                            sortiesEleveAyantDroit.getEcouteurEnregistrement().onDone("Enregistré!");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                th.start();
+                
+                
+                
+            }
+        });
     }
 
     /**
@@ -73,10 +120,10 @@ public class TEST_Principal extends javax.swing.JFrame {
         // TODO add your handling code here:
 
         initParametres();
-
+        
         //Chargement du gestionnaire sur l'onglet
         tabPrincipale.addTab("Fiche d'inscription", gestionnaireExercice);
-
+        
         //On séléctionne l'onglet actuel
         tabPrincipale.setSelectedComponent(gestionnaireExercice);
 
