@@ -23,7 +23,6 @@ public interface InterfaceEleve {
     public abstract int getIdClasse();
     public abstract long getSignature();
     public abstract String getClasse();
-    public abstract String getAdresse();
     public abstract String getTelephonesParents();
     public abstract String getNom();
     public abstract String getPostnom();
@@ -41,7 +40,6 @@ public interface InterfaceEleve {
     public abstract void setIdClasse(int idClasse);
     public abstract void setSignature(long signature);
     public abstract void setClasse(String classe);
-    public abstract void setAdresse(String adresse);
     public abstract void setTelephonesParents(String telephonesParents);
     public abstract void setNom(String nom);
     public abstract void setPostnom(String postnom);

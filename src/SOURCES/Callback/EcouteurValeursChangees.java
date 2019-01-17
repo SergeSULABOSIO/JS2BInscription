@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package SOURCES.ModeleTable;
+package SOURCES.Callback;
 
 /**
  *
  * @author HP Pavilion
  */
-public class ModeleListeAyantDroit {
-
+public abstract class EcouteurValeursChangees {
+    
+    public abstract void onValeurChangee();
+    
 }

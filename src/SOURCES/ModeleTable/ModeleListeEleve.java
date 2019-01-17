@@ -6,7 +6,7 @@
 package SOURCES.ModeleTable;
 
 import SOURCES.Callback.EcouteurValeursChangees;
-import SOURCES.Interfaces.InterfaceEnseignant;
+import SOURCES.Interfaces.InterfaceEleve;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -18,8 +18,8 @@ import javax.swing.table.AbstractTableModel;
  */
 public class ModeleListeEleve extends AbstractTableModel {
 
-    private String[] titreColonnes = {"N°", "Nom", "Postnom", "Prénom", "Sexe", "Niveau d'étude"};
-    private Vector<InterfaceEnseignant> listeData = new Vector<>();
+    private String[] titreColonnes = {"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"};
+    private Vector<InterfaceEleve> listeData = new Vector<>();
     private JScrollPane parent;
     private EcouteurValeursChangees ecouteurModele;
 
@@ -28,14 +28,14 @@ public class ModeleListeEleve extends AbstractTableModel {
         this.ecouteurModele = ecouteurModele;
     }
 
-    public void setListeClasses(Vector<InterfaceEnseignant> listeData) {
+    public void setListeEleves(Vector<InterfaceEleve> listeData) {
         this.listeData = listeData;
         redessinerTable();
     }
 
-    public InterfaceEnseignant getEnseignant(int row) {
+    public InterfaceEleve getEleve(int row) {
         if (row < listeData.size() && row != -1) {
-            InterfaceEnseignant art = listeData.elementAt(row);
+            InterfaceEleve art = listeData.elementAt(row);
             if (art != null) {
                 return art;
             } else {
@@ -46,9 +46,9 @@ public class ModeleListeEleve extends AbstractTableModel {
         }
     }
 
-    public InterfaceEnseignant getEnseignant_id(int id) {
+    public InterfaceEleve getEleve_id(int id) {
         if (id != -1) {
-            for (InterfaceEnseignant art : listeData) {
+            for (InterfaceEleve art : listeData) {
                 if (id == art.getId()) {
                     return art;
                 }
@@ -57,9 +57,9 @@ public class ModeleListeEleve extends AbstractTableModel {
         return null;
     }
     
-    public InterfaceEnseignant getEnseignant_signature(long signature) {
+    public InterfaceEleve getEleve_signature(long signature) {
         if (signature != -1) {
-            for (InterfaceEnseignant art : listeData) {
+            for (InterfaceEleve art : listeData) {
                 if (signature == art.getSignature()) {
                     return art;
                 }
@@ -68,7 +68,7 @@ public class ModeleListeEleve extends AbstractTableModel {
         return null;
     }
 
-    public Vector<InterfaceEnseignant> getListeData() {
+    public Vector<InterfaceEleve> getListeData() {
         return this.listeData;
     }
 
@@ -77,15 +77,15 @@ public class ModeleListeEleve extends AbstractTableModel {
         redessinerTable();
     }
 
-    public void AjouterEnseignant(InterfaceEnseignant newEnseignant) {
-        this.listeData.add(newEnseignant);
+    public void AjouterEleve(InterfaceEleve newEleve) {
+        this.listeData.add(newEleve);
         ecouteurModele.onValeurChangee();
         redessinerTable();
     }
 
-    public void SupprimerEnseignant(int row) {
+    public void SupprimerEleve(int row) {
         if (row < listeData.size() && row != -1) {
-            InterfaceEnseignant articl = listeData.elementAt(row);
+            InterfaceEleve articl = listeData.elementAt(row);
             if (articl != null) {
                 int dialogResult = JOptionPane.showConfirmDialog(parent, "Etes-vous sûr de vouloir supprimer cette liste?", "Avertissement", JOptionPane.YES_NO_OPTION);
                 if (dialogResult == JOptionPane.YES_OPTION) {
@@ -128,20 +128,26 @@ public class ModeleListeEleve extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Niveau d'étude"};
+        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"}
         switch (columnIndex) {
-            case 0:
+            case 0: //N°
                 return (rowIndex + 1) + "";
-            case 1:
+            case 1: //Nom
                 return listeData.elementAt(rowIndex).getNom();
-            case 2:
+            case 2: //Postnom
                 return listeData.elementAt(rowIndex).getPostnom();
-            case 3:
+            case 3: //Prenom
                 return listeData.elementAt(rowIndex).getPrenom();
-            case 4:
+            case 4: //Sexe
                 return listeData.elementAt(rowIndex).getSexe();
-            case 5:
-                return listeData.elementAt(rowIndex).getNiveauEtude();
+            case 5: //Classe
+                return listeData.elementAt(rowIndex).getIdClasse();
+            case 6: //Date de naissance
+                return listeData.elementAt(rowIndex).getDateNaissance();
+            case 7: //Lieu de naissance
+                return listeData.elementAt(rowIndex).getLieuNaissance();
+            case 8: //Telephone
+                return listeData.elementAt(rowIndex).getTelephonesParents();
             default:
                 return "Null";
         }

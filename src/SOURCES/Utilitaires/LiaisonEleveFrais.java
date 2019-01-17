@@ -12,20 +12,32 @@ import SOURCES.Interfaces.InterfaceEleve;
  * @author HP Pavilion
  */
 public class LiaisonEleveFrais {
-    private InterfaceEleve eleve;
+    private long signatureEleve;
+    private int idFrais;
     private double montant;
+    private int monnaie;
 
-    public LiaisonEleveFrais(InterfaceEleve eleve, double montant) {
-        this.eleve = eleve;
+    public LiaisonEleveFrais(long signatureEleve, int idFrais, double montant, int monnaie) {
+        this.signatureEleve = signatureEleve;
+        this.idFrais = idFrais;
         this.montant = montant;
+        this.monnaie = monnaie;
     }
 
-    public InterfaceEleve getEleve() {
-        return eleve;
+    public long getSignatureEleve() {
+        return signatureEleve;
     }
 
-    public void setEleve(InterfaceEleve eleve) {
-        this.eleve = eleve;
+    public void setSignatureEleve(long signatureEleve) {
+        this.signatureEleve = signatureEleve;
+    }
+
+    public int getIdFrais() {
+        return idFrais;
+    }
+
+    public void setIdFrais(int idFrais) {
+        this.idFrais = idFrais;
     }
 
     public double getMontant() {
@@ -36,9 +48,16 @@ public class LiaisonEleveFrais {
         this.montant = montant;
     }
 
+    public int getMonnaie() {
+        return monnaie;
+    }
+
+    public void setMonnaie(int monnaie) {
+        this.monnaie = monnaie;
+    }
+
     @Override
     public String toString() {
-        return "LiaisonEleveFrais{" + "eleve=" + eleve + ", montant=" + montant + '}';
+        return "LiaisonEleveFrais{" + "signatureEleve=" + signatureEleve + ", idFrais=" + idFrais + ", montant=" + montant + ", monnaie=" + monnaie + '}';
     }
-    
 }
