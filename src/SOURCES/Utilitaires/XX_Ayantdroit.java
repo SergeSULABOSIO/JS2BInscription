@@ -20,8 +20,9 @@ public class XX_Ayantdroit implements InterfaceAyantDroit{
     public int idEleve;
     public Vector<LiaisonEleveFrais> listeLiaisons;
     public long signature;
+    public long signatureEleve;
 
-    public XX_Ayantdroit(int id, int idEntreprise, int idUtilisateur, int idExercice, int idEleve, Vector<LiaisonEleveFrais> listeLiaisons, long signature) {
+    public XX_Ayantdroit(int id, int idEntreprise, int idUtilisateur, int idExercice, int idEleve, Vector<LiaisonEleveFrais> listeLiaisons, long signature, long signatureEleve) {
         this.id = id;
         this.idEntreprise = idEntreprise;
         this.idUtilisateur = idUtilisateur;
@@ -29,6 +30,7 @@ public class XX_Ayantdroit implements InterfaceAyantDroit{
         this.idEleve = idEleve;
         this.listeLiaisons = listeLiaisons;
         this.signature = signature;
+        this.signatureEleve = signatureEleve;
     }
 
     public int getId() {
@@ -90,5 +92,40 @@ public class XX_Ayantdroit implements InterfaceAyantDroit{
     @Override
     public String toString() {
         return "XX_Ayantdroit{" + "id=" + id + ", idEntreprise=" + idEntreprise + ", idUtilisateur=" + idUtilisateur + ", idExercice=" + idExercice + ", idEleve=" + idEleve + ", listeLiaisons=" + listeLiaisons + ", signature=" + signature + '}';
+    }
+
+    @Override
+    public void ajouterLiaisons(LiaisonEleveFrais newLiaison) {
+        if(this.listeLiaisons != null){
+            this.listeLiaisons.add(newLiaison);
+        }
+    }
+
+    @Override
+    public void viderLiaisons() {
+        if(this.listeLiaisons != null){
+            this.listeLiaisons.removeAllElements();
+        }
+    }
+
+    @Override
+    public void setLiaisons(int idFrais, double newMontant) {
+        if(this.listeLiaisons != null){
+            for(LiaisonEleveFrais liaison : listeLiaisons){
+                if(liaison.getIdFrais() == idFrais){
+                    liaison.setMontant(newMontant);
+                }
+            }
+        }
+    }
+
+    @Override
+    public long getSignatureEleve() {
+        return this.signatureEleve;
+    }
+
+    @Override
+    public void setSignatureEleve(long signature) {
+        this.signatureEleve = signature;
     }
 }

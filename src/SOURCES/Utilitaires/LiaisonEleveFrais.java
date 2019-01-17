@@ -5,8 +5,6 @@
  */
 package SOURCES.Utilitaires;
 
-import SOURCES.Interfaces.InterfaceEleve;
-
 /**
  *
  * @author HP Pavilion
