@@ -5,15 +5,12 @@
  */
 package SOURCES.RenduTable;
 
-import SOURCES.Interfaces.InterfaceAyantDroit;
-import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Interfaces.InterfaceMonnaie;
 import SOURCES.ModeleTable.ModeleListeAyantDroit;
 import SOURCES.UI.CelluleSimpleTableau;
 import SOURCES.Utilitaires.Util;
 import java.awt.Component;
-import java.util.Date;
 import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;

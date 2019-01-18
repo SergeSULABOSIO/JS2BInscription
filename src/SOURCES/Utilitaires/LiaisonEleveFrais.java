@@ -13,15 +13,18 @@ public class LiaisonEleveFrais {
     private long signatureEleve;
     private int idFrais;
     private double montant;
-    private int monnaie;
+    private int idMonnaie;
+    private String monnaie;
 
-    public LiaisonEleveFrais(long signatureEleve, int idFrais, double montant, int monnaie) {
+    public LiaisonEleveFrais(long signatureEleve, int idFrais, double montant, int idMonnaie, String monnaie) {
         this.signatureEleve = signatureEleve;
         this.idFrais = idFrais;
         this.montant = montant;
+        this.idMonnaie = idMonnaie;
         this.monnaie = monnaie;
     }
 
+    
     public long getSignatureEleve() {
         return signatureEleve;
     }
@@ -46,16 +49,28 @@ public class LiaisonEleveFrais {
         this.montant = montant;
     }
 
-    public int getMonnaie() {
+    public int getIdMonnaie() {
+        return idMonnaie;
+    }
+
+    public void setIdMonnaie(int idMonnaie) {
+        this.idMonnaie = idMonnaie;
+    }
+
+    public String getMonnaie() {
         return monnaie;
     }
 
-    public void setMonnaie(int monnaie) {
+    public void setMonnaie(String monnaie) {
         this.monnaie = monnaie;
     }
+    
+    
 
     @Override
     public String toString() {
-        return "LiaisonEleveFrais{" + "signatureEleve=" + signatureEleve + ", idFrais=" + idFrais + ", montant=" + montant + ", monnaie=" + monnaie + '}';
+        return "LiaisonEleveFrais{" + "signatureEleve=" + signatureEleve + ", idFrais=" + idFrais + ", montant=" + montant + ", idMonnaie=" + idMonnaie + ", monnaie=" + monnaie + '}';
     }
+
+    
 }
