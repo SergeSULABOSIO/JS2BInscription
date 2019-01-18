@@ -18,11 +18,13 @@ public class XX_Ayantdroit implements InterfaceAyantDroit{
     public int idUtilisateur;
     public int idExercice;
     public int idEleve;
+    public String eleve;
     public Vector<LiaisonEleveFrais> listeLiaisons;
     public long signature;
     public long signatureEleve;
+    
 
-    public XX_Ayantdroit(int id, int idEntreprise, int idUtilisateur, int idExercice, int idEleve, Vector<LiaisonEleveFrais> listeLiaisons, long signature, long signatureEleve) {
+    public XX_Ayantdroit(int id, int idEntreprise, int idUtilisateur, int idExercice, int idEleve, String eleve, Vector<LiaisonEleveFrais> listeLiaisons, long signature, long signatureEleve) {
         this.id = id;
         this.idEntreprise = idEntreprise;
         this.idUtilisateur = idUtilisateur;
@@ -31,7 +33,18 @@ public class XX_Ayantdroit implements InterfaceAyantDroit{
         this.listeLiaisons = listeLiaisons;
         this.signature = signature;
         this.signatureEleve = signatureEleve;
+        this.eleve = eleve;
     }
+
+    public String getEleve() {
+        return eleve;
+    }
+
+    public void setEleve(String eleve) {
+        this.eleve = eleve;
+    }
+    
+    
 
     public int getId() {
         return id;
@@ -91,8 +104,10 @@ public class XX_Ayantdroit implements InterfaceAyantDroit{
 
     @Override
     public String toString() {
-        return "XX_Ayantdroit{" + "id=" + id + ", idEntreprise=" + idEntreprise + ", idUtilisateur=" + idUtilisateur + ", idExercice=" + idExercice + ", idEleve=" + idEleve + ", listeLiaisons=" + listeLiaisons + ", signature=" + signature + '}';
+        return "XX_Ayantdroit{" + "id=" + id + ", idEntreprise=" + idEntreprise + ", idUtilisateur=" + idUtilisateur + ", idExercice=" + idExercice + ", idEleve=" + idEleve + ", eleve=" + eleve + ", listeLiaisons=" + listeLiaisons + ", signature=" + signature + ", signatureEleve=" + signatureEleve + '}';
     }
+
+    
 
     @Override
     public void ajouterLiaisons(LiaisonEleveFrais newLiaison) {
@@ -128,4 +143,5 @@ public class XX_Ayantdroit implements InterfaceAyantDroit{
     public void setSignatureEleve(long signature) {
         this.signatureEleve = signature;
     }
+    
 }

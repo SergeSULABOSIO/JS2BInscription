@@ -19,13 +19,19 @@ import SOURCES.Callback.EcouteurUpdateClose;
 import SOURCES.Callback.EcouteurValeursChangees;
 import SOURCES.EditeurTable.EditeurClasse;
 import SOURCES.EditeurTable.EditeurDate;
+import SOURCES.EditeurTable.EditeurEleve;
 import SOURCES.EditeurTable.EditeurSexe;
+import SOURCES.Interfaces.InterfaceAyantDroit;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
+import SOURCES.Interfaces.InterfaceFrais;
 import SOURCES.ModeleTable.ModeleListeAyantDroit;
 import SOURCES.ModeleTable.ModeleListeEleve;
+import SOURCES.RenduTable.RenduTableAyantDroit;
 import SOURCES.RenduTable.RenduTableEleve;
+import SOURCES.Utilitaires.LiaisonEleveFrais;
 import SOURCES.Utilitaires.SortiesEleveAyantDroit;
+import SOURCES.Utilitaires.XX_Ayantdroit;
 import SOURCES.Utilitaires.XX_Eleve;
 import java.awt.event.MouseEvent;
 import java.util.Date;
@@ -56,30 +62,37 @@ public class Panel extends javax.swing.JPanel {
     private MenuContextuel menuContextuel = null;
     private BarreOutils bOutils = null;
     private Vector<InterfaceClasse> listeClasses;
+    private Vector<InterfaceFrais> listeFrais;
     private EcouteurEleveAyantDroit ecouteurEleveAyantDroit = null;
     public int idUtilisateur;
     public int idEntreprise;
     public int idExercice;
-    
-    private ModeleListeEleve modeleListeEleve;
 
-    public Panel(JTabbedPane parent, int idUtilisateur, int idEntreprise, int idExercice, Vector<InterfaceClasse> listeClasses, EcouteurEleveAyantDroit ecouteurEleveAyantDroit) {
+    private ModeleListeEleve modeleListeEleve;
+    private ModeleListeAyantDroit modeleListeAyantDroit;
+    private EditeurEleve editeurEleve = null;
+
+    public Panel(JTabbedPane parent, int idUtilisateur, int idEntreprise, int idExercice, Vector<InterfaceClasse> listeClasses, Vector<InterfaceFrais> listeFrais, EcouteurEleveAyantDroit ecouteurEleveAyantDroit) {
         initComponents();
         init(parent);
         this.listeClasses = listeClasses;
+        this.listeFrais = listeFrais;
         this.ecouteurEleveAyantDroit = ecouteurEleveAyantDroit;
         this.idEntreprise = idEntreprise;
         this.idUtilisateur = idUtilisateur;
         this.idExercice = idExercice;
-        parametrerTableEleves();
+        this.parametrerTableEleves();
+        this.parametrerTableAyantDroit();
         setIconesTabs();
     }
-    
+
     private void parametrerTableEleves() {
         this.modeleListeEleve = new ModeleListeEleve(scrollListeEleves, this.listeClasses, new EcouteurValeursChangees() {
             @Override
             public void onValeurChangee() {
-                
+                if(modeleListeAyantDroit != null){
+                    modeleListeAyantDroit.actualiser();
+                }
             }
         });
         
@@ -89,7 +102,7 @@ public class Panel extends javax.swing.JPanel {
         //Parametrage du rendu de la table
         this.tableListeEleves.setDefaultRenderer(Object.class, new RenduTableEleve(icones.getModifier_01(), this.listeClasses));
         this.tableListeEleves.setRowHeight(25);
-        
+
         //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"}
         TableColumn col_No = this.tableListeEleves.getColumnModel().getColumn(0);
         col_No.setPreferredWidth(40);
@@ -100,29 +113,63 @@ public class Panel extends javax.swing.JPanel {
 
         TableColumn colPostnom = this.tableListeEleves.getColumnModel().getColumn(2);
         colPostnom.setPreferredWidth(150);
-        
+
         TableColumn colPrenom = this.tableListeEleves.getColumnModel().getColumn(3);
         colPrenom.setPreferredWidth(150);
-        
+
         TableColumn colSexe = this.tableListeEleves.getColumnModel().getColumn(4);
         colSexe.setCellEditor(new EditeurSexe());
         colSexe.setPreferredWidth(130);
         colSexe.setMaxWidth(130);
-        
+
         TableColumn colClasse = this.tableListeEleves.getColumnModel().getColumn(5);
         colClasse.setCellEditor(new EditeurClasse(this.listeClasses));
         colClasse.setPreferredWidth(100);
         colClasse.setMaxWidth(100);
-        
+
         TableColumn colDateNaissance = this.tableListeEleves.getColumnModel().getColumn(6);
         colDateNaissance.setCellEditor(new EditeurDate());
         colDateNaissance.setPreferredWidth(150);
-        
+
         TableColumn colLieuNaissance = this.tableListeEleves.getColumnModel().getColumn(7);
         colLieuNaissance.setPreferredWidth(150);
-        
+
         TableColumn colTelephone = this.tableListeEleves.getColumnModel().getColumn(8);
         colTelephone.setPreferredWidth(150);
+    }
+
+    private void parametrerTableAyantDroit() {
+        this.modeleListeAyantDroit = new ModeleListeAyantDroit(scrollListeAyantDroit, this.listeFrais, this.modeleListeEleve, new EcouteurValeursChangees() {
+            @Override
+            public void onValeurChangee() {
+
+            }
+        });
+
+        //Parametrage du modele contenant les données de la table
+        this.tableListeAyantDroit.setModel(this.modeleListeAyantDroit);
+
+        //Parametrage du rendu de la table
+        this.tableListeAyantDroit.setDefaultRenderer(Object.class, new RenduTableAyantDroit(icones.getModifier_01(), this.modeleListeEleve, modeleListeAyantDroit));
+        this.tableListeAyantDroit.setRowHeight(25);
+
+        //{"N°", "Eleve", ...liste des frais}
+        TableColumn col_No = this.tableListeAyantDroit.getColumnModel().getColumn(0);
+        col_No.setPreferredWidth(40);
+        col_No.setMaxWidth(40);
+
+        TableColumn colEleve = this.tableListeAyantDroit.getColumnModel().getColumn(1);
+        colEleve.setCellEditor(new EditeurEleve(modeleListeEleve));
+        colEleve.setPreferredWidth(150);
+        
+        int index = 1;
+        for (InterfaceFrais frais : this.listeFrais) {
+            TableColumn colFrais = this.tableListeAyantDroit.getColumnModel().getColumn(index);
+            //colFrais.setPreferredWidth(40);
+            //colFrais.setMaxWidth(40);
+            index++;
+        }
+
     }
 
     private void setBoutons() {
@@ -210,14 +257,17 @@ public class Panel extends javax.swing.JPanel {
             case 0://Tab Eleve
                 InterfaceEleve eleve = modeleListeEleve.getEleve(tableListeEleves.getSelectedRow());
                 if (eleve != null) {
-                    this.ecouteurClose.onActualiser(eleve.getNom() + " " + eleve.getPostnom()+ " " + eleve.getPrenom()+".", icones.getClient_01());
+                    this.ecouteurClose.onActualiser(eleve.getNom() + " " + eleve.getPostnom() + " " + eleve.getPrenom() + ".", icones.getClient_01());
                 }
                 break;
             case 1://Tab Ayant-Droit
-                //InterfaceClasse clss = modeleListeClasse.getClasse(tableListeClasses.getSelectedRow());
-                //if (clss != null) {
-                //    this.ecouteurClose.onActualiser(clss.getNom() + ", nombre des sièges : " + Util.getMontantFrancais((double) clss.getCapacite()), icones.getClasse_01());
-                //}
+                InterfaceAyantDroit ayantD = modeleListeAyantDroit.getAyantDroit(tableListeAyantDroit.getSelectedRow());
+                if (ayantD != null) {
+                    InterfaceEleve Elv = this.modeleListeEleve.getEleve_id(ayantD.getIdEleve());
+                    if(Elv != null){
+                        this.ecouteurClose.onActualiser(Elv.getNom()+" " + Elv.getPostnom()+" " + Elv.getPrenom(), icones.getAdministrateur_01());
+                    }
+                }
                 break;
         }
 
@@ -250,13 +300,17 @@ public class Panel extends javax.swing.JPanel {
                 if (modeleListeEleve != null) {
                     int index = (modeleListeEleve.getRowCount() + 1);
                     Date date = new Date();
-                    modeleListeEleve.AjouterEleve(new XX_Eleve(-1, idEntreprise, idUtilisateur, idExercice, -1, date.getTime(), "", "", "(+243)", "Eleve_"+index, "", "", "", InterfaceEleve.SEXE_MASCULIN, date));
+                    modeleListeEleve.AjouterEleve(new XX_Eleve(-1, idEntreprise, idUtilisateur, idExercice, -1, date.getTime(), "", "", "(+243)", "Eleve_" + index, "", "", "", InterfaceEleve.SEXE_MASCULIN, date));
                 }
             }
 
             @Override
             public void setAjoutAyantDroit(ModeleListeAyantDroit modeleListeAyantDroit) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                if (modeleListeAyantDroit != null) {
+                    int index = (modeleListeAyantDroit.getRowCount() + 1);
+                    Date date = new Date();
+                    modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, idEntreprise, idUtilisateur, idExercice, -1, "", new Vector<LiaisonEleveFrais>(), date.getTime(), -1));
+                }
             }
         };
 
@@ -274,7 +328,7 @@ public class Panel extends javax.swing.JPanel {
                 this.ecouteurAjout.setAjoutEleve(modeleListeEleve);
                 break;
             case 1: //Tab ayantdroit
-                //this.ecouteurAjout.setAjoutClasse(modeleListeClasse);
+                this.ecouteurAjout.setAjoutAyantDroit(modeleListeAyantDroit);
                 break;
         }
     }
@@ -285,7 +339,7 @@ public class Panel extends javax.swing.JPanel {
                 modeleListeEleve.SupprimerEleve(tableListeEleves.getSelectedRow());
                 break;
             case 1: //Tab ayantdroit
-                //modeleListeClasse.SupprimerClasse(tableListeClasses.getSelectedRow(), this.modeleListeFrais);
+                modeleListeAyantDroit.SupprimerAyantDroit(tableListeAyantDroit.getSelectedRow());
                 break;
         }
     }
@@ -299,7 +353,7 @@ public class Panel extends javax.swing.JPanel {
                 modeleListeEleve.viderListe();
                 break;
             case 1: //ayantdroit
-                //modeleListeClasse.viderListe();
+                modeleListeAyantDroit.viderListe();
                 break;
         }
 
@@ -379,7 +433,7 @@ public class Panel extends javax.swing.JPanel {
         menuContextuel.Ajouter(new JPopupMenu.Separator());
         menuContextuel.Ajouter(mFermer);
     }
-    
+
     public void fermer() {
         int dialogResult = JOptionPane.showConfirmDialog(this, "Etes-vous sûr de vouloir fermer cette fenêtre?", "Avertissement", JOptionPane.YES_NO_OPTION);
         if (dialogResult == JOptionPane.YES_OPTION) {
@@ -398,11 +452,11 @@ public class Panel extends javax.swing.JPanel {
             }
         }
     }
-    
+
     private SortiesEleveAyantDroit getSortieEleveAyantDroit(Bouton boutonDeclencheur, RubriqueSimple rubriqueDeclencheur) {
         SortiesEleveAyantDroit sortieEA = new SortiesEleveAyantDroit(
-                this.modeleListeEleve.getListeData(), 
-                null, //ici il faut faire la même chose aussi en ce qui concerne les Ayant-droits. C'est null puisque le modele Ayantdroit n'existe pas encore
+                this.modeleListeEleve.getListeData(),
+                this.modeleListeAyantDroit.getListeData(),
                 new EcouteurEnregistrement() {
             @Override
             public void onDone(String message) {
@@ -437,10 +491,9 @@ public class Panel extends javax.swing.JPanel {
                 }
             }
         });
-        
+
         return sortieEA;
     }
-
 
     public void enregistrer() {
         if (this.ecouteurEleveAyantDroit != null) {
@@ -467,7 +520,7 @@ public class Panel extends javax.swing.JPanel {
                 modeleListeEleve.actualiser();
                 break;
             case 1: //Classe
-                //modeleListeClasse.actualiser();
+                modeleListeAyantDroit.actualiser();
                 break;
         }
     }
@@ -537,7 +590,7 @@ public class Panel extends javax.swing.JPanel {
         });
         scrollListeEleves.setViewportView(tableListeEleves);
 
-        tabPrincipal.addTab("Elèves", scrollListeEleves);
+        tabPrincipal.addTab("Inscriptions", scrollListeEleves);
 
         scrollListeAyantDroit.setBackground(new java.awt.Color(255, 255, 255));
         scrollListeAyantDroit.setAutoscrolls(true);

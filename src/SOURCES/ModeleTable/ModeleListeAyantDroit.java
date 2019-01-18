@@ -7,6 +7,8 @@ package SOURCES.ModeleTable;
 
 import SOURCES.Callback.EcouteurValeursChangees;
 import SOURCES.Interfaces.InterfaceAyantDroit;
+import SOURCES.Interfaces.InterfaceClasse;
+import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Interfaces.InterfaceFrais;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
 import java.util.Vector;
@@ -27,16 +29,37 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     private Vector<InterfaceFrais> listeFrais = new Vector<>();
     private JScrollPane parent;
     private EcouteurValeursChangees ecouteurModele;
+    private ModeleListeEleve modeleListeEleve;
 
-    public ModeleListeAyantDroit(JScrollPane parent, Vector<InterfaceFrais> listeFrais, EcouteurValeursChangees ecouteurModele) {
+    public ModeleListeAyantDroit(JScrollPane parent, Vector<InterfaceFrais> listeFrais, ModeleListeEleve modeleListeEleve, EcouteurValeursChangees ecouteurModele) {
         this.parent = parent;
         this.ecouteurModele = ecouteurModele;
         this.listeFrais = listeFrais;
+        this.modeleListeEleve = modeleListeEleve;
         //System.out.println(" * ModeleListeFrais");
     }
 
     public void setListeAyantDroit(Vector<InterfaceAyantDroit> listeData) {
         this.listeData = listeData;
+        redessinerTable();
+    }
+    
+    
+    private InterfaceEleve getEleve(long signatureEleve){
+        for(InterfaceEleve eleve : this.modeleListeEleve.getListeData()){
+            if(eleve.getSignature() == signatureEleve){
+                return eleve;
+            }
+        }
+        return null;
+    }
+    
+    
+    private void updateEleve(InterfaceAyantDroit IayAyantDroit){
+        InterfaceEleve newEleve = getEleve(IayAyantDroit.getSignatureEleve());
+        if(newEleve != null){
+            IayAyantDroit.setEleve(newEleve.getNom()+" " + newEleve.getPostnom()+" " + newEleve.getPrenom());
+        }
         redessinerTable();
     }
 
@@ -78,8 +101,8 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     private void chargerLiaisons(InterfaceAyantDroit newAyantDroit) {
         //On charge d'abord les liaisons possibles
         this.listeFrais.forEach((frais) -> {
-            double montant = 0;
-            LiaisonEleveFrais liaison = new LiaisonEleveFrais(newAyantDroit.getSignatureEleve(), frais.getId(), montant, frais.getIdMonnaie(), frais.getMonnaie());
+            double montantRabais = 0;
+            LiaisonEleveFrais liaison = new LiaisonEleveFrais(newAyantDroit.getSignatureEleve(), frais.getId(), montantRabais, frais.getIdMonnaie(), frais.getMonnaie());
             newAyantDroit.ajouterLiaisons(liaison);
         });
     }
@@ -113,7 +136,7 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     }
 
     public void actualiser() {
-        System.out.println("actualiser - Ayant-Droit...");
+        //System.out.println("actualiser - Ayant-Droit...");
         redessinerTable();
         //lister();
     }
@@ -127,10 +150,14 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         Vector titresCols = new Vector();
         titresCols.add("N°");
         titresCols.add("Elève");
-
         if (this.listeFrais != null) {
             for (InterfaceFrais classe : this.listeFrais) {
-                titresCols.add(classe.getNom().substring(0, 10));
+                String titre = classe.getNom();
+                if(10<titre.trim().length()){
+                    titresCols.add(titre.substring(0, 7)+"..."); //j'ai l'itention de limité la taille de titre de la colonne
+                }else{
+                    titresCols.add(titre);
+                }
             }
         }
 
@@ -157,19 +184,19 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         //{"N°", "Elève"};
-        if (columnIndex < 3) {
+        if (columnIndex < 2) {
             switch (columnIndex) {
                 case 0:
                     return (rowIndex + 1) + "";
                 case 1:
                     return listeData.elementAt(rowIndex).getSignatureEleve();
                 default:
-                    return "Null";
+                    return "Nullo";
             }
         } else {
             Vector<LiaisonEleveFrais> liaisons = listeData.elementAt(rowIndex).getListeLiaisons();
             if (!liaisons.isEmpty()) {
-                return listeData.elementAt(rowIndex).getListeLiaisons().elementAt(columnIndex - 3).getMontant();
+                return listeData.elementAt(rowIndex).getListeLiaisons().elementAt(columnIndex - 2).getMontant();
             } else {
                 return "RAS";
             }
@@ -204,16 +231,18 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         //{"N°", "Elève"};
         InterfaceAyantDroit IayantDroit = listeData.get(rowIndex);
-        if (columnIndex < 3) {
+        if (columnIndex < 2) {
             switch (columnIndex) {
                 case 1:
-                    IayantDroit.setSignatureEleve(Long.parseLong(aValue + ""));
+                    long signatureEleve = Long.parseLong(aValue + "");
+                    IayantDroit.setSignatureEleve(signatureEleve);
+                    updateEleve(IayantDroit);
                     break;
                 default:
                     break;
             }
         } else {
-            listeData.elementAt(rowIndex).getListeLiaisons().elementAt(columnIndex - 3).setMontant(Double.parseDouble(aValue + ""));
+            listeData.elementAt(rowIndex).getListeLiaisons().elementAt(columnIndex - 2).setMontant(Double.parseDouble(aValue + ""));
         }
         listeData.set(rowIndex, IayantDroit);
         ecouteurModele.onValeurChangee();

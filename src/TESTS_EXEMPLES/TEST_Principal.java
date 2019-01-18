@@ -7,7 +7,10 @@ package TESTS_EXEMPLES;
 
 import SOURCES.Callback.EcouteurEleveAyantDroit;
 import SOURCES.Interfaces.InterfaceClasse;
+import SOURCES.Interfaces.InterfaceFrais;
 import SOURCES.UI.Panel;
+import SOURCES.Utilitaires.LiaisonClasseFrais;
+import SOURCES.Utilitaires.LiaisonEleveFrais;
 import SOURCES.Utilitaires.SortiesEleveAyantDroit;
 import static java.lang.Thread.sleep;
 import java.util.Date;
@@ -24,6 +27,9 @@ public class TEST_Principal extends javax.swing.JFrame {
      */
     public Panel gestionnaireExercice = null;
     public Vector<InterfaceClasse> listeClasses = null;
+    public Vector<InterfaceFrais> listeFraises = null;
+    private TEST_Frais Frais_Inscription, Frais_Minervale, Frais_TravailManul = null;
+    private TEST_Classe classe_G1, classe_G2, classe_G3, classe_L1 = null;
     public int idUtilisateur = 1;
     public int idEntreprise = 1;
     public int idExercice = 1;
@@ -34,15 +40,47 @@ public class TEST_Principal extends javax.swing.JFrame {
     }
 
     private void initParametres() {
-        this.listeClasses = new Vector<>();
+        this.classe_G1 = new TEST_Classe(10, idUtilisateur, idEntreprise, idExercice, "G1", 50, "Local 2", new Date().getTime());
+        this.classe_G2 = new TEST_Classe(11, idUtilisateur, idEntreprise, idExercice, "G2", 50, "Local 3", new Date().getTime()+1);
+        this.classe_G3 = new TEST_Classe(12, idUtilisateur, idEntreprise, idExercice, "G3", 50, "Local 4", new Date().getTime()+2);
+        this.classe_L1 = new TEST_Classe(13, idUtilisateur, idEntreprise, idExercice, "L2", 50, "Local 5", new Date().getTime()+3);
         
         //Chargement des classes
-        this.listeClasses.add(new TEST_Classe(10, idUtilisateur, idEntreprise, idExercice, "G1", 50, "Local 2", new Date().getTime()));
-        this.listeClasses.add(new TEST_Classe(11, idUtilisateur, idEntreprise, idExercice, "G2", 50, "Local 3", new Date().getTime()+1));
-        this.listeClasses.add(new TEST_Classe(12, idUtilisateur, idEntreprise, idExercice, "G3", 50, "Local 4", new Date().getTime()+2));
-        this.listeClasses.add(new TEST_Classe(13, idUtilisateur, idEntreprise, idExercice, "L2", 50, "Local 5", new Date().getTime()+3));
+        this.listeClasses = new Vector<>();
+        this.listeClasses.add(classe_G1);
+        this.listeClasses.add(classe_G2);
+        this.listeClasses.add(classe_G3);
+        this.listeClasses.add(classe_L1);
         
-        this.gestionnaireExercice = new Panel(this.tabPrincipale, this.idUtilisateur, this.idEntreprise, this.idExercice, this.listeClasses, new EcouteurEleveAyantDroit() {
+        //Chargement des Frais
+        this.listeFraises = new Vector<>();
+        Vector<LiaisonClasseFrais> liaisonsINSCRIPTION = new Vector<>();
+        liaisonsINSCRIPTION.add(new LiaisonClasseFrais(classe_G1, 50));
+        liaisonsINSCRIPTION.add(new LiaisonClasseFrais(classe_G2, 50));
+        liaisonsINSCRIPTION.add(new LiaisonClasseFrais(classe_G3, 50));
+        liaisonsINSCRIPTION.add(new LiaisonClasseFrais(classe_L1, 50));
+        this.Frais_Inscription = new TEST_Frais(12, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, "INSCRIPTION", "$", 1, 50, liaisonsINSCRIPTION);
+        
+        Vector<LiaisonClasseFrais> liaisonsMINERVALE = new Vector<>();
+        liaisonsMINERVALE.add(new LiaisonClasseFrais(classe_G1, 1500));
+        liaisonsMINERVALE.add(new LiaisonClasseFrais(classe_G2, 1500));
+        liaisonsMINERVALE.add(new LiaisonClasseFrais(classe_G3, 1500));
+        liaisonsMINERVALE.add(new LiaisonClasseFrais(classe_L1, 1500));
+        this.Frais_Minervale = new TEST_Frais(1, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, "MINERVALE", "$", 3, 1500, liaisonsMINERVALE);
+        
+        Vector<LiaisonClasseFrais> liaisonsTRAVAILMAN = new Vector<>();
+        liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_G1, 10));
+        liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_G2, 10));
+        liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_G3, 10));
+        liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_L1, 10));
+        this.Frais_TravailManul = new TEST_Frais(51, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, "TRAVAIL MANUEL", "$", 3, 1500, liaisonsTRAVAILMAN);
+        
+        this.listeFraises.add(Frais_Inscription);
+        this.listeFraises.add(Frais_Minervale);
+        this.listeFraises.add(Frais_TravailManul);
+        
+        
+        this.gestionnaireExercice = new Panel(this.tabPrincipale, this.idUtilisateur, this.idEntreprise, this.idExercice, this.listeClasses, this.listeFraises, new EcouteurEleveAyantDroit() {
             @Override
             public void onEnregistre(SortiesEleveAyantDroit sortiesEleveAyantDroit) {
                 
@@ -54,9 +92,17 @@ public class TEST_Principal extends javax.swing.JFrame {
                             sortiesEleveAyantDroit.getEcouteurEnregistrement().onUploading("Chargement...");
                             sleep(5000);
                             
-                            System.out.println("MONNAIES :");
+                            System.out.println("ELEVES :");
                             sortiesEleveAyantDroit.getListeEleves().forEach((Oeleve) -> {
                                 System.out.println(" * " + Oeleve.getNom() + ", " + Oeleve.getPostnom()+", " + Oeleve.getPrenom()+", Classe : " + Oeleve.getClasse());
+                            });
+                            
+                            System.out.println("ELEVES AYANT-DROIT :");
+                            sortiesEleveAyantDroit.getListeAyantDroit().forEach((Oeleve) -> {
+                                System.out.println(" * " + Oeleve.getEleve() + " : ");
+                                for(LiaisonEleveFrais liaisonEleveFrais : Oeleve.getListeLiaisons()){
+                                    System.out.println("\t * " + liaisonEleveFrais.getIdFrais()+" : " + liaisonEleveFrais.getMontant()+" " + liaisonEleveFrais.getMonnaie());
+                                }
                             });
 
                             sortiesEleveAyantDroit.getEcouteurEnregistrement().onDone("Enregistré!");

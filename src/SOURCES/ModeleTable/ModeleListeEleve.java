@@ -77,7 +77,7 @@ public class ModeleListeEleve extends AbstractTableModel {
     }
 
     public void actualiser() {
-        System.out.println("actualiser - Enseignant...");
+        //System.out.println("actualiser - Enseignant...");
         redessinerTable();
     }
 
@@ -209,6 +209,7 @@ public class ModeleListeEleve extends AbstractTableModel {
         if(newClasse != null){
             Ieleve.setClasse(newClasse.getNom());
         }
+        redessinerTable();
     }
     
 

@@ -19,6 +19,7 @@ public interface InterfaceAyantDroit {
     public abstract int getIdUtilisateur();
     public abstract int getIdExercice();
     public abstract int getIdEleve();
+    public abstract String getEleve();
     public abstract Vector<LiaisonEleveFrais> getListeLiaisons();
     public abstract long getSignature();
     public abstract long getSignatureEleve();
@@ -34,4 +35,5 @@ public interface InterfaceAyantDroit {
     public abstract void setLiaisons(int idFrais, double montant);
     public abstract void setSignature(long signature);
     public abstract void setSignatureEleve(long signature);
+    public abstract void setEleve(String eleve);
 }

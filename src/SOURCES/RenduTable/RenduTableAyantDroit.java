@@ -8,6 +8,7 @@ package SOURCES.RenduTable;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Interfaces.InterfaceMonnaie;
 import SOURCES.ModeleTable.ModeleListeAyantDroit;
+import SOURCES.ModeleTable.ModeleListeEleve;
 import SOURCES.UI.CelluleSimpleTableau;
 import SOURCES.Utilitaires.Util;
 import java.awt.Component;
@@ -23,34 +24,22 @@ import javax.swing.table.TableCellRenderer;
 public class RenduTableAyantDroit implements TableCellRenderer {
     
     private ImageIcon iconeEdition;
-    private Vector<InterfaceEleve> listeEleves;
-    private Vector<InterfaceMonnaie> listeMonnaies;
-    private ModeleListeAyantDroit modeleListeAyantDroit;
+    private ModeleListeEleve modeleListeEleve;
     
-    public RenduTableAyantDroit(ImageIcon iconeEdition, Vector<InterfaceEleve> listeEleves, Vector<InterfaceMonnaie> listeMonnaies, ModeleListeAyantDroit modeleListeAyantDroit) {
+    public RenduTableAyantDroit(ImageIcon iconeEdition, ModeleListeEleve modeleListeEleve, ModeleListeAyantDroit modeleListeAyantDroit) {
         this.iconeEdition = iconeEdition;
-        this.listeEleves = listeEleves;
-        this.listeMonnaies = listeMonnaies;
-        this.modeleListeAyantDroit = modeleListeAyantDroit;
+        this.modeleListeEleve = modeleListeEleve;
     }
     
-    private String getEleve(int idEleve) {
-        for (InterfaceEleve eleve : this.listeEleves) {
-            if (eleve.getId() == idEleve) {
-                return eleve.getNom() + " " + eleve.getPostnom() + " " + eleve.getPrenom();
+    private String getEleve(long signatureEleve) {
+        for (InterfaceEleve eleve : this.modeleListeEleve.getListeData()) {
+            if (eleve.getSignature() == signatureEleve) {
+                return eleve.getNom() + " " + eleve.getPostnom() + " " + eleve.getPrenom()+" ("+eleve.getClasse()+")";
             }
         }
         return "";
     }
     
-    private String getMonnaie(int idMonnaie) {
-        for (InterfaceMonnaie monnaie : this.listeMonnaies) {
-            if (monnaie.getId() == idMonnaie) {
-                return monnaie.getCode();
-            }
-        }
-        return "";
-    }
     
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -61,7 +50,7 @@ public class RenduTableAyantDroit implements TableCellRenderer {
                 cellule = new CelluleSimpleTableau(" " + value + " ", CelluleSimpleTableau.ALIGNE_CENTRE, null);
                 break;
             case 1:
-                cellule = new CelluleSimpleTableau(" " + getEleve(Integer.parseInt(value+"")) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleSimpleTableau(" " + getEleve(Long.parseLong(value+"")) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
             default:
                 double mont = Double.parseDouble(value+"");

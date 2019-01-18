@@ -106,8 +106,8 @@
           </Events>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="El&#xe8;ves">
-                <Property name="tabTitle" type="java.lang.String" value="El&#xe8;ves"/>
+              <JTabbedPaneConstraints tabName="Inscriptions">
+                <Property name="tabTitle" type="java.lang.String" value="Inscriptions"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>

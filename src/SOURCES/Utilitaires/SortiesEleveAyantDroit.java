@@ -7,9 +7,7 @@ package SOURCES.Utilitaires;
 
 import SOURCES.Callback.EcouteurEnregistrement;
 import SOURCES.Interfaces.InterfaceAyantDroit;
-import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
-import SOURCES.Interfaces.InterfaceFrais;
 import java.util.Vector;
 
 /**
