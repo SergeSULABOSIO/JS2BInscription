@@ -68,7 +68,7 @@ public class RenduTableAyantDroit implements TableCellRenderer {
                 break;
             default:
                 double mont = Double.parseDouble(value+"");
-                cellule = new CelluleSimpleTableau(" " + Util.getMontantFrancais(mont) + " UM", CelluleSimpleTableau.ALIGNE_DROITE, iconeEdition);
+                cellule = new CelluleSimpleTableau(" " + Util.getMontantFrancais(mont) + " ", CelluleSimpleTableau.ALIGNE_DROITE, iconeEdition);
                 break;
         }
         cellule.ecouterSelection(isSelected, row);
