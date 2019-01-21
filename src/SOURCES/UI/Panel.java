@@ -159,7 +159,7 @@ public class Panel extends javax.swing.JPanel {
         col_No.setMaxWidth(40);
 
         TableColumn colEleve = this.tableListeAyantDroit.getColumnModel().getColumn(1);
-        colEleve.setCellEditor(new EditeurEleve(modeleListeEleve));
+        colEleve.setCellEditor(new EditeurEleve(this.modeleListeEleve, this.modeleListeAyantDroit));
         colEleve.setPreferredWidth(150);
         
         int index = 1;
