@@ -20,7 +20,7 @@ import javax.swing.table.AbstractTableModel;
  */
 public class ModeleListeEleve extends AbstractTableModel {
 
-    private String[] titreColonnes = {"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone"};
+    private String[] titreColonnes = {"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "L. de naiss.", "Téléphone"};
     private Vector<InterfaceEleve> listeData = new Vector<>();
     private JScrollPane parent;
     private EcouteurValeursChangees ecouteurModele;

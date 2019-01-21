@@ -7,7 +7,6 @@ package SOURCES.ModeleTable;
 
 import SOURCES.Callback.EcouteurValeursChangees;
 import SOURCES.Interfaces.InterfaceAyantDroit;
-import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Interfaces.InterfaceFrais;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
@@ -153,10 +152,11 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         if (this.listeFrais != null) {
             for (InterfaceFrais classe : this.listeFrais) {
                 String titre = classe.getNom();
+                String monnaie = classe.getMonnaie();
                 if(10<titre.trim().length()){
-                    titresCols.add(titre.substring(0, 7)+"..."); //j'ai l'itention de limité la taille de titre de la colonne
+                    titresCols.add(titre.substring(0, 7)+"...("+monnaie+")"); //j'ai l'itention de limité la taille de titre de la colonne
                 }else{
-                    titresCols.add(titre);
+                    titresCols.add(titre+" ("+monnaie+")");
                 }
             }
         }

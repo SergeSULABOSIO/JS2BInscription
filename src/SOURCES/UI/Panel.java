@@ -119,13 +119,13 @@ public class Panel extends javax.swing.JPanel {
 
         TableColumn colSexe = this.tableListeEleves.getColumnModel().getColumn(4);
         colSexe.setCellEditor(new EditeurSexe());
-        colSexe.setPreferredWidth(130);
-        colSexe.setMaxWidth(130);
+        colSexe.setPreferredWidth(140);
+        colSexe.setMaxWidth(140);
 
         TableColumn colClasse = this.tableListeEleves.getColumnModel().getColumn(5);
         colClasse.setCellEditor(new EditeurClasse(this.listeClasses));
-        colClasse.setPreferredWidth(100);
-        colClasse.setMaxWidth(100);
+        colClasse.setPreferredWidth(90);
+        colClasse.setMaxWidth(90);
 
         TableColumn colDateNaissance = this.tableListeEleves.getColumnModel().getColumn(6);
         colDateNaissance.setCellEditor(new EditeurDate());

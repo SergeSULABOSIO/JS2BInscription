@@ -6,7 +6,9 @@
 package SOURCES.EditeurTable;
 
 
+import SOURCES.Interfaces.InterfaceAyantDroit;
 import SOURCES.Interfaces.InterfaceEleve;
+import SOURCES.ModeleTable.ModeleListeAyantDroit;
 import SOURCES.ModeleTable.ModeleListeEleve;
 import java.awt.Component;
 import java.util.Vector;
@@ -23,10 +25,24 @@ public class EditeurEleve extends AbstractCellEditor implements TableCellEditor 
 
     private JComboBox<String> champEditionCombo = new JComboBox();
     private ModeleListeEleve modeleListeEleve;
+    private ModeleListeAyantDroit modeleListeAyantDroit;
 
-    public EditeurEleve(ModeleListeEleve modeleListeEleve) {
+    public EditeurEleve(ModeleListeEleve modeleListeEleve, ModeleListeAyantDroit modeleListeAyantDroit) {
         this.modeleListeEleve = modeleListeEleve;
+        this.modeleListeAyantDroit = modeleListeAyantDroit;
         initCombo();
+    }
+    
+    private boolean isAlreadyAyantDroit(InterfaceEleve eleve){
+        boolean rep = false;
+        if(this.modeleListeAyantDroit != null){
+            for(InterfaceAyantDroit Ieleve : this.modeleListeAyantDroit.getListeData()){
+                if(Ieleve.getIdEleve() == eleve.getId()){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void initCombo() {
