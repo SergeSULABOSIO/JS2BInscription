@@ -144,7 +144,7 @@ public class Panel extends javax.swing.JPanel {
             public void onValeurChangee() {
 
             }
-        });
+        }, this.ecouteurClose);
 
         //Parametrage du modele contenant les données de la table
         this.tableListeAyantDroit.setModel(this.modeleListeAyantDroit);
@@ -265,10 +265,7 @@ public class Panel extends javax.swing.JPanel {
             case 1://Tab Ayant-Droit
                 InterfaceAyantDroit ayantD = modeleListeAyantDroit.getAyantDroit(tableListeAyantDroit.getSelectedRow());
                 if (ayantD != null) {
-                    InterfaceEleve Elv = this.modeleListeEleve.getEleve_id(ayantD.getIdEleve());
-                    if (Elv != null) {
-                        this.ecouteurClose.onActualiser(Elv.getNom() + " " + Elv.getPostnom() + " " + Elv.getPrenom(), icones.getAdministrateur_01());
-                    }
+                    this.ecouteurClose.onActualiser(ayantD.getEleve(), icones.getAdministrateur_01());
                 }
                 break;
         }
@@ -312,11 +309,9 @@ public class Panel extends javax.swing.JPanel {
                     if (editeurEleve != null) {
                         editeurEleve.initCombo();
                         if (editeurEleve.getTailleCombo() != 0) {
-                            int index = (modeleListeAyantDroit.getRowCount() + 1);
-                            Date date = new Date();
-                            modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, idEntreprise, idUtilisateur, idExercice, -1, "", new Vector<LiaisonEleveFrais>(), date.getTime(), -1));
-                        }else{
-                            JOptionPane.showMessageDialog(parent, "klklklklklk", klkl, JOptionPane.ERROR_MESSAGE);
+                            modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, idEntreprise, idUtilisateur, idExercice, -1, "", new Vector<LiaisonEleveFrais>(), (new Date()).getTime(), -1));
+                        } else {
+                            JOptionPane.showMessageDialog(parent, "Désolé, il n'y a plus d'élève à ajouter dans cette liste.", "Pas d'élève à ajouter", JOptionPane.ERROR_MESSAGE);
                         }
                     }
 

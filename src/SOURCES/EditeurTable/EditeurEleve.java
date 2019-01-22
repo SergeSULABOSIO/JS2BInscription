@@ -37,17 +37,6 @@ public class EditeurEleve extends AbstractCellEditor implements TableCellEditor 
         return this.champEditionCombo.getItemCount();
     }
     
-    private boolean isAlreadyAyantDroit(InterfaceEleve eleve){
-        boolean rep = false;
-        if(this.modeleListeAyantDroit != null){
-            for(InterfaceAyantDroit Ieleve : this.modeleListeAyantDroit.getListeData()){
-                if(Ieleve.getSignatureEleve() == eleve.getSignature()){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
     public void initCombo() {
         this.champEditionCombo.removeAllItems();
@@ -55,9 +44,7 @@ public class EditeurEleve extends AbstractCellEditor implements TableCellEditor 
             Vector<InterfaceEleve> listeEleves = this.modeleListeEleve.getListeData();
             if(listeEleves != null){
                 for(InterfaceEleve eleve : listeEleves){
-                    if(isAlreadyAyantDroit(eleve) == false){
-                        this.champEditionCombo.addItem(eleve.getNom() + " " + eleve.getPostnom()+ ", " + eleve.getPrenom()+" ("+eleve.getClasse()+")");
-                    }
+                    this.champEditionCombo.addItem(eleve.getNom() + " " + eleve.getPostnom()+ ", " + eleve.getPrenom()+" ("+eleve.getClasse()+")");
                 }
             }
         }

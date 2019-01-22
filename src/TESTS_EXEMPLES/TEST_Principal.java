@@ -73,7 +73,7 @@ public class TEST_Principal extends javax.swing.JFrame {
         liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_G2, 10));
         liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_G3, 10));
         liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_L1, 10));
-        this.Frais_TravailManul = new TEST_Frais(51, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, "TRAVAIL MANUEL", "$", 3, 1500, liaisonsTRAVAILMAN);
+        this.Frais_TravailManul = new TEST_Frais(51, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, "TRAVAIL MANUEL", "$", 3, 10, liaisonsTRAVAILMAN);
         
         this.listeFraises.add(Frais_Inscription);
         this.listeFraises.add(Frais_Minervale);
