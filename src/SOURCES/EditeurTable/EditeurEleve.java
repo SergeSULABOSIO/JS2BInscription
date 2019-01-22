@@ -33,6 +33,10 @@ public class EditeurEleve extends AbstractCellEditor implements TableCellEditor 
         initCombo();
     }
     
+    public int getTailleCombo(){
+        return this.champEditionCombo.getItemCount();
+    }
+    
     private boolean isAlreadyAyantDroit(InterfaceEleve eleve){
         boolean rep = false;
         if(this.modeleListeAyantDroit != null){

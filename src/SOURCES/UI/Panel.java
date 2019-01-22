@@ -90,12 +90,12 @@ public class Panel extends javax.swing.JPanel {
         this.modeleListeEleve = new ModeleListeEleve(scrollListeEleves, this.listeClasses, new EcouteurValeursChangees() {
             @Override
             public void onValeurChangee() {
-                if(modeleListeAyantDroit != null){
+                if (modeleListeAyantDroit != null) {
                     modeleListeAyantDroit.actualiser();
                 }
             }
         });
-        
+
         //Parametrage du modele contenant les données de la table
         this.tableListeEleves.setModel(this.modeleListeEleve);
 
@@ -149,6 +149,8 @@ public class Panel extends javax.swing.JPanel {
         //Parametrage du modele contenant les données de la table
         this.tableListeAyantDroit.setModel(this.modeleListeAyantDroit);
 
+        this.editeurEleve = new EditeurEleve(this.modeleListeEleve, this.modeleListeAyantDroit);
+
         //Parametrage du rendu de la table
         this.tableListeAyantDroit.setDefaultRenderer(Object.class, new RenduTableAyantDroit(icones.getModifier_01(), this.modeleListeEleve, modeleListeAyantDroit));
         this.tableListeAyantDroit.setRowHeight(25);
@@ -159,9 +161,9 @@ public class Panel extends javax.swing.JPanel {
         col_No.setMaxWidth(40);
 
         TableColumn colEleve = this.tableListeAyantDroit.getColumnModel().getColumn(1);
-        colEleve.setCellEditor(new EditeurEleve(this.modeleListeEleve, this.modeleListeAyantDroit));
+        colEleve.setCellEditor(this.editeurEleve);
         colEleve.setPreferredWidth(150);
-        
+
         int index = 1;
         for (InterfaceFrais frais : this.listeFrais) {
             TableColumn colFrais = this.tableListeAyantDroit.getColumnModel().getColumn(index);
@@ -264,8 +266,8 @@ public class Panel extends javax.swing.JPanel {
                 InterfaceAyantDroit ayantD = modeleListeAyantDroit.getAyantDroit(tableListeAyantDroit.getSelectedRow());
                 if (ayantD != null) {
                     InterfaceEleve Elv = this.modeleListeEleve.getEleve_id(ayantD.getIdEleve());
-                    if(Elv != null){
-                        this.ecouteurClose.onActualiser(Elv.getNom()+" " + Elv.getPostnom()+" " + Elv.getPrenom(), icones.getAdministrateur_01());
+                    if (Elv != null) {
+                        this.ecouteurClose.onActualiser(Elv.getNom() + " " + Elv.getPostnom() + " " + Elv.getPrenom(), icones.getAdministrateur_01());
                     }
                 }
                 break;
@@ -307,9 +309,17 @@ public class Panel extends javax.swing.JPanel {
             @Override
             public void setAjoutAyantDroit(ModeleListeAyantDroit modeleListeAyantDroit) {
                 if (modeleListeAyantDroit != null) {
-                    int index = (modeleListeAyantDroit.getRowCount() + 1);
-                    Date date = new Date();
-                    modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, idEntreprise, idUtilisateur, idExercice, -1, "", new Vector<LiaisonEleveFrais>(), date.getTime(), -1));
+                    if (editeurEleve != null) {
+                        editeurEleve.initCombo();
+                        if (editeurEleve.getTailleCombo() != 0) {
+                            int index = (modeleListeAyantDroit.getRowCount() + 1);
+                            Date date = new Date();
+                            modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, idEntreprise, idUtilisateur, idExercice, -1, "", new Vector<LiaisonEleveFrais>(), date.getTime(), -1));
+                        }else{
+                            JOptionPane.showMessageDialog(parent, "klklklklklk", klkl, JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+
                 }
             }
         };
