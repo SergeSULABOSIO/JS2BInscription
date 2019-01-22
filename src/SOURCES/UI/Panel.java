@@ -90,12 +90,12 @@ public class Panel extends javax.swing.JPanel {
         this.modeleListeEleve = new ModeleListeEleve(scrollListeEleves, this.listeClasses, new EcouteurValeursChangees() {
             @Override
             public void onValeurChangee() {
-                if(modeleListeAyantDroit != null){
+                if (modeleListeAyantDroit != null) {
                     modeleListeAyantDroit.actualiser();
                 }
             }
         });
-        
+
         //Parametrage du modele contenant les données de la table
         this.tableListeEleves.setModel(this.modeleListeEleve);
 
@@ -119,13 +119,13 @@ public class Panel extends javax.swing.JPanel {
 
         TableColumn colSexe = this.tableListeEleves.getColumnModel().getColumn(4);
         colSexe.setCellEditor(new EditeurSexe());
-        colSexe.setPreferredWidth(130);
-        colSexe.setMaxWidth(130);
+        colSexe.setPreferredWidth(140);
+        colSexe.setMaxWidth(140);
 
         TableColumn colClasse = this.tableListeEleves.getColumnModel().getColumn(5);
         colClasse.setCellEditor(new EditeurClasse(this.listeClasses));
-        colClasse.setPreferredWidth(100);
-        colClasse.setMaxWidth(100);
+        colClasse.setPreferredWidth(90);
+        colClasse.setMaxWidth(90);
 
         TableColumn colDateNaissance = this.tableListeEleves.getColumnModel().getColumn(6);
         colDateNaissance.setCellEditor(new EditeurDate());
@@ -144,10 +144,12 @@ public class Panel extends javax.swing.JPanel {
             public void onValeurChangee() {
 
             }
-        });
+        }, this.ecouteurClose);
 
         //Parametrage du modele contenant les données de la table
         this.tableListeAyantDroit.setModel(this.modeleListeAyantDroit);
+
+        this.editeurEleve = new EditeurEleve(this.modeleListeEleve, this.modeleListeAyantDroit);
 
         //Parametrage du rendu de la table
         this.tableListeAyantDroit.setDefaultRenderer(Object.class, new RenduTableAyantDroit(icones.getModifier_01(), this.modeleListeEleve, modeleListeAyantDroit));
@@ -159,9 +161,9 @@ public class Panel extends javax.swing.JPanel {
         col_No.setMaxWidth(40);
 
         TableColumn colEleve = this.tableListeAyantDroit.getColumnModel().getColumn(1);
-        colEleve.setCellEditor(new EditeurEleve(modeleListeEleve));
+        colEleve.setCellEditor(this.editeurEleve);
         colEleve.setPreferredWidth(150);
-        
+
         int index = 1;
         for (InterfaceFrais frais : this.listeFrais) {
             TableColumn colFrais = this.tableListeAyantDroit.getColumnModel().getColumn(index);
@@ -263,10 +265,7 @@ public class Panel extends javax.swing.JPanel {
             case 1://Tab Ayant-Droit
                 InterfaceAyantDroit ayantD = modeleListeAyantDroit.getAyantDroit(tableListeAyantDroit.getSelectedRow());
                 if (ayantD != null) {
-                    InterfaceEleve Elv = this.modeleListeEleve.getEleve_id(ayantD.getIdEleve());
-                    if(Elv != null){
-                        this.ecouteurClose.onActualiser(Elv.getNom()+" " + Elv.getPostnom()+" " + Elv.getPrenom(), icones.getAdministrateur_01());
-                    }
+                    this.ecouteurClose.onActualiser(ayantD.getEleve(), icones.getAdministrateur_01());
                 }
                 break;
         }
@@ -307,9 +306,15 @@ public class Panel extends javax.swing.JPanel {
             @Override
             public void setAjoutAyantDroit(ModeleListeAyantDroit modeleListeAyantDroit) {
                 if (modeleListeAyantDroit != null) {
-                    int index = (modeleListeAyantDroit.getRowCount() + 1);
-                    Date date = new Date();
-                    modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, idEntreprise, idUtilisateur, idExercice, -1, "", new Vector<LiaisonEleveFrais>(), date.getTime(), -1));
+                    if (editeurEleve != null) {
+                        editeurEleve.initCombo();
+                        if (editeurEleve.getTailleCombo() != 0) {
+                            modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, idEntreprise, idUtilisateur, idExercice, -1, "", new Vector<LiaisonEleveFrais>(), (new Date()).getTime(), -1));
+                        } else {
+                            JOptionPane.showMessageDialog(parent, "Désolé, il n'y a plus d'élève à ajouter dans cette liste.", "Pas d'élève à ajouter", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+
                 }
             }
         };

@@ -5,12 +5,14 @@
  */
 package SOURCES.ModeleTable;
 
+import ICONES.Icones;
+import SOURCES.Callback.EcouteurUpdateClose;
 import SOURCES.Callback.EcouteurValeursChangees;
 import SOURCES.Interfaces.InterfaceAyantDroit;
-import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Interfaces.InterfaceFrais;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
+import SOURCES.Utilitaires.Util;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -20,8 +22,6 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author HP Pavilion
  */
-
-
 public class ModeleListeAyantDroit extends AbstractTableModel {
 
     private String[] titreColonnes = null;
@@ -30,12 +30,14 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     private JScrollPane parent;
     private EcouteurValeursChangees ecouteurModele;
     private ModeleListeEleve modeleListeEleve;
+    private EcouteurUpdateClose ecouteurClose;
 
-    public ModeleListeAyantDroit(JScrollPane parent, Vector<InterfaceFrais> listeFrais, ModeleListeEleve modeleListeEleve, EcouteurValeursChangees ecouteurModele) {
+    public ModeleListeAyantDroit(JScrollPane parent, Vector<InterfaceFrais> listeFrais, ModeleListeEleve modeleListeEleve, EcouteurValeursChangees ecouteurModele, EcouteurUpdateClose ecouteurClose) {
         this.parent = parent;
         this.ecouteurModele = ecouteurModele;
         this.listeFrais = listeFrais;
         this.modeleListeEleve = modeleListeEleve;
+        this.ecouteurClose = ecouteurClose;
         //System.out.println(" * ModeleListeFrais");
     }
 
@@ -43,22 +45,20 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         this.listeData = listeData;
         redessinerTable();
     }
-    
-    
-    private InterfaceEleve getEleve(long signatureEleve){
-        for(InterfaceEleve eleve : this.modeleListeEleve.getListeData()){
-            if(eleve.getSignature() == signatureEleve){
+
+    private InterfaceEleve getEleve(long signatureEleve) {
+        for (InterfaceEleve eleve : this.modeleListeEleve.getListeData()) {
+            if (eleve.getSignature() == signatureEleve) {
                 return eleve;
             }
         }
         return null;
     }
-    
-    
-    private void updateEleve(InterfaceAyantDroit IayAyantDroit){
+
+    private void updateEleve(InterfaceAyantDroit IayAyantDroit) {
         InterfaceEleve newEleve = getEleve(IayAyantDroit.getSignatureEleve());
-        if(newEleve != null){
-            IayAyantDroit.setEleve(newEleve.getNom()+" " + newEleve.getPostnom()+" " + newEleve.getPrenom());
+        if (newEleve != null) {
+            IayAyantDroit.setEleve(newEleve.getNom() + " " + newEleve.getPostnom() + " " + newEleve.getPrenom());
         }
         redessinerTable();
     }
@@ -151,12 +151,14 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         titresCols.add("N°");
         titresCols.add("Elève");
         if (this.listeFrais != null) {
-            for (InterfaceFrais classe : this.listeFrais) {
-                String titre = classe.getNom();
-                if(10<titre.trim().length()){
-                    titresCols.add(titre.substring(0, 7)+"..."); //j'ai l'itention de limité la taille de titre de la colonne
-                }else{
-                    titresCols.add(titre);
+            for (InterfaceFrais Ifrais : this.listeFrais) {
+                String titre = Ifrais.getNom();
+                String SmontantDefaut = Util.getMontantFrancais(Ifrais.getMontant_default());
+                String monnaie = Ifrais.getMonnaie();
+                if (10 < titre.trim().length()) {
+                    titresCols.add(titre.substring(0, 7) + "...(" + SmontantDefaut + " " + monnaie + ")"); //j'ai l'itention de limité la taille de titre de la colonne
+                } else {
+                    titresCols.add(titre + " (" + SmontantDefaut + " " + monnaie + ")");
                 }
             }
         }
@@ -167,7 +169,6 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
             this.titreColonnes[i] = titresCols.elementAt(i) + "";
         }
     }
-
 
     @Override
     public int getColumnCount() {
@@ -226,17 +227,37 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         }
     }
 
-    
+    private InterfaceAyantDroit getAyantDroit(long signatureEleve) {
+        for (InterfaceAyantDroit IayantD : this.listeData) {
+            if (IayantD.getSignatureEleve() == signatureEleve) {
+                return IayantD;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         //{"N°", "Elève"};
         InterfaceAyantDroit IayantDroit = listeData.get(rowIndex);
+        boolean canAdd = false;
         if (columnIndex < 2) {
             switch (columnIndex) {
                 case 1:
                     long signatureEleve = Long.parseLong(aValue + "");
-                    IayantDroit.setSignatureEleve(signatureEleve);
-                    updateEleve(IayantDroit);
+                    //Contrôle anti doublon
+                    InterfaceAyantDroit ayantDroiExistant = getAyantDroit(signatureEleve);
+                    if (ayantDroiExistant == null) {
+                        IayantDroit.setSignatureEleve(signatureEleve);
+                        updateEleve(IayantDroit);
+                        canAdd = true;
+                    } else {
+                        if(this.ecouteurClose != null){
+                            String message = "Désolé, " + (ayantDroiExistant.getEleve().trim()) + " figure déjà dans cette liste comme ayant-droit.";
+                            this.ecouteurClose.onActualiser(message, new Icones().getAdministrateur_01());
+                        }
+                        canAdd = false;
+                    }
                     break;
                 default:
                     break;
@@ -244,9 +265,11 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         } else {
             listeData.elementAt(rowIndex).getListeLiaisons().elementAt(columnIndex - 2).setMontant(Double.parseDouble(aValue + ""));
         }
-        listeData.set(rowIndex, IayantDroit);
-        ecouteurModele.onValeurChangee();
-        fireTableDataChanged();
+        if (canAdd == true) {
+            listeData.set(rowIndex, IayantDroit);
+            ecouteurModele.onValeurChangee();
+            fireTableDataChanged();
+        }
     }
 
 }
