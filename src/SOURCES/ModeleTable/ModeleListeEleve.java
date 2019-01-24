@@ -25,6 +25,8 @@ public class ModeleListeEleve extends AbstractTableModel {
     private JScrollPane parent;
     private EcouteurValeursChangees ecouteurModele;
     private Vector<InterfaceClasse> listeClasses = new Vector<>();
+    private Vector<InterfaceEleve> listeDataExclus = new Vector<>();
+    //private Vector<InterfaceEleve> listeDataASuppr = new Vector<>();
 
     public ModeleListeEleve(JScrollPane parent, Vector<InterfaceClasse> listeClasses, EcouteurValeursChangees ecouteurModele) {
         this.parent = parent;
@@ -32,6 +34,27 @@ public class ModeleListeEleve extends AbstractTableModel {
         this.listeClasses = listeClasses;
     }
 
+    public void chercher(String motcle) {
+        this.listeData.addAll(this.listeDataExclus);
+        this.listeDataExclus.removeAllElements();
+        if (motcle.trim().length() != 0) {
+            for (InterfaceEleve Ieleve : this.listeData) {
+                if (Ieleve != null) {
+                    //Si, ni le NOM, ni le POSTNOM et ni le PRENOM ne contient le mot clé
+                    if (!(Ieleve.getNom().contains(motcle)) && !(Ieleve.getPostnom().contains(motcle)) && !(Ieleve.getPrenom().contains(motcle))) {
+                        if (!listeDataExclus.contains(Ieleve)) {
+                            this.listeDataExclus.add(Ieleve);
+                        }
+                    }
+                }
+            }
+            this.listeDataExclus.forEach((IeleveASupp) -> {
+                this.listeData.removeElement(IeleveASupp);
+            });
+        }
+        redessinerTable();
+    }
+    
     public void setListeEleves(Vector<InterfaceEleve> listeData) {
         this.listeData = listeData;
         redessinerTable();
@@ -82,7 +105,7 @@ public class ModeleListeEleve extends AbstractTableModel {
     }
 
     public void AjouterEleve(InterfaceEleve newEleve) {
-        this.listeData.add(newEleve);
+        this.listeData.add(0, newEleve);
         ecouteurModele.onValeurChangee();
         redessinerTable();
     }
@@ -129,8 +152,7 @@ public class ModeleListeEleve extends AbstractTableModel {
     public String getColumnName(int column) {
         return titreColonnes[column];
     }
-    
-    
+
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"}
@@ -194,25 +216,23 @@ public class ModeleListeEleve extends AbstractTableModel {
             return true;
         }
     }
-    
-    private InterfaceClasse getClasse(int idClasse){
-        for(InterfaceClasse clss : this.listeClasses){
-            if(clss.getId() == idClasse){
+
+    private InterfaceClasse getClasse(int idClasse) {
+        for (InterfaceClasse clss : this.listeClasses) {
+            if (clss.getId() == idClasse) {
                 return clss;
             }
         }
         return null;
     }
-    
-    private void updateClasse(InterfaceEleve Ieleve){
+
+    private void updateClasse(InterfaceEleve Ieleve) {
         InterfaceClasse newClasse = getClasse(Ieleve.getIdClasse());
-        if(newClasse != null){
+        if (newClasse != null) {
             Ieleve.setClasse(newClasse.getNom());
         }
         redessinerTable();
     }
-    
-
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
@@ -236,7 +256,7 @@ public class ModeleListeEleve extends AbstractTableModel {
                 updateClasse(Ieleve);
                 break;
             case 6: //Date de naissance
-                Ieleve.setDateNaissance((Date)aValue);
+                Ieleve.setDateNaissance((Date) aValue);
                 break;
             case 7: //Lieu de naissance
                 Ieleve.setLieuNaissance(aValue + "");

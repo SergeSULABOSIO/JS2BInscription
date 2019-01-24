@@ -93,7 +93,7 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
 
     public void AjouterAyantDroit(InterfaceAyantDroit newFrais) {
         this.chargerLiaisons(newFrais);
-        this.listeData.add(newFrais);
+        this.listeData.add(0, newFrais);
         redessinerTable();
         //lister();
     }

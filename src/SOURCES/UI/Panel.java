@@ -29,6 +29,7 @@ import SOURCES.ModeleTable.ModeleListeAyantDroit;
 import SOURCES.ModeleTable.ModeleListeEleve;
 import SOURCES.RenduTable.RenduTableAyantDroit;
 import SOURCES.RenduTable.RenduTableEleve;
+import SOURCES.MoteurRecherche.MoteurRecherche;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
 import SOURCES.Utilitaires.SortiesEleveAyantDroit;
 import SOURCES.Utilitaires.XX_Ayantdroit;
@@ -71,6 +72,7 @@ public class Panel extends javax.swing.JPanel {
     private ModeleListeEleve modeleListeEleve;
     private ModeleListeAyantDroit modeleListeAyantDroit;
     private EditeurEleve editeurEleve = null;
+    private MoteurRecherche gestionnaireRecherche = null;
 
     public Panel(JTabbedPane parent, int idUtilisateur, int idEntreprise, int idExercice, Vector<InterfaceClasse> listeClasses, Vector<InterfaceFrais> listeFrais, EcouteurEleveAyantDroit ecouteurEleveAyantDroit) {
         initComponents();
@@ -84,6 +86,25 @@ public class Panel extends javax.swing.JPanel {
         this.parametrerTableEleves();
         this.parametrerTableAyantDroit();
         setIconesTabs();
+        activerMoteurRecherche();
+    }
+
+    private void activerMoteurRecherche() {
+        gestionnaireRecherche = new MoteurRecherche(icones, chRecherche, ecouteurClose) {
+            @Override
+            public void chercher(String motcle) {
+                //System.out.println("- ENTER: " + motcle);
+                switch (indexTabSelected) {
+                    case 0:
+                        modeleListeEleve.chercher(motcle);
+                        break;
+                    case 1:
+
+                        break;
+                    default:
+                }
+            }
+        };
     }
 
     private void parametrerTableEleves() {
@@ -300,6 +321,9 @@ public class Panel extends javax.swing.JPanel {
                     int index = (modeleListeEleve.getRowCount() + 1);
                     Date date = new Date();
                     modeleListeEleve.AjouterEleve(new XX_Eleve(-1, idEntreprise, idUtilisateur, idExercice, -1, date.getTime(), "", "", "(+243)", "Eleve_" + index, "", "", "", InterfaceEleve.SEXE_MASCULIN, date));
+                    //On sélectionne la première ligne
+                    tableListeEleves.setRowSelectionAllowed(true);
+                    tableListeEleves.setRowSelectionInterval(0, 0);
                 }
             }
 
@@ -310,6 +334,9 @@ public class Panel extends javax.swing.JPanel {
                         editeurEleve.initCombo();
                         if (editeurEleve.getTailleCombo() != 0) {
                             modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, idEntreprise, idUtilisateur, idExercice, -1, "", new Vector<LiaisonEleveFrais>(), (new Date()).getTime(), -1));
+                            //On sélectionne la première ligne
+                            tableListeAyantDroit.setRowSelectionAllowed(true);
+                            tableListeAyantDroit.setRowSelectionInterval(0, 0);
                         } else {
                             JOptionPane.showMessageDialog(parent, "Désolé, il n'y a plus d'élève à ajouter dans cette liste.", "Pas d'élève à ajouter", JOptionPane.ERROR_MESSAGE);
                         }
