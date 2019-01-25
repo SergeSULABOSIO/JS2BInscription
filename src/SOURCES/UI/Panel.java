@@ -87,19 +87,55 @@ public class Panel extends javax.swing.JPanel {
         this.parametrerTableAyantDroit();
         setIconesTabs();
         activerMoteurRecherche();
+        initCombos();
+    }
+
+    private void initCombos() {
+        //Les sexes
+        chSexe.removeAllItems();
+        chSexe.addItem("TOUS");
+        chSexe.addItem("MASCULIN");
+        chSexe.addItem("FEMININ");
+
+        //Les calsses
+        chClasse.removeAllItems();
+        chClasse.addItem("TOUS");
+        if (this.listeClasses != null) {
+            for (InterfaceClasse iClasse : this.listeClasses) {
+                chClasse.addItem(iClasse.getNom() + "");
+            }
+        }
     }
 
     private void activerMoteurRecherche() {
-        gestionnaireRecherche = new MoteurRecherche(icones, chRecherche, ecouteurClose) {
+        gestionnaireRecherche = new MoteurRecherche(icones, chRecherche, chClasse, chSexe, ecouteurClose) {
+
             @Override
-            public void chercher(String motcle) {
+            public void chercher(String motcle, Object classeSelected, Object sexeSelected) {
                 //System.out.println("- ENTER: " + motcle);
                 switch (indexTabSelected) {
                     case 0:
-                        modeleListeEleve.chercher(motcle);
+                        System.out.println("" + classeSelected + " & " + sexeSelected);
+                        //interprétation du sexe
+                        int iSexe = -1;
+                        if ((classeSelected+"").equals("MASCULIN")) {
+                            iSexe = InterfaceEleve.SEXE_MASCULIN;
+                        }
+                        if ((classeSelected+"").equals("FEMININ")) {
+                            iSexe = InterfaceEleve.SEXE_FEMININ;
+                        }
+                        //interprétation de la classe
+                        int idClasse = -1;
+                        for (InterfaceClasse iClasse : listeClasses) {
+                            if (iClasse.getNom().trim().equals(classeSelected+"")) {
+                                idClasse = iClasse.getId();
+                                break;
+                            }
+                        }
+                        modeleListeEleve.chercher(motcle, idClasse, iSexe);
                         break;
                     case 1:
-
+                        
                         break;
                     default:
                 }
@@ -113,6 +149,9 @@ public class Panel extends javax.swing.JPanel {
             public void onValeurChangee() {
                 if (modeleListeAyantDroit != null) {
                     modeleListeAyantDroit.actualiser();
+                }
+                if (ecouteurClose != null) {
+                    ecouteurClose.onActualiser(modeleListeEleve.getRowCount() + " élement(s).", icones.getClient_01());
                 }
             }
         });
@@ -575,6 +614,8 @@ public class Panel extends javax.swing.JPanel {
         tableListeAyantDroit = new javax.swing.JTable();
         labInfos = new javax.swing.JLabel();
         chRecherche = new UI.JS2bTextField();
+        chClasse = new javax.swing.JComboBox<>();
+        chSexe = new javax.swing.JComboBox<>();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createTitledBorder(""));
@@ -655,17 +696,26 @@ public class Panel extends javax.swing.JPanel {
         chRecherche.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Facture01.png"))); // NOI18N
         chRecherche.setTextInitial("Recherche");
 
+        chClasse.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        chSexe.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TOUS", "MASCULIN", "FEMININ" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(barreOutils, javax.swing.GroupLayout.DEFAULT_SIZE, 636, Short.MAX_VALUE)
+            .addComponent(barreOutils, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(tabPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, 636, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(labInfos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(chRecherche, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(chRecherche, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(chClasse, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(chSexe, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -673,7 +723,10 @@ public class Panel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(barreOutils, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(chRecherche, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(chRecherche, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(chClasse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(chSexe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tabPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -710,7 +763,9 @@ public class Panel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToolBar barreOutils;
+    private javax.swing.JComboBox<String> chClasse;
     private UI.JS2bTextField chRecherche;
+    private javax.swing.JComboBox<String> chSexe;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel labInfos;
     private javax.swing.JScrollPane scrollListeAyantDroit;

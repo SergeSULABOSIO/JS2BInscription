@@ -34,7 +34,7 @@ public class ModeleListeEleve extends AbstractTableModel {
         this.listeClasses = listeClasses;
     }
 
-    public void chercher(String motcle) {
+    public void chercher(String motcle, int idclasse, int sexe) {
         this.listeData.addAll(this.listeDataExclus);
         this.listeDataExclus.removeAllElements();
         if (motcle.trim().length() != 0) {
@@ -42,8 +42,11 @@ public class ModeleListeEleve extends AbstractTableModel {
                 if (Ieleve != null) {
                     //Si, ni le NOM, ni le POSTNOM et ni le PRENOM ne contient le mot clé
                     if (!(Ieleve.getNom().contains(motcle)) && !(Ieleve.getPostnom().contains(motcle)) && !(Ieleve.getPrenom().contains(motcle))) {
-                        if (!listeDataExclus.contains(Ieleve)) {
-                            this.listeDataExclus.add(Ieleve);
+                        System.out.println("classe:"+idclasse+" & sexe:"+sexe);
+                        if (Ieleve.getIdClasse() != idclasse && Ieleve.getSexe() != sexe) {
+                            if (!listeDataExclus.contains(Ieleve)) {
+                                this.listeDataExclus.add(Ieleve);
+                            }
                         }
                     }
                 }
@@ -54,7 +57,7 @@ public class ModeleListeEleve extends AbstractTableModel {
         }
         redessinerTable();
     }
-    
+
     public void setListeEleves(Vector<InterfaceEleve> listeData) {
         this.listeData = listeData;
         redessinerTable();
