@@ -105,6 +105,7 @@ public class Panel extends javax.swing.JPanel {
                 chClasse.addItem(iClasse.getNom() + "");
             }
         }
+        chRecherche.setTextInitial("Recherche : Saisissez votre mot clé ici, puis tapez ENTER");
     }
 
     private void activerMoteurRecherche() {

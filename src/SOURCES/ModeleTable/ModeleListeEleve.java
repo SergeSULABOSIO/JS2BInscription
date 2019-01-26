@@ -40,13 +40,19 @@ public class ModeleListeEleve extends AbstractTableModel {
         if (motcle.trim().length() != 0) {
             for (InterfaceEleve Ieleve : this.listeData) {
                 if (Ieleve != null) {
-                    //Si, ni le NOM, ni le POSTNOM et ni le PRENOM ne contient le mot clé
-                    if (!(Ieleve.getNom().contains(motcle)) && !(Ieleve.getPostnom().contains(motcle)) && !(Ieleve.getPrenom().contains(motcle))) {
-                        System.out.println("classe:"+idclasse+" & sexe:"+sexe);
-                        if (Ieleve.getIdClasse() != idclasse && Ieleve.getSexe() != sexe) {
-                            if (!listeDataExclus.contains(Ieleve)) {
-                                this.listeDataExclus.add(Ieleve);
-                            }
+                    
+                    
+                    System.out.println("classe:" + idclasse + " & sexe:" + sexe);
+                    
+                    
+                    boolean isNeContientPasMotCle = (!(Ieleve.getNom().toLowerCase().contains(motcle.toLowerCase()))
+                            && !(Ieleve.getPostnom().toLowerCase().contains(motcle.toLowerCase()))
+                            && !(Ieleve.getPrenom().toLowerCase().contains(motcle.toLowerCase())));
+
+                    if (isNeContientPasMotCle == true) {
+                        
+                        if (!listeDataExclus.contains(Ieleve)) {
+                            this.listeDataExclus.add(Ieleve);
                         }
                     }
                 }
