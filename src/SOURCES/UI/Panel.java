@@ -637,12 +637,12 @@ public class Panel extends javax.swing.JPanel {
             chClasse.setVisible(true);
             chSexe.setVisible(true);
             chStatus.setVisible(true);
-            btCriteres.setText("Criteres [-]");
+            btCriteres.setText("Critères [-]");
         } else {
             chClasse.setVisible(false);
             chSexe.setVisible(false);
             chStatus.setVisible(false);
-            btCriteres.setText("Criteres [+]");
+            btCriteres.setText("Critères [+]");
         }
     }
 
