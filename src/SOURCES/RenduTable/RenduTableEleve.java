@@ -38,6 +38,14 @@ public class RenduTableEleve implements TableCellRenderer {
         return Ssexe;
     }
     
+    private String getStatus(Object value) {
+        String Status = "REGULIER(E)";
+        if ((Integer.parseInt(value + "")) == InterfaceEleve.STATUS_INACTIF) {
+            Status = "EXCLU(E)";
+        }
+        return Status;
+    }
+    
     private String getClasse(int idClasse) {
         for (InterfaceClasse clss : this.listeClasses) {
             if (clss.getId() == idClasse) {
@@ -73,8 +81,8 @@ public class RenduTableEleve implements TableCellRenderer {
             case 6: //Date de naissance
                 cellule = new CelluleSimpleTableau(" " + Util.getDateFrancais((Date) value) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
-            case 7: //Lieu de naissance
-                cellule = new CelluleSimpleTableau(" " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+            case 7: //Status
+                cellule = new CelluleSimpleTableau(" " + getStatus(value) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 8: //Téléphone
                 cellule = new CelluleSimpleTableau(" " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);

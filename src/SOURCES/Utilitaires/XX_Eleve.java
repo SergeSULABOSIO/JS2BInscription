@@ -26,11 +26,11 @@ public class XX_Eleve implements InterfaceEleve{
     public String nom;
     public String postnom;
     public String prenom;
-    public String lieuNaissance;
+    public int status;
     public int sexe;
     public Date dateNaissance;
 
-    public XX_Eleve(int id, int idEntreprise, int idUtilisateur, int idExercice, int idClasse, long signature, String classe, String adresse, String telephonesParents, String nom, String postnom, String prenom, String lieuNaissance, int sexe, Date dateNaissance) {
+    public XX_Eleve(int id, int idEntreprise, int idUtilisateur, int idExercice, int idClasse, long signature, String classe, String adresse, String telephonesParents, String nom, String postnom, String prenom, int status, int sexe, Date dateNaissance) {
         this.id = id;
         this.idEntreprise = idEntreprise;
         this.idUtilisateur = idUtilisateur;
@@ -43,7 +43,7 @@ public class XX_Eleve implements InterfaceEleve{
         this.nom = nom;
         this.postnom = postnom;
         this.prenom = prenom;
-        this.lieuNaissance = lieuNaissance;
+        this.status = status;
         this.sexe = sexe;
         this.dateNaissance = dateNaissance;
     }
@@ -144,13 +144,7 @@ public class XX_Eleve implements InterfaceEleve{
         this.prenom = prenom;
     }
 
-    public String getLieuNaissance() {
-        return lieuNaissance;
-    }
-
-    public void setLieuNaissance(String lieuNaissance) {
-        this.lieuNaissance = lieuNaissance;
-    }
+    
 
     public int getSexe() {
         return sexe;
@@ -169,7 +163,19 @@ public class XX_Eleve implements InterfaceEleve{
     }
 
     @Override
-    public String toString() {
-        return "XX_Eleve{" + "id=" + id + ", idEntreprise=" + idEntreprise + ", idUtilisateur=" + idUtilisateur + ", idExercice=" + idExercice + ", idClasse=" + idClasse + ", signature=" + signature + ", classe=" + classe + ", adresse=" + adresse + ", telephonesParents=" + telephonesParents + ", nom=" + nom + ", postnom=" + postnom + ", prenom=" + prenom + ", lieuNaissance=" + lieuNaissance + ", sexe=" + sexe + ", dateNaissance=" + dateNaissance + '}';
+    public int getStatus() {
+        return status;
     }
+
+    @Override
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "XX_Eleve{" + "id=" + id + ", idEntreprise=" + idEntreprise + ", idUtilisateur=" + idUtilisateur + ", idExercice=" + idExercice + ", idClasse=" + idClasse + ", signature=" + signature + ", classe=" + classe + ", adresse=" + adresse + ", telephonesParents=" + telephonesParents + ", nom=" + nom + ", postnom=" + postnom + ", prenom=" + prenom + ", status=" + status + ", sexe=" + sexe + ", dateNaissance=" + dateNaissance + '}';
+    }
+    
+    
 }

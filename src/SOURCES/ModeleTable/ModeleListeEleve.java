@@ -20,13 +20,12 @@ import javax.swing.table.AbstractTableModel;
  */
 public class ModeleListeEleve extends AbstractTableModel {
 
-    private String[] titreColonnes = {"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "L. de naiss.", "Téléphone"};
+    private String[] titreColonnes = {"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Status", "Téléphone"};
     private Vector<InterfaceEleve> listeData = new Vector<>();
     private JScrollPane parent;
     private EcouteurValeursChangees ecouteurModele;
     private Vector<InterfaceClasse> listeClasses = new Vector<>();
     private Vector<InterfaceEleve> listeDataExclus = new Vector<>();
-    //private Vector<InterfaceEleve> listeDataASuppr = new Vector<>();
 
     public ModeleListeEleve(JScrollPane parent, Vector<InterfaceClasse> listeClasses, EcouteurValeursChangees ecouteurModele) {
         this.parent = parent;
@@ -34,34 +33,78 @@ public class ModeleListeEleve extends AbstractTableModel {
         this.listeClasses = listeClasses;
     }
 
-    public void chercher(String motcle, int idclasse, int sexe) {
+    public void chercher(String motcle, int idclasse, int sexe, int status) {
         this.listeData.addAll(this.listeDataExclus);
         this.listeDataExclus.removeAllElements();
-        if (motcle.trim().length() != 0) {
-            for (InterfaceEleve Ieleve : this.listeData) {
-                if (Ieleve != null) {
-                    
-                    
-                    System.out.println("classe:" + idclasse + " & sexe:" + sexe);
-                    
-                    
-                    boolean isNeContientPasMotCle = (!(Ieleve.getNom().toLowerCase().contains(motcle.toLowerCase()))
-                            && !(Ieleve.getPostnom().toLowerCase().contains(motcle.toLowerCase()))
-                            && !(Ieleve.getPrenom().toLowerCase().contains(motcle.toLowerCase())));
-
-                    if (isNeContientPasMotCle == true) {
-                        
-                        if (!listeDataExclus.contains(Ieleve)) {
-                            this.listeDataExclus.add(Ieleve);
-                        }
-                    }
-                }
+        for (InterfaceEleve Ieleve : this.listeData) {
+            if (Ieleve != null) {
+                search_verifier_status(motcle, status, idclasse, sexe, Ieleve);
             }
+        }
+        //En fin, on va nettoyer la liste - en enlevant tout objet qui a été black listé
+        search_nettoyer();
+    }
+    
+    private void search_verifier_motcle(String motcle, int idclasse, InterfaceEleve Ieleve) {
+        if (Ieleve != null) {
+            boolean isNeContientPasMotCle = (!(Ieleve.getNom().toLowerCase().contains(motcle.toLowerCase()))
+                        && !(Ieleve.getPostnom().toLowerCase().contains(motcle.toLowerCase()))
+                        && !(Ieleve.getPrenom().toLowerCase().contains(motcle.toLowerCase())));
+            
+            if (isNeContientPasMotCle == true) {
+                search_blacklister(Ieleve);
+            }
+        }
+    }
+    
+    private void search_verifier_status(String motcle, int status, int idclasse, int sexe, InterfaceEleve Ieleve) {
+        if (Ieleve != null) {
+            if (status == -1) {
+                //On ne fait rien
+            } else if (Ieleve.getStatus() != status) {
+                search_blacklister(Ieleve);
+            }
+            search_verifier_sexe(motcle, idclasse, sexe, Ieleve);
+        }
+    }
+    
+    private void search_verifier_sexe(String motcle, int idclasse, int sexe, InterfaceEleve Ieleve) {
+        if (Ieleve != null) {
+            if (sexe == -1) {
+                //On ne fait rien
+            } else if (Ieleve.getSexe() != sexe) {
+                search_blacklister(Ieleve);
+            }
+            search_verifier_classe(motcle, idclasse, Ieleve);
+        }
+    }
+
+    private void search_verifier_classe(String motcle, int idclasse, InterfaceEleve Ieleve) {
+        if (Ieleve != null) {
+            if (idclasse == -1) {
+                //On ne fait rien
+            } else if (Ieleve.getIdClasse() != idclasse) {
+                search_blacklister(Ieleve);
+            }
+            search_verifier_motcle(motcle, idclasse, Ieleve);
+        }
+    }
+
+    private void search_blacklister(InterfaceEleve Ieleve) {
+        if (Ieleve != null && this.listeDataExclus != null) {
+            if (!listeDataExclus.contains(Ieleve)) {
+                this.listeDataExclus.add(Ieleve);
+            }
+        }
+    }
+
+    private void search_nettoyer() {
+        if (this.listeDataExclus != null && this.listeData != null) {
             this.listeDataExclus.forEach((IeleveASupp) -> {
                 this.listeData.removeElement(IeleveASupp);
             });
+            redessinerTable();
         }
-        redessinerTable();
     }
 
     public void setListeEleves(Vector<InterfaceEleve> listeData) {
@@ -164,7 +207,7 @@ public class ModeleListeEleve extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"}
+        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Status", "Téléphone (parents)"}
         switch (columnIndex) {
             case 0: //N°
                 return (rowIndex + 1) + "";
@@ -180,8 +223,8 @@ public class ModeleListeEleve extends AbstractTableModel {
                 return listeData.elementAt(rowIndex).getIdClasse();
             case 6: //Date de naissance
                 return listeData.elementAt(rowIndex).getDateNaissance();
-            case 7: //Lieu de naissance
-                return listeData.elementAt(rowIndex).getLieuNaissance();
+            case 7: //Status
+                return listeData.elementAt(rowIndex).getStatus();
             case 8: //Telephone
                 return listeData.elementAt(rowIndex).getTelephonesParents();
             default:
@@ -191,7 +234,7 @@ public class ModeleListeEleve extends AbstractTableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"}
+        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Status", "Téléphone (parents)"}
         switch (columnIndex) {
             case 0: //N°
                 return String.class;
@@ -207,8 +250,8 @@ public class ModeleListeEleve extends AbstractTableModel {
                 return Integer.class;
             case 6: // Date de naissance
                 return Date.class;
-            case 7: //Lieu de naissance
-                return String.class;
+            case 7: //Status
+                return Integer.class;
             case 8: //Téléphone des parents
                 return String.class;
             default:
@@ -267,8 +310,8 @@ public class ModeleListeEleve extends AbstractTableModel {
             case 6: //Date de naissance
                 Ieleve.setDateNaissance((Date) aValue);
                 break;
-            case 7: //Lieu de naissance
-                Ieleve.setLieuNaissance(aValue + "");
+            case 7: //Status
+                Ieleve.setStatus(Integer.parseInt(aValue + ""));
                 break;
             case 8: //Téléphone des parents
                 Ieleve.setTelephonesParents(aValue + "");

@@ -15,6 +15,9 @@ public interface InterfaceEleve {
     //Constantes - SEXE
     public static final int SEXE_MASCULIN = 0;
     public static final int SEXE_FEMININ = 1;
+    //Constantes - STATUS
+    public static final int STATUS_ACTIF = 0;
+    public static final int STATUS_INACTIF = 1;
     //les getters
     public abstract int getId();
     public abstract int getIdEntreprise();
@@ -27,8 +30,8 @@ public interface InterfaceEleve {
     public abstract String getNom();
     public abstract String getPostnom();
     public abstract String getPrenom();
-    public abstract String getLieuNaissance();
     public abstract int getSexe();
+    public abstract int getStatus();
     public abstract Date getDateNaissance();
     
     
@@ -46,6 +49,6 @@ public interface InterfaceEleve {
     public abstract void setPrenom(String prenom);
     public abstract void setSexe(int sexe);
     public abstract void setDateNaissance(Date dateNaissance);
-    public abstract void setLieuNaissance(String lieuNaissance);
+    public abstract void setStatus(int status);
     
 }

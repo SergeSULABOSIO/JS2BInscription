@@ -12,7 +12,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JComboBox;
 
 /**
  *
@@ -24,15 +23,11 @@ public abstract class MoteurRecherche {
     private Icones icones;
     private EcouteurUpdateClose ecouteurUpdateClose;
     private Thread processus = null;
-    private JComboBox classe;
-    private JComboBox sexe;
 
-    public MoteurRecherche(Icones icones, JS2bTextField champTexte, JComboBox classe, JComboBox sexe, EcouteurUpdateClose ecouteurUpdateClose) {
+    public MoteurRecherche(Icones icones, JS2bTextField champTexte, EcouteurUpdateClose ecouteurUpdateClose) {
         this.champTexte = champTexte;
         this.icones = icones;
         this.ecouteurUpdateClose = ecouteurUpdateClose;
-        this.classe = classe;
-        this.sexe = sexe;
         init();
     }
 
@@ -68,7 +63,7 @@ public abstract class MoteurRecherche {
                 try {
                     patienter();
                     processus.sleep(200);
-                    chercher(champTexte.getText().trim(), classe.getSelectedItem(), sexe.getSelectedItem());
+                    chercher(champTexte.getText().trim());
                     fin();
                 } catch (InterruptedException ex) {
                     Logger.getLogger(MoteurRecherche.class.getName()).log(Level.SEVERE, null, ex);
@@ -115,6 +110,6 @@ public abstract class MoteurRecherche {
         }
     }
 
-    public abstract void chercher(String motcle, Object classeSelected, Object sexeSelected);
+    public abstract void chercher(String motcle);
 
 }

@@ -21,6 +21,7 @@ import SOURCES.EditeurTable.EditeurClasse;
 import SOURCES.EditeurTable.EditeurDate;
 import SOURCES.EditeurTable.EditeurEleve;
 import SOURCES.EditeurTable.EditeurSexe;
+import SOURCES.EditeurTable.EditeurStatus;
 import SOURCES.Interfaces.InterfaceAyantDroit;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
@@ -30,6 +31,7 @@ import SOURCES.ModeleTable.ModeleListeEleve;
 import SOURCES.RenduTable.RenduTableAyantDroit;
 import SOURCES.RenduTable.RenduTableEleve;
 import SOURCES.MoteurRecherche.MoteurRecherche;
+import SOURCES.RenduComboBox.RenduCombo;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
 import SOURCES.Utilitaires.SortiesEleveAyantDroit;
 import SOURCES.Utilitaires.XX_Ayantdroit;
@@ -93,52 +95,77 @@ public class Panel extends javax.swing.JPanel {
     private void initCombos() {
         //Les sexes
         chSexe.removeAllItems();
-        chSexe.addItem("TOUS");
+        chSexe.addItem("MASCULIN & FEMININ");
         chSexe.addItem("MASCULIN");
         chSexe.addItem("FEMININ");
+        chSexe.setRenderer(new RenduCombo(icones.getClient_01()));
+
+        //Les status
+        chStatus.removeAllItems();
+        chStatus.addItem("REGULIER(E) & EXCLU(E)");
+        chStatus.addItem("REGULIER(E)");
+        chStatus.addItem("EXCLU(E)");
+        chStatus.setRenderer(new RenduCombo(icones.getAimer_01()));
 
         //Les calsses
         chClasse.removeAllItems();
-        chClasse.addItem("TOUS");
+        chClasse.addItem("TOUTES LES CLASSES");
         if (this.listeClasses != null) {
             for (InterfaceClasse iClasse : this.listeClasses) {
                 chClasse.addItem(iClasse.getNom() + "");
             }
         }
+        chClasse.setRenderer(new RenduCombo(icones.getClasse_01()));
+        
         chRecherche.setTextInitial("Recherche : Saisissez votre mot clé ici, puis tapez ENTER");
+        activerCriteres();
     }
 
     private void activerMoteurRecherche() {
-        gestionnaireRecherche = new MoteurRecherche(icones, chRecherche, chClasse, chSexe, ecouteurClose) {
+        gestionnaireRecherche = new MoteurRecherche(icones, chRecherche, ecouteurClose) {
 
             @Override
-            public void chercher(String motcle, Object classeSelected, Object sexeSelected) {
-                //System.out.println("- ENTER: " + motcle);
-                switch (indexTabSelected) {
-                    case 0:
-                        System.out.println("" + classeSelected + " & " + sexeSelected);
-                        //interprétation du sexe
-                        int iSexe = -1;
-                        if ((classeSelected+"").equals("MASCULIN")) {
-                            iSexe = InterfaceEleve.SEXE_MASCULIN;
-                        }
-                        if ((classeSelected+"").equals("FEMININ")) {
-                            iSexe = InterfaceEleve.SEXE_FEMININ;
-                        }
-                        //interprétation de la classe
-                        int idClasse = -1;
-                        for (InterfaceClasse iClasse : listeClasses) {
-                            if (iClasse.getNom().trim().equals(classeSelected+"")) {
-                                idClasse = iClasse.getId();
-                                break;
-                            }
-                        }
-                        modeleListeEleve.chercher(motcle, idClasse, iSexe);
+            public void chercher(String motcle) {
+                //classe
+                int idClasse = -1;
+                for (InterfaceClasse iClasse : listeClasses) {
+                    if (iClasse.getNom().trim().equals(chClasse.getSelectedItem() + "")) {
+                        idClasse = iClasse.getId();
                         break;
+                    }
+                }
+
+                //Sexe
+                int sexe = -1;
+                switch (chSexe.getSelectedIndex()) {
                     case 1:
-                        
+                        sexe = InterfaceEleve.SEXE_MASCULIN;
+                        break;
+                    case 2:
+                        sexe = InterfaceEleve.SEXE_FEMININ;
                         break;
                     default:
+                        sexe = -1;
+                        break;
+                }
+
+                //status
+                int status = -1;
+                switch (chStatus.getSelectedIndex()) {
+                    case 1:
+                        status = InterfaceEleve.STATUS_ACTIF;
+                        break;
+                    case 2:
+                        status = InterfaceEleve.STATUS_INACTIF;
+                        break;
+                    default:
+                        status = -1;
+                        break;
+                }
+
+                modeleListeEleve.chercher(motcle, idClasse, sexe, status);
+                if (modeleListeAyantDroit != null) {
+                    modeleListeAyantDroit.chercher(modeleListeEleve.getListeData());
                 }
             }
         };
@@ -192,11 +219,12 @@ public class Panel extends javax.swing.JPanel {
         colDateNaissance.setCellEditor(new EditeurDate());
         colDateNaissance.setPreferredWidth(150);
 
-        TableColumn colLieuNaissance = this.tableListeEleves.getColumnModel().getColumn(7);
-        colLieuNaissance.setPreferredWidth(150);
+        TableColumn colStatus = this.tableListeEleves.getColumnModel().getColumn(7);
+        colStatus.setCellEditor(new EditeurStatus());
+        colStatus.setPreferredWidth(120);
 
         TableColumn colTelephone = this.tableListeEleves.getColumnModel().getColumn(8);
-        colTelephone.setPreferredWidth(150);
+        colTelephone.setPreferredWidth(200);
     }
 
     private void parametrerTableAyantDroit() {
@@ -360,7 +388,7 @@ public class Panel extends javax.swing.JPanel {
                 if (modeleListeEleve != null) {
                     int index = (modeleListeEleve.getRowCount() + 1);
                     Date date = new Date();
-                    modeleListeEleve.AjouterEleve(new XX_Eleve(-1, idEntreprise, idUtilisateur, idExercice, -1, date.getTime(), "", "", "(+243)", "Eleve_" + index, "", "", "", InterfaceEleve.SEXE_MASCULIN, date));
+                    modeleListeEleve.AjouterEleve(new XX_Eleve(-1, idEntreprise, idUtilisateur, idExercice, -1, date.getTime(), "", "", "(+243)", "Eleve_" + index, "", "", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, date));
                     //On sélectionne la première ligne
                     tableListeEleves.setRowSelectionAllowed(true);
                     tableListeEleves.setRowSelectionInterval(0, 0);
@@ -597,6 +625,27 @@ public class Panel extends javax.swing.JPanel {
         }
     }
 
+    private void activerCriteres() {
+        //System.out.println("btCriteres.isSelected() = " + btCriteres.isSelected());
+        btCriteres.setIcon(icones.getParamètres_01());
+        //On reinitialise les combo
+        chClasse.setSelectedIndex(0);
+        chSexe.setSelectedIndex(0);
+        chStatus.setSelectedIndex(0);
+
+        if (btCriteres.isSelected() == true) {
+            chClasse.setVisible(true);
+            chSexe.setVisible(true);
+            chStatus.setVisible(true);
+            btCriteres.setText("Criteres [-]");
+        } else {
+            chClasse.setVisible(false);
+            chSexe.setVisible(false);
+            chStatus.setVisible(false);
+            btCriteres.setText("Criteres [+]");
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -617,6 +666,8 @@ public class Panel extends javax.swing.JPanel {
         chRecherche = new UI.JS2bTextField();
         chClasse = new javax.swing.JComboBox<>();
         chSexe = new javax.swing.JComboBox<>();
+        chStatus = new javax.swing.JComboBox<>();
+        btCriteres = new javax.swing.JToggleButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createTitledBorder(""));
@@ -699,7 +750,17 @@ public class Panel extends javax.swing.JPanel {
 
         chClasse.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-        chSexe.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TOUS", "MASCULIN", "FEMININ" }));
+        chSexe.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TOUT GENRE", "MASCULIN", "FEMININ" }));
+
+        chStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TOUT STATUS", "EL. ACTIF", "EL. INACTIF" }));
+
+        btCriteres.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Facture01.png"))); // NOI18N
+        btCriteres.setText("Critères++");
+        btCriteres.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btCriteresActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -712,11 +773,15 @@ public class Panel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(labInfos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(chClasse, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(chSexe, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(chStatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(chRecherche, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(chClasse, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(chSexe, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btCriteres)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -726,10 +791,14 @@ public class Panel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(chRecherche, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btCriteres))
+                .addGap(4, 4, 4)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(chClasse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chSexe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(chSexe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(chStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tabPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
+                .addComponent(tabPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(labInfos)
                 .addContainerGap())
@@ -761,12 +830,19 @@ public class Panel extends javax.swing.JPanel {
         activerBoutons(((JTabbedPane) evt.getSource()).getSelectedIndex());
     }//GEN-LAST:event_tabPrincipalStateChanged
 
+    private void btCriteresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCriteresActionPerformed
+        // TODO add your handling code here:
+        activerCriteres();
+    }//GEN-LAST:event_btCriteresActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToolBar barreOutils;
+    private javax.swing.JToggleButton btCriteres;
     private javax.swing.JComboBox<String> chClasse;
     private UI.JS2bTextField chRecherche;
     private javax.swing.JComboBox<String> chSexe;
+    private javax.swing.JComboBox<String> chStatus;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel labInfos;
     private javax.swing.JScrollPane scrollListeAyantDroit;

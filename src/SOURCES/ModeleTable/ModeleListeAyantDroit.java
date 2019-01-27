@@ -26,6 +26,7 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
 
     private String[] titreColonnes = null;
     private Vector<InterfaceAyantDroit> listeData = new Vector<>();
+    private Vector<InterfaceAyantDroit> listeDataExclus = new Vector<>();
     private Vector<InterfaceFrais> listeFrais = new Vector<>();
     private JScrollPane parent;
     private EcouteurValeursChangees ecouteurModele;
@@ -39,6 +40,42 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         this.modeleListeEleve = modeleListeEleve;
         this.ecouteurClose = ecouteurClose;
         //System.out.println(" * ModeleListeFrais");
+    }
+
+    public void chercher(Vector<InterfaceEleve> listeEleveFiltres) {
+        //System.out.println("Taile Eleves: " + listeEleveFiltres.size());
+        this.listeData.addAll(this.listeDataExclus);
+        this.listeDataExclus.removeAllElements();
+        for (InterfaceAyantDroit Iayant : this.listeData) {
+            boolean canBL = true;
+            for (InterfaceEleve Ieleve : listeEleveFiltres) {
+                if (Iayant.getSignatureEleve() == Ieleve.getSignature()) {
+                    canBL = false;
+                }
+            }
+            if (canBL == true) {
+                search_blacklister(Iayant);
+            }
+        }
+        //En fin, on va nettoyer la liste - en enlevant tout objet qui a été black listé
+        search_nettoyer();
+    }
+
+    private void search_blacklister(InterfaceAyantDroit Iayant) {
+        if (Iayant != null && this.listeDataExclus != null) {
+            if (!listeDataExclus.contains(Iayant)) {
+                this.listeDataExclus.add(Iayant);
+            }
+        }
+    }
+
+    private void search_nettoyer() {
+        if (this.listeDataExclus != null && this.listeData != null) {
+            this.listeDataExclus.forEach((IeleveASupp) -> {
+                this.listeData.removeElement(IeleveASupp);
+            });
+            redessinerTable();
+        }
     }
 
     public void setListeAyantDroit(Vector<InterfaceAyantDroit> listeData) {
@@ -252,7 +289,7 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
                         updateEleve(IayantDroit);
                         canAdd = true;
                     } else {
-                        if(this.ecouteurClose != null){
+                        if (this.ecouteurClose != null) {
                             String message = "Désolé, " + (ayantDroiExistant.getEleve().trim()) + " figure déjà dans cette liste comme ayant-droit.";
                             this.ecouteurClose.onActualiser(message, new Icones().getAdministrateur_01());
                         }
