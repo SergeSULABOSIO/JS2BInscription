@@ -33,8 +33,8 @@ public class TEST_Principal extends javax.swing.JFrame {
     public int idUtilisateur = 1;
     public int idEntreprise = 1;
     public int idExercice = 1;
+    public TEST_Entreprise entreprise = new TEST_Entreprise(1, "ECOLE CARESIENNE DE KINSHASA", "7e Rue Limeté Industrielle, Kinshasa/RDC", "+243844803514", "infos@cartesien.org", "wwww.cartesien.org", "Equity Bank Congo SA", "Cartesien de Kinshasa", "00122114557892554", "IBN0012455", "CDKIN0012", "logo.png", "RCCM/KD/CD/4513", "IDN00111454", "IMP00124100");
     
-
     public TEST_Principal() {
         initComponents();
     }
@@ -80,7 +80,7 @@ public class TEST_Principal extends javax.swing.JFrame {
         this.listeFraises.add(Frais_TravailManul);
         
         
-        this.gestionnaireExercice = new Panel(this.tabPrincipale, this.idUtilisateur, this.idEntreprise, this.idExercice, this.listeClasses, this.listeFraises, new EcouteurEleveAyantDroit() {
+        this.gestionnaireExercice = new Panel(this.tabPrincipale, "Serge SULA BOSIO", this.idUtilisateur, this.entreprise, this.idExercice, this.listeClasses, this.listeFraises, new EcouteurEleveAyantDroit() {
             @Override
             public void onEnregistre(SortiesEleveAyantDroit sortiesEleveAyantDroit) {
                 

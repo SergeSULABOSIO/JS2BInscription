@@ -7,7 +7,9 @@ package SOURCES.Utilitaires;
 
 import SOURCES.Callback.EcouteurEnregistrement;
 import SOURCES.Interfaces.InterfaceAyantDroit;
+import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
+import SOURCES.Interfaces.InterfaceFrais;
 import java.util.Vector;
 
 /**
@@ -19,12 +21,17 @@ public class SortiesEleveAyantDroit {
     private EcouteurEnregistrement ecouteurEnregistrement;
     private Vector<InterfaceEleve> listeEleves;
     private Vector<InterfaceAyantDroit> listeAyantDroit;
+    private Vector<InterfaceClasse> listeClasses;
+    private Vector<InterfaceFrais> listeFrais;
 
-    public SortiesEleveAyantDroit(Vector<InterfaceEleve> listeEleves, Vector<InterfaceAyantDroit> listeAyantDroit, EcouteurEnregistrement ecouteurEnregistrement) {
+    public SortiesEleveAyantDroit(Vector<InterfaceFrais> listeFrais, Vector<InterfaceClasse> listeClasses, Vector<InterfaceEleve> listeEleves, Vector<InterfaceAyantDroit> listeAyantDroit, EcouteurEnregistrement ecouteurEnregistrement) {
         this.ecouteurEnregistrement = ecouteurEnregistrement;
         this.listeEleves = listeEleves;
         this.listeAyantDroit = listeAyantDroit;
+        this.listeClasses = listeClasses;
+        this.listeFrais = listeFrais;
     }
+    
 
     public EcouteurEnregistrement getEcouteurEnregistrement() {
         return ecouteurEnregistrement;
@@ -34,6 +41,19 @@ public class SortiesEleveAyantDroit {
         this.ecouteurEnregistrement = ecouteurEnregistrement;
     }
 
+    public Vector<InterfaceClasse> getListeClasses() {
+        return listeClasses;
+    }
+    
+    public void setListeClasses(Vector<InterfaceClasse> listeClasses) {
+        this.listeClasses = listeClasses;
+    }
+
+    public Vector<InterfaceFrais> getListeFrais() {
+        return listeFrais;
+    }
+    
+    
     public Vector<InterfaceEleve> getListeEleves() {
         return listeEleves;
     }

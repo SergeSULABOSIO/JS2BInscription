@@ -22,9 +22,11 @@ import SOURCES.EditeurTable.EditeurDate;
 import SOURCES.EditeurTable.EditeurEleve;
 import SOURCES.EditeurTable.EditeurSexe;
 import SOURCES.EditeurTable.EditeurStatus;
+import SOURCES.GenerateurPDF.DocumentPDF;
 import SOURCES.Interfaces.InterfaceAyantDroit;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
+import SOURCES.Interfaces.InterfaceEntreprise;
 import SOURCES.Interfaces.InterfaceFrais;
 import SOURCES.ModeleTable.ModeleListeAyantDroit;
 import SOURCES.ModeleTable.ModeleListeEleve;
@@ -68,28 +70,54 @@ public class Panel extends javax.swing.JPanel {
     private Vector<InterfaceFrais> listeFrais;
     private EcouteurEleveAyantDroit ecouteurEleveAyantDroit = null;
     public int idUtilisateur;
-    public int idEntreprise;
     public int idExercice;
+    public String nomUtilisateur;
+    public InterfaceEntreprise interfaceEntreprise;
 
     private ModeleListeEleve modeleListeEleve;
     private ModeleListeAyantDroit modeleListeAyantDroit;
     private EditeurEleve editeurEleve = null;
     private MoteurRecherche gestionnaireRecherche = null;
 
-    public Panel(JTabbedPane parent, int idUtilisateur, int idEntreprise, int idExercice, Vector<InterfaceClasse> listeClasses, Vector<InterfaceFrais> listeFrais, EcouteurEleveAyantDroit ecouteurEleveAyantDroit) {
-        initComponents();
-        init(parent);
+    public Panel(JTabbedPane parent, String nomUtilisateur, int idUtilisateur, InterfaceEntreprise interfaceEntreprise, int idExercice, Vector<InterfaceClasse> listeClasses, Vector<InterfaceFrais> listeFrais, EcouteurEleveAyantDroit ecouteurEleveAyantDroit) {
+        this.initComponents();
+        this.init(parent);
         this.listeClasses = listeClasses;
         this.listeFrais = listeFrais;
         this.ecouteurEleveAyantDroit = ecouteurEleveAyantDroit;
-        this.idEntreprise = idEntreprise;
         this.idUtilisateur = idUtilisateur;
         this.idExercice = idExercice;
+        this.nomUtilisateur = nomUtilisateur;
+        this.interfaceEntreprise = interfaceEntreprise;
         this.parametrerTableEleves();
         this.parametrerTableAyantDroit();
-        setIconesTabs();
-        activerMoteurRecherche();
-        initCombos();
+        this.setIconesTabs();
+        this.activerMoteurRecherche();
+        this.initCombos();
+    }
+
+    public InterfaceEntreprise getEntreprise() {
+        return interfaceEntreprise;
+    }
+
+    public int getIndexTabSelected() {
+        return indexTabSelected;
+    }
+
+    public String getNomUtilisateur() {
+        return nomUtilisateur;
+    }
+    
+    public String getTitreDoc(){
+        if(indexTabSelected == 0){
+            return "LISTE D'ELEVES";
+        }else{
+            return "LISTE D'ELEVES AYANT-DROITS";
+        }
+    }
+    
+    public Date getDateDocument(){
+        return new Date();
     }
 
     private void initCombos() {
@@ -119,6 +147,18 @@ public class Panel extends javax.swing.JPanel {
         
         chRecherche.setTextInitial("Recherche : Saisissez votre mot clé ici, puis tapez ENTER");
         activerCriteres();
+    }
+    
+    public String getCritereSexe(){
+        return this.chSexe.getSelectedItem()+"";
+    }
+    
+    public String getCritereClasse(){
+        return this.chClasse.getSelectedItem()+"";
+    }
+    
+    public String getCritereStatus(){
+        return this.chStatus.getSelectedItem()+"";
     }
 
     private void activerMoteurRecherche() {
@@ -170,7 +210,8 @@ public class Panel extends javax.swing.JPanel {
             }
         };
     }
-
+    
+   
     private void parametrerTableEleves() {
         this.modeleListeEleve = new ModeleListeEleve(scrollListeEleves, this.listeClasses, new EcouteurValeursChangees() {
             @Override
@@ -388,7 +429,7 @@ public class Panel extends javax.swing.JPanel {
                 if (modeleListeEleve != null) {
                     int index = (modeleListeEleve.getRowCount() + 1);
                     Date date = new Date();
-                    modeleListeEleve.AjouterEleve(new XX_Eleve(-1, idEntreprise, idUtilisateur, idExercice, -1, date.getTime(), "", "", "(+243)", "Eleve_" + index, "", "", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, date));
+                    modeleListeEleve.AjouterEleve(new XX_Eleve(-1, interfaceEntreprise.getId(), idUtilisateur, idExercice, -1, date.getTime(), "", "", "(+243)", "Eleve_" + index, "", "", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, date));
                     //On sélectionne la première ligne
                     tableListeEleves.setRowSelectionAllowed(true);
                     tableListeEleves.setRowSelectionInterval(0, 0);
@@ -401,7 +442,7 @@ public class Panel extends javax.swing.JPanel {
                     if (editeurEleve != null) {
                         editeurEleve.initCombo();
                         if (editeurEleve.getTailleCombo() != 0) {
-                            modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, idEntreprise, idUtilisateur, idExercice, -1, "", new Vector<LiaisonEleveFrais>(), (new Date()).getTime(), -1));
+                            modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, interfaceEntreprise.getId(), idUtilisateur, idExercice, -1, "", new Vector<LiaisonEleveFrais>(), (new Date()).getTime(), -1));
                             //On sélectionne la première ligne
                             tableListeAyantDroit.setRowSelectionAllowed(true);
                             tableListeAyantDroit.setRowSelectionInterval(0, 0);
@@ -545,16 +586,22 @@ public class Panel extends javax.swing.JPanel {
         int dialogResult = JOptionPane.showConfirmDialog(this, "Etes-vous sûr de vouloir imprimer ce document?", "Avertissement", JOptionPane.YES_NO_OPTION);
         if (dialogResult == JOptionPane.YES_OPTION) {
             try {
-                //SortiesAnneeScolaire sortie = getSortieAnneeScolaire(btImprimer, mImprimer);
-                //DocumentPDF documentPDF = new DocumentPDF(this, DocumentPDF.ACTION_IMPRIMER, sortie);
+                SortiesEleveAyantDroit sortie = getSortieEleveAyantDroit(btImprimer, mImprimer);
+                DocumentPDF documentPDF = new DocumentPDF(this, DocumentPDF.ACTION_IMPRIMER, sortie);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+    
+    public String getNomfichierPreuve() {
+        return "FicheElevesS2B.pdf";
+    }
 
     private SortiesEleveAyantDroit getSortieEleveAyantDroit(Bouton boutonDeclencheur, RubriqueSimple rubriqueDeclencheur) {
         SortiesEleveAyantDroit sortieEA = new SortiesEleveAyantDroit(
+                this.listeFrais,
+                this.listeClasses,
                 this.modeleListeEleve.getListeData(),
                 this.modeleListeAyantDroit.getListeData(),
                 new EcouteurEnregistrement() {
@@ -606,8 +653,8 @@ public class Panel extends javax.swing.JPanel {
         int dialogResult = JOptionPane.showConfirmDialog(this, "Voulez-vous les exporter dans un fichier PDF?", "Avertissement", JOptionPane.YES_NO_OPTION);
         if (dialogResult == JOptionPane.YES_OPTION) {
             try {
-                //SortiesAnneeScolaire sortie = getSortieAnneeScolaire(btPDF, mPDF);
-                //DocumentPDF docpdf = new DocumentPDF(this, DocumentPDF.ACTION_OUVRIR, sortie);
+                SortiesEleveAyantDroit sortie = getSortieEleveAyantDroit(btPDF, mPDF);
+                DocumentPDF docpdf = new DocumentPDF(this, DocumentPDF.ACTION_OUVRIR, sortie);
             } catch (Exception e) {
                 e.printStackTrace();
             }
