@@ -13,6 +13,11 @@ import java.util.Vector;
  * @author HP Pavilion
  */
 public interface InterfaceAyantDroit {
+    //Conatantes - BETA
+    public static final int BETA_EXISTANT = 0;
+    public static final int BETA_MODIFIE = 1;
+    public static final int BETA_NOUVEAU = 2;
+    
     //les getters //ModeleListeAyantDroit
     public abstract int getId();
     public abstract int getIdEntreprise();
@@ -23,6 +28,7 @@ public interface InterfaceAyantDroit {
     public abstract Vector<LiaisonEleveFrais> getListeLiaisons();
     public abstract long getSignature();
     public abstract long getSignatureEleve();
+    public abstract int getBeta();  // 0 = Existant, 1 =  Modifié, 2 = Nouveau
     //Stters
     public abstract void setId(int id);
     public abstract void setIdEntreprise(int idEntreprise);
@@ -36,4 +42,5 @@ public interface InterfaceAyantDroit {
     public abstract void setSignature(long signature);
     public abstract void setSignatureEleve(long signature);
     public abstract void setEleve(String eleve);
+    public abstract void setBeta(int newbeta);
 }

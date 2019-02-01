@@ -29,8 +29,9 @@ public class XX_Eleve implements InterfaceEleve{
     public int status;
     public int sexe;
     public Date dateNaissance;
+    public int beta;
 
-    public XX_Eleve(int id, int idEntreprise, int idUtilisateur, int idExercice, int idClasse, long signature, String classe, String adresse, String telephonesParents, String nom, String postnom, String prenom, int status, int sexe, Date dateNaissance) {
+    public XX_Eleve(int id, int idEntreprise, int idUtilisateur, int idExercice, int idClasse, long signature, String classe, String adresse, String telephonesParents, String nom, String postnom, String prenom, int status, int sexe, Date dateNaissance, int beta) {
         this.id = id;
         this.idEntreprise = idEntreprise;
         this.idUtilisateur = idUtilisateur;
@@ -46,8 +47,17 @@ public class XX_Eleve implements InterfaceEleve{
         this.status = status;
         this.sexe = sexe;
         this.dateNaissance = dateNaissance;
+        this.beta = beta;
     }
 
+    public int getBeta() {
+        return beta;
+    }
+
+    public void setBeta(int beta) {
+        this.beta = beta;
+    }
+    
     public int getId() {
         return id;
     }
@@ -174,8 +184,9 @@ public class XX_Eleve implements InterfaceEleve{
 
     @Override
     public String toString() {
-        return "XX_Eleve{" + "id=" + id + ", idEntreprise=" + idEntreprise + ", idUtilisateur=" + idUtilisateur + ", idExercice=" + idExercice + ", idClasse=" + idClasse + ", signature=" + signature + ", classe=" + classe + ", adresse=" + adresse + ", telephonesParents=" + telephonesParents + ", nom=" + nom + ", postnom=" + postnom + ", prenom=" + prenom + ", status=" + status + ", sexe=" + sexe + ", dateNaissance=" + dateNaissance + '}';
+        return "XX_Eleve{" + "id=" + id + ", idEntreprise=" + idEntreprise + ", idUtilisateur=" + idUtilisateur + ", idExercice=" + idExercice + ", idClasse=" + idClasse + ", signature=" + signature + ", classe=" + classe + ", adresse=" + adresse + ", telephonesParents=" + telephonesParents + ", nom=" + nom + ", postnom=" + postnom + ", prenom=" + prenom + ", status=" + status + ", sexe=" + sexe + ", dateNaissance=" + dateNaissance + ", beta=" + beta + '}';
     }
+
     
     
 }

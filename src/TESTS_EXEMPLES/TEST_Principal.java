@@ -6,12 +6,17 @@
 package TESTS_EXEMPLES;
 
 import SOURCES.Callback.EcouteurEleveAyantDroit;
+import SOURCES.Interfaces.InterfaceAyantDroit;
 import SOURCES.Interfaces.InterfaceClasse;
+import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Interfaces.InterfaceFrais;
 import SOURCES.UI.Panel;
+import SOURCES.Utilitaires.DonneesInscription;
 import SOURCES.Utilitaires.LiaisonClasseFrais;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
+import SOURCES.Utilitaires.ParametreInscription;
 import SOURCES.Utilitaires.SortiesEleveAyantDroit;
+import SOURCES.Utilitaires.Util;
 import static java.lang.Thread.sleep;
 import java.util.Date;
 import java.util.Vector;
@@ -34,12 +39,13 @@ public class TEST_Principal extends javax.swing.JFrame {
     public int idEntreprise = 1;
     public int idExercice = 1;
     public TEST_Entreprise entreprise = new TEST_Entreprise(1, "ECOLE CARESIENNE DE KINSHASA", "7e Rue Limeté Industrielle, Kinshasa/RDC", "+243844803514", "infos@cartesien.org", "wwww.cartesien.org", "Equity Bank Congo SA", "Cartesien de Kinshasa", "00122114557892554", "IBN0012455", "CDKIN0012", "logo.png", "RCCM/KD/CD/4513", "IDN00111454", "IMP00124100");
+    public TEST_AnneeScolaire anneescolaire = null;
     
     public TEST_Principal() {
         initComponents();
     }
-
-    private void initParametres() {
+    
+    public ParametreInscription getParametres(){
         this.classe_G1 = new TEST_Classe(10, idUtilisateur, idEntreprise, idExercice, "G1", 50, "Local 2", new Date().getTime());
         this.classe_G2 = new TEST_Classe(11, idUtilisateur, idEntreprise, idExercice, "G2", 50, "Local 3", new Date().getTime()+1);
         this.classe_G3 = new TEST_Classe(12, idUtilisateur, idEntreprise, idExercice, "G3", 50, "Local 4", new Date().getTime()+2);
@@ -79,8 +85,34 @@ public class TEST_Principal extends javax.swing.JFrame {
         this.listeFraises.add(Frais_Minervale);
         this.listeFraises.add(Frais_TravailManul);
         
+        anneescolaire = new TEST_AnneeScolaire(12, entreprise.getId(), idUtilisateur, "Année scolaire 2019-2020", new Date(), Util.getDate_AjouterAnnee(new Date(), 1));
         
-        this.gestionnaireExercice = new Panel(this.tabPrincipale, "Serge SULA BOSIO", this.idUtilisateur, this.entreprise, this.idExercice, this.listeClasses, this.listeFraises, new EcouteurEleveAyantDroit() {
+        ParametreInscription parametres = new ParametreInscription(listeClasses, listeFraises, entreprise, anneescolaire, idUtilisateur, "Serge SULA BOSIO");
+        return parametres;
+    }
+    
+    
+    public DonneesInscription getDonnees(){
+        Vector<InterfaceEleve> listeElevesExistants = new Vector<>();
+        listeElevesExistants.add(new TEST_Eleve(1, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 10, new Date().getTime(), "G1", "", "(+243)844803514", "SULA", "BOSIO", "SERGE", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, new Date(), InterfaceEleve.BETA_EXISTANT));
+        listeElevesExistants.add(new TEST_Eleve(2, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 10, new Date().getTime()+1, "G1", "", "(+243)844803514", "MAKULA", "BOFANDO", "ALAIN", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, new Date(), InterfaceEleve.BETA_EXISTANT));
+        listeElevesExistants.add(new TEST_Eleve(3, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 10, new Date().getTime()+2, "G1", "", "(+243)844803514", "MUTA", "KANKU", "CHRISTIAN", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, new Date(), InterfaceEleve.BETA_EXISTANT));
+        listeElevesExistants.add(new TEST_Eleve(4, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 10, new Date().getTime()+3, "G1", "", "(+243)844803514", "SULA", "OKONDJI", "HERMINE", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_FEMININ, new Date(), InterfaceEleve.BETA_EXISTANT));
+        
+        
+        Vector<InterfaceAyantDroit> listeAyantDroitsExistants = new Vector<>();
+        
+        DonneesInscription donnees = new DonneesInscription(listeElevesExistants, listeAyantDroitsExistants);
+        return donnees;
+    }
+
+    private void initParametres() {
+        ParametreInscription parametre = getParametres();
+        DonneesInscription donnees = getDonnees();
+        
+        
+        
+        this.gestionnaireExercice = new Panel(this.tabPrincipale, donnees, parametre, new EcouteurEleveAyantDroit() {
             @Override
             public void onEnregistre(SortiesEleveAyantDroit sortiesEleveAyantDroit) {
                 

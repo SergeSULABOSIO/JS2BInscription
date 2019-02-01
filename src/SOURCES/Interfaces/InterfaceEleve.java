@@ -18,6 +18,10 @@ public interface InterfaceEleve {
     //Constantes - STATUS
     public static final int STATUS_ACTIF = 0;
     public static final int STATUS_INACTIF = 1;
+    //Conatantes - BETA
+    public static final int BETA_EXISTANT = 0;
+    public static final int BETA_MODIFIE = 1;
+    public static final int BETA_NOUVEAU = 2;
     //les getters
     public abstract int getId();
     public abstract int getIdEntreprise();
@@ -33,6 +37,7 @@ public interface InterfaceEleve {
     public abstract int getSexe();
     public abstract int getStatus();
     public abstract Date getDateNaissance();
+    public abstract int getBeta();  // 0 = Existant, 1 =  Modifié, 2 = Nouveau
     
     
     //Les setters
@@ -50,5 +55,5 @@ public interface InterfaceEleve {
     public abstract void setSexe(int sexe);
     public abstract void setDateNaissance(Date dateNaissance);
     public abstract void setStatus(int status);
-    
+    public abstract void setBeta(int newbeta);
 }

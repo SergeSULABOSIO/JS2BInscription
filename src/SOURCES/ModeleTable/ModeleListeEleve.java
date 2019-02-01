@@ -8,6 +8,7 @@ package SOURCES.ModeleTable;
 import SOURCES.Callback.EcouteurValeursChangees;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
+import SOURCES.Utilitaires.XX_Eleve;
 import java.util.Date;
 import java.util.Vector;
 import javax.swing.JOptionPane;
@@ -44,19 +45,19 @@ public class ModeleListeEleve extends AbstractTableModel {
         //En fin, on va nettoyer la liste - en enlevant tout objet qui a été black listé
         search_nettoyer();
     }
-    
+
     private void search_verifier_motcle(String motcle, int idclasse, InterfaceEleve Ieleve) {
         if (Ieleve != null) {
             boolean isNeContientPasMotCle = (!(Ieleve.getNom().toLowerCase().contains(motcle.toLowerCase()))
-                        && !(Ieleve.getPostnom().toLowerCase().contains(motcle.toLowerCase()))
-                        && !(Ieleve.getPrenom().toLowerCase().contains(motcle.toLowerCase())));
-            
+                    && !(Ieleve.getPostnom().toLowerCase().contains(motcle.toLowerCase()))
+                    && !(Ieleve.getPrenom().toLowerCase().contains(motcle.toLowerCase())));
+
             if (isNeContientPasMotCle == true) {
                 search_blacklister(Ieleve);
             }
         }
     }
-    
+
     private void search_verifier_status(String motcle, int status, int idclasse, int sexe, InterfaceEleve Ieleve) {
         if (Ieleve != null) {
             if (status == -1) {
@@ -67,7 +68,7 @@ public class ModeleListeEleve extends AbstractTableModel {
             search_verifier_sexe(motcle, idclasse, sexe, Ieleve);
         }
     }
-    
+
     private void search_verifier_sexe(String motcle, int idclasse, int sexe, InterfaceEleve Ieleve) {
         if (Ieleve != null) {
             if (sexe == -1) {
@@ -208,25 +209,26 @@ public class ModeleListeEleve extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Status", "Téléphone (parents)"}
+        InterfaceEleve Ieleve = listeData.get(rowIndex);
         switch (columnIndex) {
             case 0: //N°
                 return (rowIndex + 1) + "";
             case 1: //Nom
-                return listeData.elementAt(rowIndex).getNom();
+                return Ieleve.getNom();
             case 2: //Postnom
-                return listeData.elementAt(rowIndex).getPostnom();
+                return Ieleve.getPostnom();
             case 3: //Prenom
-                return listeData.elementAt(rowIndex).getPrenom();
+                return Ieleve.getPrenom();
             case 4: //Sexe
-                return listeData.elementAt(rowIndex).getSexe();
+                return Ieleve.getSexe();
             case 5: //Classe
-                return listeData.elementAt(rowIndex).getIdClasse();
+                return Ieleve.getIdClasse();
             case 6: //Date de naissance
-                return listeData.elementAt(rowIndex).getDateNaissance();
+                return Ieleve.getDateNaissance();
             case 7: //Status
-                return listeData.elementAt(rowIndex).getStatus();
+                return Ieleve.getStatus();
             case 8: //Telephone
-                return listeData.elementAt(rowIndex).getTelephonesParents();
+                return Ieleve.getTelephonesParents();
             default:
                 return "Null";
         }
@@ -285,11 +287,14 @@ public class ModeleListeEleve extends AbstractTableModel {
         }
         redessinerTable();
     }
+    
+    
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone"}
         InterfaceEleve Ieleve = listeData.get(rowIndex);
+        String avant = Ieleve.toString();
         switch (columnIndex) {
             case 1: //Nom
                 Ieleve.setNom(aValue + "");
@@ -318,6 +323,14 @@ public class ModeleListeEleve extends AbstractTableModel {
                 break;
             default:
                 break;
+        }
+        String apres = Ieleve.toString();
+        if(!avant.equals(apres)){
+            if(Ieleve.getId() != -1){
+                Ieleve.setBeta(InterfaceEleve.BETA_MODIFIE);
+            }
+            //System.out.println(avant);
+            //System.out.println(Ieleve.toString());
         }
         listeData.set(rowIndex, Ieleve);
         ecouteurModele.onValeurChangee();

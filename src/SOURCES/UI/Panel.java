@@ -27,14 +27,15 @@ import SOURCES.Interfaces.InterfaceAyantDroit;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Interfaces.InterfaceEntreprise;
-import SOURCES.Interfaces.InterfaceFrais;
 import SOURCES.ModeleTable.ModeleListeAyantDroit;
 import SOURCES.ModeleTable.ModeleListeEleve;
 import SOURCES.RenduTable.RenduTableAyantDroit;
 import SOURCES.RenduTable.RenduTableEleve;
 import SOURCES.MoteurRecherche.MoteurRecherche;
 import SOURCES.RenduComboBox.RenduCombo;
+import SOURCES.Utilitaires.DonneesInscription;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
+import SOURCES.Utilitaires.ParametreInscription;
 import SOURCES.Utilitaires.SortiesEleveAyantDroit;
 import SOURCES.Utilitaires.XX_Ayantdroit;
 import SOURCES.Utilitaires.XX_Eleve;
@@ -58,7 +59,7 @@ public class Panel extends javax.swing.JPanel {
      */
     public int indexTabSelected = 0;
     private Icones icones = null;
-    private JTabbedPane parent = null;
+    private final JTabbedPane parent;
     private Panel moi = null;
     private EcouteurUpdateClose ecouteurClose = null;
     private EcouteurAjout ecouteurAjout = null;
@@ -66,29 +67,25 @@ public class Panel extends javax.swing.JPanel {
     private RubriqueSimple mEnregistrer, mAjouter, mSupprimer, mVider, mImprimer, mPDF, mFermer, mActualiser;
     private MenuContextuel menuContextuel = null;
     private BarreOutils bOutils = null;
-    private Vector<InterfaceClasse> listeClasses;
-    private Vector<InterfaceFrais> listeFrais;
     private EcouteurEleveAyantDroit ecouteurEleveAyantDroit = null;
-    public int idUtilisateur;
-    public int idExercice;
-    public String nomUtilisateur;
-    public InterfaceEntreprise interfaceEntreprise;
 
     private ModeleListeEleve modeleListeEleve;
     private ModeleListeAyantDroit modeleListeAyantDroit;
     private EditeurEleve editeurEleve = null;
-    private MoteurRecherche gestionnaireRecherche = null;
+    private MoteurRecherche gestionnaireRecherche;
 
-    public Panel(JTabbedPane parent, String nomUtilisateur, int idUtilisateur, InterfaceEntreprise interfaceEntreprise, int idExercice, Vector<InterfaceClasse> listeClasses, Vector<InterfaceFrais> listeFrais, EcouteurEleveAyantDroit ecouteurEleveAyantDroit) {
+    public DonneesInscription donneesInscription;
+    public ParametreInscription parametreInscription;
+
+    public Panel(JTabbedPane parent, DonneesInscription donneesInscription, ParametreInscription parametreInscription, EcouteurEleveAyantDroit ecouteurEleveAyantDroit) {
         this.initComponents();
-        this.init(parent);
-        this.listeClasses = listeClasses;
-        this.listeFrais = listeFrais;
+        this.parent = parent;
+        this.init();
+        this.donneesInscription = donneesInscription;
+        this.parametreInscription = parametreInscription;
         this.ecouteurEleveAyantDroit = ecouteurEleveAyantDroit;
-        this.idUtilisateur = idUtilisateur;
-        this.idExercice = idExercice;
-        this.nomUtilisateur = nomUtilisateur;
-        this.interfaceEntreprise = interfaceEntreprise;
+
+        //Initialisaterus
         this.parametrerTableEleves();
         this.parametrerTableAyantDroit();
         this.setIconesTabs();
@@ -97,7 +94,7 @@ public class Panel extends javax.swing.JPanel {
     }
 
     public InterfaceEntreprise getEntreprise() {
-        return interfaceEntreprise;
+        return this.parametreInscription.getEntreprise();
     }
 
     public int getIndexTabSelected() {
@@ -105,18 +102,18 @@ public class Panel extends javax.swing.JPanel {
     }
 
     public String getNomUtilisateur() {
-        return nomUtilisateur;
+        return this.parametreInscription.getNomUtilisateur();
     }
-    
-    public String getTitreDoc(){
-        if(indexTabSelected == 0){
+
+    public String getTitreDoc() {
+        if (indexTabSelected == 0) {
             return "LISTE D'ELEVES";
-        }else{
+        } else {
             return "LISTE D'ELEVES AYANT-DROITS";
         }
     }
-    
-    public Date getDateDocument(){
+
+    public Date getDateDocument() {
         return new Date();
     }
 
@@ -138,27 +135,27 @@ public class Panel extends javax.swing.JPanel {
         //Les calsses
         chClasse.removeAllItems();
         chClasse.addItem("TOUTES LES CLASSES");
-        if (this.listeClasses != null) {
-            for (InterfaceClasse iClasse : this.listeClasses) {
+        if (this.parametreInscription.getListeClasses() != null) {
+            for (InterfaceClasse iClasse : this.parametreInscription.getListeClasses()) {
                 chClasse.addItem(iClasse.getNom() + "");
             }
         }
         chClasse.setRenderer(new RenduCombo(icones.getClasse_01()));
-        
+
         chRecherche.setTextInitial("Recherche : Saisissez votre mot clé ici, puis tapez ENTER");
         activerCriteres();
     }
-    
-    public String getCritereSexe(){
-        return this.chSexe.getSelectedItem()+"";
+
+    public String getCritereSexe() {
+        return this.chSexe.getSelectedItem() + "";
     }
-    
-    public String getCritereClasse(){
-        return this.chClasse.getSelectedItem()+"";
+
+    public String getCritereClasse() {
+        return this.chClasse.getSelectedItem() + "";
     }
-    
-    public String getCritereStatus(){
-        return this.chStatus.getSelectedItem()+"";
+
+    public String getCritereStatus() {
+        return this.chStatus.getSelectedItem() + "";
     }
 
     private void activerMoteurRecherche() {
@@ -168,7 +165,7 @@ public class Panel extends javax.swing.JPanel {
             public void chercher(String motcle) {
                 //classe
                 int idClasse = -1;
-                for (InterfaceClasse iClasse : listeClasses) {
+                for (InterfaceClasse iClasse : parametreInscription.getListeClasses()) {
                     if (iClasse.getNom().trim().equals(chClasse.getSelectedItem() + "")) {
                         idClasse = iClasse.getId();
                         break;
@@ -210,10 +207,9 @@ public class Panel extends javax.swing.JPanel {
             }
         };
     }
-    
-   
+
     private void parametrerTableEleves() {
-        this.modeleListeEleve = new ModeleListeEleve(scrollListeEleves, this.listeClasses, new EcouteurValeursChangees() {
+        this.modeleListeEleve = new ModeleListeEleve(scrollListeEleves, this.parametreInscription.getListeClasses(), new EcouteurValeursChangees() {
             @Override
             public void onValeurChangee() {
                 if (modeleListeAyantDroit != null) {
@@ -227,9 +223,15 @@ public class Panel extends javax.swing.JPanel {
 
         //Parametrage du modele contenant les données de la table
         this.tableListeEleves.setModel(this.modeleListeEleve);
+        
+        if(this.donneesInscription != null){
+            if(this.donneesInscription.getListeEleves().size() != 0){
+                this.modeleListeEleve.setListeEleves(this.donneesInscription.getListeEleves());
+            }
+        }
 
         //Parametrage du rendu de la table
-        this.tableListeEleves.setDefaultRenderer(Object.class, new RenduTableEleve(icones.getModifier_01(), this.listeClasses));
+        this.tableListeEleves.setDefaultRenderer(Object.class, new RenduTableEleve(icones.getModifier_01(), this.modeleListeEleve, this.parametreInscription.getListeClasses()));
         this.tableListeEleves.setRowHeight(25);
 
         //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"}
@@ -252,7 +254,7 @@ public class Panel extends javax.swing.JPanel {
         colSexe.setMaxWidth(140);
 
         TableColumn colClasse = this.tableListeEleves.getColumnModel().getColumn(5);
-        colClasse.setCellEditor(new EditeurClasse(this.listeClasses));
+        colClasse.setCellEditor(new EditeurClasse(this.parametreInscription.getListeClasses()));
         colClasse.setPreferredWidth(90);
         colClasse.setMaxWidth(90);
 
@@ -269,7 +271,7 @@ public class Panel extends javax.swing.JPanel {
     }
 
     private void parametrerTableAyantDroit() {
-        this.modeleListeAyantDroit = new ModeleListeAyantDroit(scrollListeAyantDroit, this.listeFrais, this.modeleListeEleve, new EcouteurValeursChangees() {
+        this.modeleListeAyantDroit = new ModeleListeAyantDroit(scrollListeAyantDroit, this.parametreInscription.getListeFraises(), this.modeleListeEleve, new EcouteurValeursChangees() {
             @Override
             public void onValeurChangee() {
 
@@ -294,14 +296,16 @@ public class Panel extends javax.swing.JPanel {
         colEleve.setCellEditor(this.editeurEleve);
         colEleve.setPreferredWidth(150);
 
+        //Redimensionnement de la colonne des frais
+        /*
         int index = 1;
-        for (InterfaceFrais frais : this.listeFrais) {
+        for (InterfaceFrais frais : this.parametreInscription.getListeFraises()) {
             TableColumn colFrais = this.tableListeAyantDroit.getColumnModel().getColumn(index);
             //colFrais.setPreferredWidth(40);
             //colFrais.setMaxWidth(40);
             index++;
         }
-
+        */
     }
 
     private void setBoutons() {
@@ -402,10 +406,9 @@ public class Panel extends javax.swing.JPanel {
 
     }
 
-    public void init(JTabbedPane parent) {
+    public void init() {
         this.icones = new Icones();
         this.moi = this;
-        this.parent = parent;
         this.chRecherche.setIcon(icones.getChercher_01());
         this.labInfos.setIcon(icones.getInfos_01());
         this.labInfos.setText("Prêt.");
@@ -429,7 +432,7 @@ public class Panel extends javax.swing.JPanel {
                 if (modeleListeEleve != null) {
                     int index = (modeleListeEleve.getRowCount() + 1);
                     Date date = new Date();
-                    modeleListeEleve.AjouterEleve(new XX_Eleve(-1, interfaceEntreprise.getId(), idUtilisateur, idExercice, -1, date.getTime(), "", "", "(+243)", "Eleve_" + index, "", "", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, date));
+                    modeleListeEleve.AjouterEleve(new XX_Eleve(-1, parametreInscription.getEntreprise().getId(), parametreInscription.getIdUtilisateur(), parametreInscription.getAnneeScolaire().getId(), -1, date.getTime(), "", "", "(+243)", "Eleve_" + index, "", "", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, date, InterfaceEleve.BETA_NOUVEAU));
                     //On sélectionne la première ligne
                     tableListeEleves.setRowSelectionAllowed(true);
                     tableListeEleves.setRowSelectionInterval(0, 0);
@@ -442,7 +445,7 @@ public class Panel extends javax.swing.JPanel {
                     if (editeurEleve != null) {
                         editeurEleve.initCombo();
                         if (editeurEleve.getTailleCombo() != 0) {
-                            modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, interfaceEntreprise.getId(), idUtilisateur, idExercice, -1, "", new Vector<LiaisonEleveFrais>(), (new Date()).getTime(), -1));
+                            modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, parametreInscription.getEntreprise().getId(), parametreInscription.getIdUtilisateur(), parametreInscription.getAnneeScolaire().getId(), -1, "", new Vector<LiaisonEleveFrais>(), (new Date()).getTime(), -1));
                             //On sélectionne la première ligne
                             tableListeAyantDroit.setRowSelectionAllowed(true);
                             tableListeAyantDroit.setRowSelectionInterval(0, 0);
@@ -593,15 +596,15 @@ public class Panel extends javax.swing.JPanel {
             }
         }
     }
-    
+
     public String getNomfichierPreuve() {
         return "FicheElevesS2B.pdf";
     }
 
     private SortiesEleveAyantDroit getSortieEleveAyantDroit(Bouton boutonDeclencheur, RubriqueSimple rubriqueDeclencheur) {
         SortiesEleveAyantDroit sortieEA = new SortiesEleveAyantDroit(
-                this.listeFrais,
-                this.listeClasses,
+                this.parametreInscription.getListeFraises(),
+                this.parametreInscription.getListeClasses(),
                 this.modeleListeEleve.getListeData(),
                 this.modeleListeAyantDroit.getListeData(),
                 new EcouteurEnregistrement() {

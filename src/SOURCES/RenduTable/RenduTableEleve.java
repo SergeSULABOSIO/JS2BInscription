@@ -7,6 +7,7 @@ package SOURCES.RenduTable;
 
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
+import SOURCES.ModeleTable.ModeleListeEleve;
 import SOURCES.UI.CelluleSimpleTableau;
 import SOURCES.Utilitaires.Util;
 import java.awt.Component;
@@ -21,15 +22,17 @@ import javax.swing.table.TableCellRenderer;
  * @author user
  */
 public class RenduTableEleve implements TableCellRenderer {
-    
+
     private ImageIcon iconeEdition;
     private Vector<InterfaceClasse> listeClasses;
-    
-    public RenduTableEleve(ImageIcon iconeEdition, Vector<InterfaceClasse> listeClasses) {
+    private ModeleListeEleve modeleListeEleve;
+
+    public RenduTableEleve(ImageIcon iconeEdition, ModeleListeEleve modeleListeEleve, Vector<InterfaceClasse> listeClasses) {
         this.iconeEdition = iconeEdition;
         this.listeClasses = listeClasses;
+        this.modeleListeEleve = modeleListeEleve;
     }
-    
+
     private String getSexe(Object value) {
         String Ssexe = "MASCULIN";
         if ((Integer.parseInt(value + "")) == InterfaceEleve.SEXE_FEMININ) {
@@ -37,7 +40,7 @@ public class RenduTableEleve implements TableCellRenderer {
         }
         return Ssexe;
     }
-    
+
     private String getStatus(Object value) {
         String Status = "REGULIER(E)";
         if ((Integer.parseInt(value + "")) == InterfaceEleve.STATUS_INACTIF) {
@@ -45,7 +48,7 @@ public class RenduTableEleve implements TableCellRenderer {
         }
         return Status;
     }
-    
+
     private String getClasse(int idClasse) {
         for (InterfaceClasse clss : this.listeClasses) {
             if (clss.getId() == idClasse) {
@@ -54,7 +57,7 @@ public class RenduTableEleve implements TableCellRenderer {
         }
         return "";
     }
-    
+
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"}
@@ -88,7 +91,18 @@ public class RenduTableEleve implements TableCellRenderer {
                 cellule = new CelluleSimpleTableau(" " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
         }
-        cellule.ecouterSelection(isSelected, row);
+
+        cellule.ecouterSelection(isSelected, row, getBeta(row));
         return cellule;
+    }
+
+    private int getBeta(int row) {
+        if (this.modeleListeEleve != null) {
+            InterfaceEleve Ieleve = this.modeleListeEleve.getEleve(row);
+            if (Ieleve != null) {
+                return Ieleve.getBeta();
+            }
+        }
+        return InterfaceEleve.BETA_NOUVEAU;
     }
 }

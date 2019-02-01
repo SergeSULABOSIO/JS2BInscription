@@ -6,13 +6,11 @@
 package SOURCES.RenduTable;
 
 import SOURCES.Interfaces.InterfaceEleve;
-import SOURCES.Interfaces.InterfaceMonnaie;
 import SOURCES.ModeleTable.ModeleListeAyantDroit;
 import SOURCES.ModeleTable.ModeleListeEleve;
 import SOURCES.UI.CelluleSimpleTableau;
 import SOURCES.Utilitaires.Util;
 import java.awt.Component;
-import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
@@ -25,10 +23,12 @@ public class RenduTableAyantDroit implements TableCellRenderer {
     
     private ImageIcon iconeEdition;
     private ModeleListeEleve modeleListeEleve;
+    private ModeleListeAyantDroit modeleListeAyantDroit;
     
     public RenduTableAyantDroit(ImageIcon iconeEdition, ModeleListeEleve modeleListeEleve, ModeleListeAyantDroit modeleListeAyantDroit) {
         this.iconeEdition = iconeEdition;
         this.modeleListeEleve = modeleListeEleve;
+        this.modeleListeAyantDroit = modeleListeAyantDroit;
     }
     
     private String getEleve(long signatureEleve) {
@@ -57,7 +57,17 @@ public class RenduTableAyantDroit implements TableCellRenderer {
                 cellule = new CelluleSimpleTableau(" " + Util.getMontantFrancais(mont) + " ", CelluleSimpleTableau.ALIGNE_DROITE, iconeEdition);
                 break;
         }
-        cellule.ecouterSelection(isSelected, row);
+        cellule.ecouterSelection(isSelected, row, getBeta(row));
         return cellule;
+    }
+    
+    private int getBeta(int row) {
+        if (this.modeleListeEleve != null) {
+            InterfaceEleve Ieleve = this.modeleListeEleve.getEleve(row);
+            if (Ieleve != null) {
+                return Ieleve.getBeta();
+            }
+        }
+        return InterfaceEleve.BETA_NOUVEAU;
     }
 }
