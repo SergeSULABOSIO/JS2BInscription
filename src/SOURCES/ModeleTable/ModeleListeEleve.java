@@ -8,7 +8,6 @@ package SOURCES.ModeleTable;
 import SOURCES.Callback.EcouteurValeursChangees;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
-import SOURCES.Utilitaires.XX_Eleve;
 import java.util.Date;
 import java.util.Vector;
 import javax.swing.JOptionPane;

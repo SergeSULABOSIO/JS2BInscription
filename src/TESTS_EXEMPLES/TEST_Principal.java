@@ -101,6 +101,12 @@ public class TEST_Principal extends javax.swing.JFrame {
         
         
         Vector<InterfaceAyantDroit> listeAyantDroitsExistants = new Vector<>();
+        Vector<LiaisonEleveFrais> liaison = new Vector<>();
+        liaison.add(new LiaisonEleveFrais(new Date().getTime(), 12, 0, 3, "$"));
+        liaison.add(new LiaisonEleveFrais(new Date().getTime(), 1, 0, 3, "$"));
+        liaison.add(new LiaisonEleveFrais(new Date().getTime(), 51, 0, 3, "$"));
+        
+        listeAyantDroitsExistants.add(new TEST_Ayantdroit(1, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 1, "SULA", liaison, new Date().getTime(), new Date().getTime(), InterfaceAyantDroit.BETA_EXISTANT));
         
         DonneesInscription donnees = new DonneesInscription(listeElevesExistants, listeAyantDroitsExistants);
         return donnees;
@@ -122,18 +128,18 @@ public class TEST_Principal extends javax.swing.JFrame {
                     public void run() {
                         try {
                             sortiesEleveAyantDroit.getEcouteurEnregistrement().onUploading("Chargement...");
-                            sleep(5000);
+                            sleep(10);
                             
-                            System.out.println("ELEVES :");
+                            
                             sortiesEleveAyantDroit.getListeEleves().forEach((Oeleve) -> {
-                                System.out.println(" * " + Oeleve.getNom() + ", " + Oeleve.getPostnom()+", " + Oeleve.getPrenom()+", Classe : " + Oeleve.getClasse());
+                                if(Oeleve.getBeta() == InterfaceEleve.BETA_MODIFIE || Oeleve.getBeta() == InterfaceEleve.BETA_NOUVEAU){
+                                    System.out.println(" * " + Oeleve.toString());
+                                }
                             });
-                            
-                            System.out.println("ELEVES AYANT-DROIT :");
+                          
                             sortiesEleveAyantDroit.getListeAyantDroit().forEach((Oeleve) -> {
-                                System.out.println(" * " + Oeleve.getEleve() + " : ");
-                                for(LiaisonEleveFrais liaisonEleveFrais : Oeleve.getListeLiaisons()){
-                                    System.out.println("\t * " + liaisonEleveFrais.getIdFrais()+" : " + liaisonEleveFrais.getMontant()+" " + liaisonEleveFrais.getMonnaie());
+                                if(Oeleve.getBeta() == InterfaceAyantDroit.BETA_MODIFIE || Oeleve.getBeta() == InterfaceAyantDroit.BETA_NOUVEAU){
+                                    System.out.println(" * " + Oeleve.toString() + " : ");
                                 }
                             });
 

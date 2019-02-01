@@ -280,6 +280,12 @@ public class Panel extends javax.swing.JPanel {
 
         //Parametrage du modele contenant les données de la table
         this.tableListeAyantDroit.setModel(this.modeleListeAyantDroit);
+        
+        if(this.donneesInscription != null){
+            if(this.donneesInscription.getListeAyantDroit().size() != 0){
+                this.modeleListeAyantDroit.setListeAyantDroit(this.donneesInscription.getListeAyantDroit());
+            }
+        }
 
         this.editeurEleve = new EditeurEleve(this.modeleListeEleve, this.modeleListeAyantDroit);
 
@@ -445,7 +451,7 @@ public class Panel extends javax.swing.JPanel {
                     if (editeurEleve != null) {
                         editeurEleve.initCombo();
                         if (editeurEleve.getTailleCombo() != 0) {
-                            modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, parametreInscription.getEntreprise().getId(), parametreInscription.getIdUtilisateur(), parametreInscription.getAnneeScolaire().getId(), -1, "", new Vector<LiaisonEleveFrais>(), (new Date()).getTime(), -1));
+                            modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, parametreInscription.getEntreprise().getId(), parametreInscription.getIdUtilisateur(), parametreInscription.getAnneeScolaire().getId(), -1, "", new Vector<LiaisonEleveFrais>(), (new Date()).getTime(), -1, InterfaceAyantDroit.BETA_NOUVEAU));
                             //On sélectionne la première ligne
                             tableListeAyantDroit.setRowSelectionAllowed(true);
                             tableListeAyantDroit.setRowSelectionInterval(0, 0);

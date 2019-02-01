@@ -277,6 +277,8 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         //{"N°", "Elève"};
         InterfaceAyantDroit IayantDroit = listeData.get(rowIndex);
+        String avant = IayantDroit.toString() + "" + IayantDroit.getListeLiaisons().toString();
+        //System.out.println("Avant: " + avant);
         boolean canAdd = false;
         if (columnIndex < 2) {
             switch (columnIndex) {
@@ -300,8 +302,19 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
                     break;
             }
         } else {
-            listeData.elementAt(rowIndex).getListeLiaisons().elementAt(columnIndex - 2).setMontant(Double.parseDouble(aValue + ""));
+            IayantDroit.getListeLiaisons().elementAt(columnIndex - 2).setMontant(Double.parseDouble(aValue + ""));
         }
+
+        String apres = IayantDroit.toString() + "" + IayantDroit.getListeLiaisons().toString();
+        //System.out.println("Après: " + apres);
+        if (!avant.equals(apres)) {
+            if (IayantDroit.getId() != -1) {
+                IayantDroit.setBeta(InterfaceAyantDroit.BETA_MODIFIE);
+            }
+            //System.out.println(avant);
+            //System.out.println(Ieleve.toString());
+        }
+
         if (canAdd == true) {
             listeData.set(rowIndex, IayantDroit);
             ecouteurModele.onValeurChangee();

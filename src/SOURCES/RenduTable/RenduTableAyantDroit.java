@@ -5,6 +5,7 @@
  */
 package SOURCES.RenduTable;
 
+import SOURCES.Interfaces.InterfaceAyantDroit;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.ModeleTable.ModeleListeAyantDroit;
 import SOURCES.ModeleTable.ModeleListeEleve;
@@ -62,8 +63,8 @@ public class RenduTableAyantDroit implements TableCellRenderer {
     }
     
     private int getBeta(int row) {
-        if (this.modeleListeEleve != null) {
-            InterfaceEleve Ieleve = this.modeleListeEleve.getEleve(row);
+        if (this.modeleListeAyantDroit != null) {
+            InterfaceAyantDroit Ieleve = this.modeleListeAyantDroit.getAyantDroit(row);
             if (Ieleve != null) {
                 return Ieleve.getBeta();
             }
