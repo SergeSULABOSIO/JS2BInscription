@@ -328,8 +328,6 @@ public class ModeleListeEleve extends AbstractTableModel {
             if(Ieleve.getId() != -1){
                 Ieleve.setBeta(InterfaceEleve.BETA_MODIFIE);
             }
-            //System.out.println(avant);
-            //System.out.println(Ieleve.toString());
         }
         listeData.set(rowIndex, Ieleve);
         ecouteurModele.onValeurChangee();
