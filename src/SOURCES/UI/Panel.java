@@ -223,9 +223,9 @@ public class Panel extends javax.swing.JPanel {
 
         //Parametrage du modele contenant les données de la table
         this.tableListeEleves.setModel(this.modeleListeEleve);
-        
-        if(this.donneesInscription != null){
-            if(this.donneesInscription.getListeEleves().size() != 0){
+
+        if (this.donneesInscription != null) {
+            if (this.donneesInscription.getListeEleves().size() != 0) {
                 this.modeleListeEleve.setListeEleves(this.donneesInscription.getListeEleves());
             }
         }
@@ -280,9 +280,9 @@ public class Panel extends javax.swing.JPanel {
 
         //Parametrage du modele contenant les données de la table
         this.tableListeAyantDroit.setModel(this.modeleListeAyantDroit);
-        
-        if(this.donneesInscription != null){
-            if(this.donneesInscription.getListeAyantDroit().size() != 0){
+
+        if (this.donneesInscription != null) {
+            if (this.donneesInscription.getListeAyantDroit().size() != 0) {
                 this.modeleListeAyantDroit.setListeAyantDroit(this.donneesInscription.getListeAyantDroit());
             }
         }
@@ -311,7 +311,7 @@ public class Panel extends javax.swing.JPanel {
             //colFrais.setMaxWidth(40);
             index++;
         }
-        */
+         */
     }
 
     private void setBoutons() {
@@ -584,10 +584,39 @@ public class Panel extends javax.swing.JPanel {
         menuContextuel.Ajouter(mFermer);
     }
 
+    private boolean mustBeSaved() {
+        boolean rep = false;
+        //On vérifie dans la liste d'élèves
+        for (InterfaceEleve Ieleve : this.modeleListeEleve.getListeData()) {
+            if (Ieleve.getBeta() == InterfaceEleve.BETA_MODIFIE || Ieleve.getBeta() == InterfaceEleve.BETA_NOUVEAU) {
+                rep = true;
+            }
+        }
+
+        //On vérifie aussi dans la liste d'ayant-droits
+        for (InterfaceAyantDroit Iayant : this.modeleListeAyantDroit.getListeData()) {
+            if (Iayant.getBeta() == InterfaceAyantDroit.BETA_MODIFIE || Iayant.getBeta() == InterfaceAyantDroit.BETA_MODIFIE) {
+                rep = true;
+            }
+        }
+        return rep;
+    }
+
     public void fermer() {
-        int dialogResult = JOptionPane.showConfirmDialog(this, "Etes-vous sûr de vouloir fermer cette fenêtre?", "Avertissement", JOptionPane.YES_NO_OPTION);
-        if (dialogResult == JOptionPane.YES_OPTION) {
-            this.ecouteurClose.onFermer();
+        //Vérifier s'il n'y a rien à enregistrer
+        if (mustBeSaved() == true) {
+            int dialogResult = JOptionPane.showConfirmDialog(this, "Voulez-vous enregistrer les modifications et/ou ajouts apportés à ces données?", "Avertissement", JOptionPane.YES_NO_CANCEL_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                this.ecouteurEleveAyantDroit.onEnregistre(getSortieEleveAyantDroit(btEnregistrer, mEnregistrer));
+                this.ecouteurClose.onFermer();
+            }else if(dialogResult == JOptionPane.NO_OPTION){
+                this.ecouteurClose.onFermer();
+            }
+        }else{
+            int dialogResult = JOptionPane.showConfirmDialog(this, "Etes-vous sûr de vouloir fermer cette fenêtre?", "Avertissement", JOptionPane.YES_NO_OPTION);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                this.ecouteurClose.onFermer();
+            }
         }
     }
 
