@@ -185,7 +185,7 @@ public class ModeleListeEleve extends AbstractTableModel {
         }
     }
 
-    private void redessinerTable() {
+    public void redessinerTable() {
         ecouteurModele.onValeurChangee();
         fireTableDataChanged();
     }

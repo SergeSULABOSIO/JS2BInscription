@@ -134,12 +134,18 @@ public class TEST_Principal extends javax.swing.JFrame {
                             sortiesEleveAyantDroit.getListeEleves().forEach((Oeleve) -> {
                                 if(Oeleve.getBeta() == InterfaceEleve.BETA_MODIFIE || Oeleve.getBeta() == InterfaceEleve.BETA_NOUVEAU){
                                     System.out.println(" * " + Oeleve.toString());
+                                    
+                                    //Après enregistrement
+                                    Oeleve.setBeta(InterfaceEleve.BETA_EXISTANT);
                                 }
                             });
                           
                             sortiesEleveAyantDroit.getListeAyantDroit().forEach((Oeleve) -> {
                                 if(Oeleve.getBeta() == InterfaceAyantDroit.BETA_MODIFIE || Oeleve.getBeta() == InterfaceAyantDroit.BETA_NOUVEAU){
                                     System.out.println(" * " + Oeleve.toString() + " : ");
+                                    
+                                    //Après enregistrement
+                                    Oeleve.setBeta(InterfaceAyantDroit.BETA_EXISTANT);
                                 }
                             });
 
