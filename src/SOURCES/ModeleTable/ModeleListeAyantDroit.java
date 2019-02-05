@@ -308,11 +308,9 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         String apres = IayantDroit.toString() + "" + IayantDroit.getListeLiaisons().toString();
         //System.out.println("Après: " + apres);
         if (!avant.equals(apres)) {
-            if (IayantDroit.getId() != -1) {
+            if (IayantDroit.getBeta() == InterfaceAyantDroit.BETA_EXISTANT) {
                 IayantDroit.setBeta(InterfaceAyantDroit.BETA_MODIFIE);
             }
-            //System.out.println(avant);
-            //System.out.println(Ieleve.toString());
         }
 
         if (canAdd == true) {

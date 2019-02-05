@@ -597,7 +597,7 @@ public class Panel extends javax.swing.JPanel {
 
         //On vérifie aussi dans la liste d'ayant-droits
         for (InterfaceAyantDroit Iayant : this.modeleListeAyantDroit.getListeData()) {
-            if (Iayant.getBeta() == InterfaceAyantDroit.BETA_MODIFIE || Iayant.getBeta() == InterfaceAyantDroit.BETA_MODIFIE) {
+            if (Iayant.getBeta() == InterfaceAyantDroit.BETA_MODIFIE || Iayant.getBeta() == InterfaceAyantDroit.BETA_NOUVEAU) {
                 rep = true;
             }
         }

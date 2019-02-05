@@ -325,7 +325,7 @@ public class ModeleListeEleve extends AbstractTableModel {
         }
         String apres = Ieleve.toString();
         if(!avant.equals(apres)){
-            if(Ieleve.getId() != -1){
+            if(Ieleve.getBeta() == InterfaceEleve.BETA_EXISTANT){
                 Ieleve.setBeta(InterfaceEleve.BETA_MODIFIE);
             }
         }
