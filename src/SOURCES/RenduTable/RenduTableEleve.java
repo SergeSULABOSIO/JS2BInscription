@@ -92,7 +92,7 @@ public class RenduTableEleve implements TableCellRenderer {
                 break;
         }
 
-        cellule.ecouterSelection(isSelected, row, getBeta(row));
+        cellule.ecouterSelection(isSelected, row, getBeta(row), hasFocus);
         return cellule;
     }
 

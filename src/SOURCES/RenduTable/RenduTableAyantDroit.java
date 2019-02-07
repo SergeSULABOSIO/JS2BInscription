@@ -58,7 +58,7 @@ public class RenduTableAyantDroit implements TableCellRenderer {
                 cellule = new CelluleSimpleTableau(" " + Util.getMontantFrancais(mont) + " ", CelluleSimpleTableau.ALIGNE_DROITE, iconeEdition);
                 break;
         }
-        cellule.ecouterSelection(isSelected, row, getBeta(row));
+        cellule.ecouterSelection(isSelected, row, getBeta(row), hasFocus);
         return cellule;
     }
     

@@ -94,7 +94,8 @@ public class TEST_Principal extends javax.swing.JFrame {
     
     public DonneesInscription getDonnees(){
         Vector<InterfaceEleve> listeElevesExistants = new Vector<>();
-        listeElevesExistants.add(new TEST_Eleve(1, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 10, new Date().getTime(), "G1", "", "(+243)844803514", "SULA", "BOSIO", "SERGE", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, new Date(), InterfaceEleve.BETA_EXISTANT));
+        long signEle = (new Date().getTime());
+        listeElevesExistants.add(new TEST_Eleve(1, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 10, signEle, "G1", "", "(+243)844803514", "SULA", "BOSIO", "SERGE", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, new Date(), InterfaceEleve.BETA_EXISTANT));
         listeElevesExistants.add(new TEST_Eleve(2, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 10, new Date().getTime()+1, "G1", "", "(+243)844803514", "MAKULA", "BOFANDO", "ALAIN", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, new Date(), InterfaceEleve.BETA_EXISTANT));
         listeElevesExistants.add(new TEST_Eleve(3, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 10, new Date().getTime()+2, "G1", "", "(+243)844803514", "MUTA", "KANKU", "CHRISTIAN", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, new Date(), InterfaceEleve.BETA_EXISTANT));
         listeElevesExistants.add(new TEST_Eleve(4, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 10, new Date().getTime()+3, "G1", "", "(+243)844803514", "SULA", "OKONDJI", "HERMINE", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_FEMININ, new Date(), InterfaceEleve.BETA_EXISTANT));
@@ -106,7 +107,7 @@ public class TEST_Principal extends javax.swing.JFrame {
         liaison.add(new LiaisonEleveFrais(new Date().getTime(), 1, 0, 3, "$"));
         liaison.add(new LiaisonEleveFrais(new Date().getTime(), 51, 0, 3, "$"));
         
-        listeAyantDroitsExistants.add(new TEST_Ayantdroit(1, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 1, "SULA", liaison, new Date().getTime(), new Date().getTime(), InterfaceAyantDroit.BETA_EXISTANT));
+        listeAyantDroitsExistants.add(new TEST_Ayantdroit(1, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 1, "SULA", liaison, new Date().getTime(), signEle, InterfaceAyantDroit.BETA_EXISTANT));
         
         DonneesInscription donnees = new DonneesInscription(listeElevesExistants, listeAyantDroitsExistants);
         return donnees;
