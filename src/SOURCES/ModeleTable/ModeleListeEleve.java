@@ -8,6 +8,7 @@ package SOURCES.ModeleTable;
 import SOURCES.Callback.EcouteurValeursChangees;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
+import SOURCES.Utilitaires.Util;
 import java.util.Date;
 import java.util.Vector;
 import javax.swing.JOptionPane;
@@ -47,10 +48,7 @@ public class ModeleListeEleve extends AbstractTableModel {
 
     private void search_verifier_motcle(String motcle, int idclasse, InterfaceEleve Ieleve) {
         if (Ieleve != null) {
-            boolean isNeContientPasMotCle = (!(Ieleve.getNom().toLowerCase().contains(motcle.toLowerCase()))
-                    && !(Ieleve.getPostnom().toLowerCase().contains(motcle.toLowerCase()))
-                    && !(Ieleve.getPrenom().toLowerCase().contains(motcle.toLowerCase())));
-
+            boolean isNeContientPasMotCle = (!(Util.contientMotsCles(Ieleve.getNom() + " " + Ieleve.getPostnom() + " " + Ieleve.getPrenom(), motcle)));
             if (isNeContientPasMotCle == true) {
                 search_blacklister(Ieleve);
             }
