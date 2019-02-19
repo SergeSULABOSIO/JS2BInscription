@@ -5,6 +5,8 @@
  */
 package SOURCES.ModeleTable;
 
+import BEAN_BARRE_OUTILS.Bouton;
+import BEAN_MenuContextuel.RubriqueSimple;
 import ICONES.Icones;
 import SOURCES.Callback.EcouteurUpdateClose;
 import SOURCES.Callback.EcouteurValeursChangees;
@@ -13,6 +15,7 @@ import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Interfaces.InterfaceFrais;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
 import SOURCES.Utilitaires.Util;
+import java.awt.Color;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -32,13 +35,17 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     private EcouteurValeursChangees ecouteurModele;
     private ModeleListeEleve modeleListeEleve;
     private EcouteurUpdateClose ecouteurClose;
+    private Bouton btEnreg;
+    private RubriqueSimple mEnreg;
 
-    public ModeleListeAyantDroit(JScrollPane parent, Vector<InterfaceFrais> listeFrais, ModeleListeEleve modeleListeEleve, EcouteurValeursChangees ecouteurModele, EcouteurUpdateClose ecouteurClose) {
+    public ModeleListeAyantDroit(JScrollPane parent, Bouton btEnreg, RubriqueSimple mEnreg, Vector<InterfaceFrais> listeFrais, ModeleListeEleve modeleListeEleve, EcouteurValeursChangees ecouteurModele, EcouteurUpdateClose ecouteurClose) {
         this.parent = parent;
         this.ecouteurModele = ecouteurModele;
         this.listeFrais = listeFrais;
         this.modeleListeEleve = modeleListeEleve;
         this.ecouteurClose = ecouteurClose;
+        this.mEnreg = mEnreg;
+        this.btEnreg = btEnreg;
         //System.out.println(" * ModeleListeFrais");
     }
 
@@ -131,6 +138,8 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     public void AjouterAyantDroit(InterfaceAyantDroit newFrais) {
         this.chargerLiaisons(newFrais);
         this.listeData.add(0, newFrais);
+        mEnreg.setCouleur(Color.blue);
+        btEnreg.setCouleur(Color.blue);
         redessinerTable();
         //lister();
     }
@@ -310,6 +319,8 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         if (!avant.equals(apres)) {
             if (IayantDroit.getBeta() == InterfaceAyantDroit.BETA_EXISTANT) {
                 IayantDroit.setBeta(InterfaceAyantDroit.BETA_MODIFIE);
+                mEnreg.setCouleur(Color.blue);
+                btEnreg.setCouleur(Color.blue);
             }
         }
 

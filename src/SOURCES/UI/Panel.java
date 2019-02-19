@@ -39,6 +39,7 @@ import SOURCES.Utilitaires.ParametreInscription;
 import SOURCES.Utilitaires.SortiesEleveAyantDroit;
 import SOURCES.Utilitaires.XX_Ayantdroit;
 import SOURCES.Utilitaires.XX_Eleve;
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.util.Date;
 import java.util.Vector;
@@ -209,7 +210,7 @@ public class Panel extends javax.swing.JPanel {
     }
 
     private void parametrerTableEleves() {
-        this.modeleListeEleve = new ModeleListeEleve(scrollListeEleves, this.parametreInscription.getListeClasses(), new EcouteurValeursChangees() {
+        this.modeleListeEleve = new ModeleListeEleve(scrollListeEleves, btEnregistrer, mEnregistrer, this.parametreInscription.getListeClasses(), new EcouteurValeursChangees() {
             @Override
             public void onValeurChangee() {
                 if (modeleListeAyantDroit != null) {
@@ -271,7 +272,7 @@ public class Panel extends javax.swing.JPanel {
     }
 
     private void parametrerTableAyantDroit() {
-        this.modeleListeAyantDroit = new ModeleListeAyantDroit(scrollListeAyantDroit, this.parametreInscription.getListeFraises(), this.modeleListeEleve, new EcouteurValeursChangees() {
+        this.modeleListeAyantDroit = new ModeleListeAyantDroit(scrollListeAyantDroit, btEnregistrer, mEnregistrer, this.parametreInscription.getListeFraises(), this.modeleListeEleve, new EcouteurValeursChangees() {
             @Override
             public void onValeurChangee() {
 
@@ -335,6 +336,7 @@ public class Panel extends javax.swing.JPanel {
                 enregistrer();
             }
         });
+        btEnregistrer.setGras(true);
 
         btVider = new Bouton(12, "Vider", icones.getAnnuler_02(), new BoutonListener() {
             @Override
@@ -516,56 +518,56 @@ public class Panel extends javax.swing.JPanel {
     }
 
     private void setMenuContextuel() {
-        mAjouter = new RubriqueSimple("Ajouter", icones.getAjouter_01(), new RubriqueListener() {
+        mAjouter = new RubriqueSimple("Ajouter", 12, false, icones.getAjouter_01(), new RubriqueListener() {
             @Override
             public void OnEcouterLaSelection() {
                 ajouter();
             }
         });
 
-        mSupprimer = new RubriqueSimple("Supprimer", icones.getSupprimer_01(), new RubriqueListener() {
+        mSupprimer = new RubriqueSimple("Supprimer", 12, false, icones.getSupprimer_01(), new RubriqueListener() {
             @Override
             public void OnEcouterLaSelection() {
                 supprimer();
             }
         });
 
-        mEnregistrer = new RubriqueSimple("Enregistrer", icones.getEnregistrer_01(), new RubriqueListener() {
+        mEnregistrer = new RubriqueSimple("Enregistrer", 12, true, icones.getEnregistrer_01(), new RubriqueListener() {
             @Override
             public void OnEcouterLaSelection() {
                 enregistrer();
             }
         });
 
-        mVider = new RubriqueSimple("Vider", icones.getAnnuler_01(), new RubriqueListener() {
+        mVider = new RubriqueSimple("Vider", 12, false, icones.getAnnuler_01(), new RubriqueListener() {
             @Override
             public void OnEcouterLaSelection() {
                 vider();
             }
         });
 
-        mImprimer = new RubriqueSimple("Imprimer", icones.getImprimer_01(), new RubriqueListener() {
+        mImprimer = new RubriqueSimple("Imprimer", 12, false, icones.getImprimer_01(), new RubriqueListener() {
             @Override
             public void OnEcouterLaSelection() {
                 imprimer();
             }
         });
 
-        mFermer = new RubriqueSimple("Fermer", icones.getFermer_01(), new RubriqueListener() {
+        mFermer = new RubriqueSimple("Fermer", 12, false, icones.getFermer_01(), new RubriqueListener() {
             @Override
             public void OnEcouterLaSelection() {
                 fermer();
             }
         });
 
-        mPDF = new RubriqueSimple("Export. PDF", icones.getPDF_01(), new RubriqueListener() {
+        mPDF = new RubriqueSimple("Export. PDF", 12, false, icones.getPDF_01(), new RubriqueListener() {
             @Override
             public void OnEcouterLaSelection() {
                 exporterPDF();
             }
         });
 
-        mActualiser = new RubriqueSimple("Actualiser", icones.getSynchroniser_01(), new RubriqueListener() {
+        mActualiser = new RubriqueSimple("Actualiser", 12, false, icones.getSynchroniser_01(), new RubriqueListener() {
             @Override
             public void OnEcouterLaSelection() {
                 actualiser();
@@ -692,6 +694,9 @@ public class Panel extends javax.swing.JPanel {
 
     public void enregistrer() {
         if (this.ecouteurEleveAyantDroit != null) {
+            btEnregistrer.setCouleur(Color.black);
+            mEnregistrer.setCouleur(Color.BLACK);
+            
             SortiesEleveAyantDroit sortie = getSortieEleveAyantDroit(btEnregistrer, mEnregistrer);
             this.ecouteurEleveAyantDroit.onEnregistre(sortie);
         }

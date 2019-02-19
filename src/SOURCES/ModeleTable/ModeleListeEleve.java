@@ -5,10 +5,13 @@
  */
 package SOURCES.ModeleTable;
 
+import BEAN_BARRE_OUTILS.Bouton;
+import BEAN_MenuContextuel.RubriqueSimple;
 import SOURCES.Callback.EcouteurValeursChangees;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Utilitaires.Util;
+import java.awt.Color;
 import java.util.Date;
 import java.util.Vector;
 import javax.swing.JOptionPane;
@@ -27,11 +30,15 @@ public class ModeleListeEleve extends AbstractTableModel {
     private EcouteurValeursChangees ecouteurModele;
     private Vector<InterfaceClasse> listeClasses = new Vector<>();
     private Vector<InterfaceEleve> listeDataExclus = new Vector<>();
+    private Bouton btEnreg;
+    private RubriqueSimple mEnreg;
 
-    public ModeleListeEleve(JScrollPane parent, Vector<InterfaceClasse> listeClasses, EcouteurValeursChangees ecouteurModele) {
+    public ModeleListeEleve(JScrollPane parent, Bouton btEnreg, RubriqueSimple mEnreg, Vector<InterfaceClasse> listeClasses, EcouteurValeursChangees ecouteurModele) {
         this.parent = parent;
         this.ecouteurModele = ecouteurModele;
         this.listeClasses = listeClasses;
+        this.mEnreg = mEnreg;
+        this.btEnreg = btEnreg;
     }
 
     public void chercher(String motcle, int idclasse, int sexe, int status) {
@@ -157,6 +164,8 @@ public class ModeleListeEleve extends AbstractTableModel {
     public void AjouterEleve(InterfaceEleve newEleve) {
         this.listeData.add(0, newEleve);
         ecouteurModele.onValeurChangee();
+        mEnreg.setCouleur(Color.blue);
+        btEnreg.setCouleur(Color.blue);
         redessinerTable();
     }
 
@@ -284,8 +293,6 @@ public class ModeleListeEleve extends AbstractTableModel {
         }
         redessinerTable();
     }
-    
-    
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
@@ -322,9 +329,11 @@ public class ModeleListeEleve extends AbstractTableModel {
                 break;
         }
         String apres = Ieleve.toString();
-        if(!avant.equals(apres)){
-            if(Ieleve.getBeta() == InterfaceEleve.BETA_EXISTANT){
+        if (!avant.equals(apres)) {
+            if (Ieleve.getBeta() == InterfaceEleve.BETA_EXISTANT) {
                 Ieleve.setBeta(InterfaceEleve.BETA_MODIFIE);
+                mEnreg.setCouleur(Color.blue);
+                btEnreg.setCouleur(Color.blue);
             }
         }
         listeData.set(rowIndex, Ieleve);
