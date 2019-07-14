@@ -17,14 +17,14 @@ import java.util.Vector;
  * @author user
  */
 
-public class SortiesEleveAyantDroit {
+public class SortiesInscription {
     private EcouteurEnregistrement ecouteurEnregistrement;
     private Vector<InterfaceEleve> listeEleves;
     private Vector<InterfaceAyantDroit> listeAyantDroit;
     private Vector<InterfaceClasse> listeClasses;
     private Vector<InterfaceFrais> listeFrais;
 
-    public SortiesEleveAyantDroit(Vector<InterfaceFrais> listeFrais, Vector<InterfaceClasse> listeClasses, Vector<InterfaceEleve> listeEleves, Vector<InterfaceAyantDroit> listeAyantDroit, EcouteurEnregistrement ecouteurEnregistrement) {
+    public SortiesInscription(Vector<InterfaceFrais> listeFrais, Vector<InterfaceClasse> listeClasses, Vector<InterfaceEleve> listeEleves, Vector<InterfaceAyantDroit> listeAyantDroit, EcouteurEnregistrement ecouteurEnregistrement) {
         this.ecouteurEnregistrement = ecouteurEnregistrement;
         this.listeEleves = listeEleves;
         this.listeAyantDroit = listeAyantDroit;

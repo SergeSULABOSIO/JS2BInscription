@@ -5,18 +5,20 @@
  */
 package TESTS_EXEMPLES;
 
-import SOURCES.Callback.EcouteurEleveAyantDroit;
+import SOURCES.Callback.EcouteurInscription;
 import SOURCES.Interfaces.InterfaceAyantDroit;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Interfaces.InterfaceFrais;
 import SOURCES.UI.Panel;
+import SOURCES.Utilitaires.CouleurBasique;
 import SOURCES.Utilitaires.DonneesInscription;
 import SOURCES.Utilitaires.LiaisonClasseFrais;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
 import SOURCES.Utilitaires.ParametreInscription;
-import SOURCES.Utilitaires.SortiesEleveAyantDroit;
-import SOURCES.Utilitaires.Util;
+import SOURCES.Utilitaires.SortiesInscription;
+import SOURCES.Utilitaires.UtilInscription;
+import java.awt.Color;
 import static java.lang.Thread.sleep;
 import java.util.Date;
 import java.util.Vector;
@@ -38,7 +40,7 @@ public class TEST_Principal extends javax.swing.JFrame {
     public int idUtilisateur = 1;
     public int idEntreprise = 1;
     public int idExercice = 1;
-    public TEST_Entreprise entreprise = new TEST_Entreprise(1, "ECOLE CARESIENNE DE KINSHASA", "7e Rue Limeté Industrielle, Kinshasa/RDC", "+243844803514", "infos@cartesien.org", "wwww.cartesien.org", "Equity Bank Congo SA", "Cartesien de Kinshasa", "00122114557892554", "IBN0012455", "CDKIN0012", "logo.png", "RCCM/KD/CD/4513", "IDN00111454", "IMP00124100");
+    public TEST_Entreprise entreprise = new TEST_Entreprise(1, "ECOLE CARESIENNE DE KINSHASA", "7e Rue Limeté Industrielle, Kinshasa/RDC", "+243844803514", "infos@cartesien.org", "wwww.cartesien.org", "logo.png", "RCCM/KD/CD/4513", "IDN00111454", "IMP00124100", "Equity Bank Congo SA", "AIB RDC Sarl", "000000121212400", "IBANNN0012", "SWIFTCDK");
     public TEST_AnneeScolaire anneescolaire = null;
     
     public TEST_Principal() {
@@ -85,7 +87,7 @@ public class TEST_Principal extends javax.swing.JFrame {
         this.listeFraises.add(Frais_Minervale);
         this.listeFraises.add(Frais_TravailManul);
         
-        anneescolaire = new TEST_AnneeScolaire(12, entreprise.getId(), idUtilisateur, "Année scolaire 2019-2020", new Date(), Util.getDate_AjouterAnnee(new Date(), 1));
+        anneescolaire = new TEST_AnneeScolaire(12, entreprise.getId(), idUtilisateur, "Année scolaire 2019-2020", new Date(), UtilInscription.getDate_AjouterAnnee(new Date(), 1));
         
         ParametreInscription parametres = new ParametreInscription(listeClasses, listeFraises, entreprise, anneescolaire, idUtilisateur, "Serge SULA BOSIO");
         return parametres;
@@ -117,11 +119,29 @@ public class TEST_Principal extends javax.swing.JFrame {
         ParametreInscription parametre = getParametres();
         DonneesInscription donnees = getDonnees();
         
+        CouleurBasique couleurs = new CouleurBasique();
+        couleurs.setCouleur_background_normal(Color.white);
+        couleurs.setCouleur_background_selection(UtilInscription.COULEUR_BLEU);
+        couleurs.setCouleur_encadrement_selection(UtilInscription.COULEUR_ORANGE);
+        couleurs.setCouleur_foreground_objet_existant(UtilInscription.COULEUR_BLEU);
+        couleurs.setCouleur_foreground_objet_modifie(UtilInscription.COULEUR_BLEU_CLAIRE_1);
+        couleurs.setCouleur_foreground_objet_nouveau(UtilInscription.COULEUR_ROUGE);
         
-        
-        this.gestionnaireExercice = new Panel(this.tabPrincipale, donnees, parametre, new EcouteurEleveAyantDroit() {
+        this.gestionnaireExercice = new Panel(couleurs, this.tabPrincipale, donnees, parametre, new EcouteurInscription() {
             @Override
-            public void onEnregistre(SortiesEleveAyantDroit sortiesEleveAyantDroit) {
+            public void onDetruitExercice(int idExercice) {
+                System.out.println("RAS=" + idExercice);
+            }
+
+            @Override
+            public void onDetruitElements(int idElement, int index) {
+                System.out.println("Element supprimé = " + idElement + ", indice = " + index);
+            }
+            
+            
+            
+            @Override
+            public void onEnregistre(SortiesInscription sortiesEleveAyantDroit) {
                 
                 
                 Thread th = new Thread() {

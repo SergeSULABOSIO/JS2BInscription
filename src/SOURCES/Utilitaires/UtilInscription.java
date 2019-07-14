@@ -5,6 +5,7 @@
  */
 package SOURCES.Utilitaires;
 
+import java.awt.Color;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -14,7 +15,12 @@ import java.util.Date;
  *
  * @author user
  */
-public class Util {
+public class UtilInscription {
+    public static Color COULEUR_BLEU = new Color(26, 45, 77);       //Pour plus d'infos visiter le lien https://www.colorhexa.com/1a2e4d
+    public static Color COULEUR_BLEU_CLAIRE_1 = new Color(68,117,192);    //Une variante claire
+    public static Color COULEUR_BLEU_CLAIRE_2 = new Color(141,171,217);    //Une variante claire
+    public static Color COULEUR_ORANGE = new Color(251, 155, 12);   //Pour plus d'information, visiter le lien https://www.colorhexa.com/fb9b0c
+    public static Color COULEUR_ROUGE = new Color(251,36,12);       //Une variante  
 
     public static double round(double value, int places) {
         if (places < 0) {
@@ -49,7 +55,7 @@ public class Util {
     public static double getNombre_jours(Date dateFin, Date dateDebut) {
         try {
             double nb = (int) ((dateFin.getTime() - dateDebut.getTime()) / (1000 * 60 * 60 * 24));
-            nb = Util.round(nb, 0);
+            nb = UtilInscription.round(nb, 0);
             return nb;
         } catch (Exception e) {
             e.printStackTrace();
@@ -71,7 +77,7 @@ public class Util {
     public static double getNombre_jours_from_today(Date dateFin) {
         try {
             double nb = (double) ((dateFin.getTime() - (new Date()).getTime()) / (1000 * 60 * 60 * 24));
-            nb = Util.round(nb, 0);
+            nb = UtilInscription.round(nb, 0);
             return nb;
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,7 +121,7 @@ public class Util {
 
     public static void main(String[] args) {
         double origine = 10000.14;
-        String res = Util.getMontantFrancais(origine);
+        String res = UtilInscription.getMontantFrancais(origine);
         System.out.println("Résultat = " + res);
     }
 }

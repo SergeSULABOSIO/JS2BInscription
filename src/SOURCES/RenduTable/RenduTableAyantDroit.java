@@ -10,7 +10,7 @@ import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.ModeleTable.ModeleListeAyantDroit;
 import SOURCES.ModeleTable.ModeleListeEleve;
 import SOURCES.UI.CelluleSimpleTableau;
-import SOURCES.Utilitaires.Util;
+import SOURCES.Utilitaires.UtilInscription;
 import java.awt.Component;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
@@ -55,7 +55,7 @@ public class RenduTableAyantDroit implements TableCellRenderer {
                 break;
             default:
                 double mont = Double.parseDouble(value+"");
-                cellule = new CelluleSimpleTableau(" " + Util.getMontantFrancais(mont) + " ", CelluleSimpleTableau.ALIGNE_DROITE, iconeEdition);
+                cellule = new CelluleSimpleTableau(" " + UtilInscription.getMontantFrancais(mont) + " ", CelluleSimpleTableau.ALIGNE_DROITE, iconeEdition);
                 break;
         }
         cellule.ecouterSelection(isSelected, row, getBeta(row), hasFocus);

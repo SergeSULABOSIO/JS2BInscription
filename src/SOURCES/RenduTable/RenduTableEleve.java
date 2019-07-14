@@ -9,7 +9,7 @@ import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.ModeleTable.ModeleListeEleve;
 import SOURCES.UI.CelluleSimpleTableau;
-import SOURCES.Utilitaires.Util;
+import SOURCES.Utilitaires.UtilInscription;
 import java.awt.Component;
 import java.util.Date;
 import java.util.Vector;
@@ -82,7 +82,7 @@ public class RenduTableEleve implements TableCellRenderer {
                 cellule = new CelluleSimpleTableau(" " + getClasse(Integer.parseInt(value + "")) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 6: //Date de naissance
-                cellule = new CelluleSimpleTableau(" " + Util.getDateFrancais((Date) value) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleSimpleTableau(" " + UtilInscription.getDateFrancais((Date) value) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 7: //Status
                 cellule = new CelluleSimpleTableau(" " + getStatus(value) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);

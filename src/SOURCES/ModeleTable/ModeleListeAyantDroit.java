@@ -8,14 +8,15 @@ package SOURCES.ModeleTable;
 import BEAN_BARRE_OUTILS.Bouton;
 import BEAN_MenuContextuel.RubriqueSimple;
 import ICONES.Icones;
+import SOURCES.Callback.EcouteurSuppressionElement;
 import SOURCES.Callback.EcouteurUpdateClose;
 import SOURCES.Callback.EcouteurValeursChangees;
 import SOURCES.Interfaces.InterfaceAyantDroit;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Interfaces.InterfaceFrais;
+import SOURCES.Utilitaires.CouleurBasique;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
-import SOURCES.Utilitaires.Util;
-import java.awt.Color;
+import SOURCES.Utilitaires.UtilInscription;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -37,9 +38,11 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     private EcouteurUpdateClose ecouteurClose;
     private Bouton btEnreg;
     private RubriqueSimple mEnreg;
+    private CouleurBasique colBasique;
 
-    public ModeleListeAyantDroit(JScrollPane parent, Bouton btEnreg, RubriqueSimple mEnreg, Vector<InterfaceFrais> listeFrais, ModeleListeEleve modeleListeEleve, EcouteurValeursChangees ecouteurModele, EcouteurUpdateClose ecouteurClose) {
+    public ModeleListeAyantDroit(CouleurBasique colBasique, JScrollPane parent, Bouton btEnreg, RubriqueSimple mEnreg, Vector<InterfaceFrais> listeFrais, ModeleListeEleve modeleListeEleve, EcouteurValeursChangees ecouteurModele, EcouteurUpdateClose ecouteurClose) {
         this.parent = parent;
+        this.colBasique = colBasique;
         this.ecouteurModele = ecouteurModele;
         this.listeFrais = listeFrais;
         this.modeleListeEleve = modeleListeEleve;
@@ -138,8 +141,8 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     public void AjouterAyantDroit(InterfaceAyantDroit newFrais) {
         this.chargerLiaisons(newFrais);
         this.listeData.add(0, newFrais);
-        mEnreg.setCouleur(Color.blue);
-        btEnreg.setCouleur(Color.blue);
+        mEnreg.setCouleur(colBasique.getCouleur_foreground_objet_nouveau());                                        //mEnreg.setCouleur(Color.blue);
+        btEnreg.setForeground(colBasique.getCouleur_foreground_objet_nouveau());                                   //btEnreg.setForeground(Color.blue);
         redessinerTable();
         //lister();
     }
@@ -153,14 +156,16 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         });
     }
 
-    public void SupprimerAyantDroit(int row) {
+    public void SupprimerAyantDroit(int row, EcouteurSuppressionElement ecouteurSuppressionElement) {
         if (row < listeData.size() && row != -1) {
             InterfaceAyantDroit articl = listeData.elementAt(row);
             if (articl != null) {
+                int idASupp = articl.getId();
                 int dialogResult = JOptionPane.showConfirmDialog(parent, "Etes-vous sûr de vouloir supprimer cette liste?", "Avertissement", JOptionPane.YES_NO_OPTION);
                 if (dialogResult == JOptionPane.YES_OPTION) {
                     if (row <= listeData.size()) {
                         this.listeData.removeElementAt(row);
+                        ecouteurSuppressionElement.onSuppressionConfirmee(idASupp);
                     }
                     redessinerTable();
                 }
@@ -199,7 +204,7 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         if (this.listeFrais != null) {
             for (InterfaceFrais Ifrais : this.listeFrais) {
                 String titre = Ifrais.getNom();
-                String SmontantDefaut = Util.getMontantFrancais(Ifrais.getMontant_default());
+                String SmontantDefaut = UtilInscription.getMontantFrancais(Ifrais.getMontant_default());
                 String monnaie = Ifrais.getMonnaie();
                 if (10 < titre.trim().length()) {
                     titresCols.add(titre.substring(0, 7) + "...(" + SmontantDefaut + " " + monnaie + ")"); //j'ai l'itention de limité la taille de titre de la colonne
@@ -319,8 +324,8 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         if (!avant.equals(apres)) {
             if (IayantDroit.getBeta() == InterfaceAyantDroit.BETA_EXISTANT) {
                 IayantDroit.setBeta(InterfaceAyantDroit.BETA_MODIFIE);
-                mEnreg.setCouleur(Color.blue);
-                btEnreg.setCouleur(Color.blue);
+                mEnreg.setCouleur(colBasique.getCouleur_foreground_objet_nouveau());                                        //mEnreg.setCouleur(Color.blue);
+                btEnreg.setForeground(colBasique.getCouleur_foreground_objet_nouveau());                                   //btEnreg.setForeground(Color.blue);
             }
         }
 

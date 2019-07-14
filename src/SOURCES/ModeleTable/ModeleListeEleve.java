@@ -7,10 +7,12 @@ package SOURCES.ModeleTable;
 
 import BEAN_BARRE_OUTILS.Bouton;
 import BEAN_MenuContextuel.RubriqueSimple;
+import SOURCES.Callback.EcouteurSuppressionElement;
 import SOURCES.Callback.EcouteurValeursChangees;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
-import SOURCES.Utilitaires.Util;
+import SOURCES.Utilitaires.CouleurBasique;
+import SOURCES.Utilitaires.UtilInscription;
 import java.awt.Color;
 import java.util.Date;
 import java.util.Vector;
@@ -32,9 +34,11 @@ public class ModeleListeEleve extends AbstractTableModel {
     private Vector<InterfaceEleve> listeDataExclus = new Vector<>();
     private Bouton btEnreg;
     private RubriqueSimple mEnreg;
+    private CouleurBasique couleurBasique;
 
-    public ModeleListeEleve(JScrollPane parent, Bouton btEnreg, RubriqueSimple mEnreg, Vector<InterfaceClasse> listeClasses, EcouteurValeursChangees ecouteurModele) {
+    public ModeleListeEleve(CouleurBasique couleurBasique, JScrollPane parent, Bouton btEnreg, RubriqueSimple mEnreg, Vector<InterfaceClasse> listeClasses, EcouteurValeursChangees ecouteurModele) {
         this.parent = parent;
+        this.couleurBasique = couleurBasique;
         this.ecouteurModele = ecouteurModele;
         this.listeClasses = listeClasses;
         this.mEnreg = mEnreg;
@@ -55,7 +59,7 @@ public class ModeleListeEleve extends AbstractTableModel {
 
     private void search_verifier_motcle(String motcle, int idclasse, InterfaceEleve Ieleve) {
         if (Ieleve != null) {
-            boolean isNeContientPasMotCle = (!(Util.contientMotsCles(Ieleve.getNom() + " " + Ieleve.getPostnom() + " " + Ieleve.getPrenom(), motcle)));
+            boolean isNeContientPasMotCle = (!(UtilInscription.contientMotsCles(Ieleve.getNom() + " " + Ieleve.getPostnom() + " " + Ieleve.getPrenom(), motcle)));
             if (isNeContientPasMotCle == true) {
                 search_blacklister(Ieleve);
             }
@@ -164,19 +168,21 @@ public class ModeleListeEleve extends AbstractTableModel {
     public void AjouterEleve(InterfaceEleve newEleve) {
         this.listeData.add(0, newEleve);
         ecouteurModele.onValeurChangee();
-        mEnreg.setCouleur(Color.blue);
-        btEnreg.setCouleur(Color.blue);
+        mEnreg.setCouleur(couleurBasique.getCouleur_foreground_objet_nouveau());                                        //mEnreg.setCouleur(Color.blue);
+        btEnreg.setForeground(couleurBasique.getCouleur_foreground_objet_nouveau());                                   //btEnreg.setForeground(Color.blue);
         redessinerTable();
     }
 
-    public void SupprimerEleve(int row) {
+    public void SupprimerEleve(int row, EcouteurSuppressionElement ecouteurSuppressionElement) {
         if (row < listeData.size() && row != -1) {
             InterfaceEleve articl = listeData.elementAt(row);
             if (articl != null) {
+                int idASupp = articl.getId();
                 int dialogResult = JOptionPane.showConfirmDialog(parent, "Etes-vous sûr de vouloir supprimer cette liste?", "Avertissement", JOptionPane.YES_NO_OPTION);
                 if (dialogResult == JOptionPane.YES_OPTION) {
                     if (row <= listeData.size()) {
                         this.listeData.removeElementAt(row);
+                        ecouteurSuppressionElement.onSuppressionConfirmee(idASupp);
                     }
                     redessinerTable();
                 }
@@ -332,8 +338,8 @@ public class ModeleListeEleve extends AbstractTableModel {
         if (!avant.equals(apres)) {
             if (Ieleve.getBeta() == InterfaceEleve.BETA_EXISTANT) {
                 Ieleve.setBeta(InterfaceEleve.BETA_MODIFIE);
-                mEnreg.setCouleur(Color.blue);
-                btEnreg.setCouleur(Color.blue);
+                mEnreg.setCouleur(couleurBasique.getCouleur_foreground_objet_nouveau());                                        //mEnreg.setCouleur(Color.blue);
+                btEnreg.setForeground(couleurBasique.getCouleur_foreground_objet_nouveau());                                   //btEnreg.setForeground(Color.blue);
             }
         }
         listeData.set(rowIndex, Ieleve);

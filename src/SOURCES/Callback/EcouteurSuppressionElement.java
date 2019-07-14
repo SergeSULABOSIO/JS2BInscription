@@ -5,15 +5,11 @@
  */
 package SOURCES.Callback;
 
-import SOURCES.Utilitaires.SortiesEleveAyantDroit;
-
 /**
  *
  * @author HP Pavilion
  */
+public abstract class EcouteurSuppressionElement {
 
-
-public abstract class EcouteurEleveAyantDroit {
-    public abstract void onEnregistre(SortiesEleveAyantDroit sortiesEleveAyantDroit);
-    
+    public abstract void onSuppressionConfirmee(int idElement);
 }

@@ -13,8 +13,10 @@ import BEAN_MenuContextuel.RubriqueListener;
 import BEAN_MenuContextuel.RubriqueSimple;
 import ICONES.Icones;
 import SOURCES.Callback.EcouteurAjout;
-import SOURCES.Callback.EcouteurEleveAyantDroit;
+import SOURCES.Callback.EcouteurInscription;
 import SOURCES.Callback.EcouteurEnregistrement;
+import SOURCES.Callback.EcouteurInscription;
+import SOURCES.Callback.EcouteurSuppressionElement;
 import SOURCES.Callback.EcouteurUpdateClose;
 import SOURCES.Callback.EcouteurValeursChangees;
 import SOURCES.EditeurTable.EditeurClasse;
@@ -33,10 +35,11 @@ import SOURCES.RenduTable.RenduTableAyantDroit;
 import SOURCES.RenduTable.RenduTableEleve;
 import SOURCES.MoteurRecherche.MoteurRecherche;
 import SOURCES.RenduComboBox.RenduCombo;
+import SOURCES.Utilitaires.CouleurBasique;
 import SOURCES.Utilitaires.DonneesInscription;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
 import SOURCES.Utilitaires.ParametreInscription;
-import SOURCES.Utilitaires.SortiesEleveAyantDroit;
+import SOURCES.Utilitaires.SortiesInscription;
 import SOURCES.Utilitaires.XX_Ayantdroit;
 import SOURCES.Utilitaires.XX_Eleve;
 import java.awt.Color;
@@ -68,7 +71,7 @@ public class Panel extends javax.swing.JPanel {
     private RubriqueSimple mEnregistrer, mAjouter, mSupprimer, mVider, mImprimer, mPDF, mFermer, mActualiser;
     private MenuContextuel menuContextuel = null;
     private BarreOutils bOutils = null;
-    private EcouteurEleveAyantDroit ecouteurEleveAyantDroit = null;
+    private EcouteurInscription ecouteurInscription = null;
 
     private ModeleListeEleve modeleListeEleve;
     private ModeleListeAyantDroit modeleListeAyantDroit;
@@ -77,14 +80,16 @@ public class Panel extends javax.swing.JPanel {
 
     public DonneesInscription donneesInscription;
     public ParametreInscription parametreInscription;
+    private CouleurBasique couleurBasique;
 
-    public Panel(JTabbedPane parent, DonneesInscription donneesInscription, ParametreInscription parametreInscription, EcouteurEleveAyantDroit ecouteurEleveAyantDroit) {
+    public Panel(CouleurBasique couleurBasique, JTabbedPane parent, DonneesInscription donneesInscription, ParametreInscription parametreInscription, EcouteurInscription ecouteurInscription) {
         this.initComponents();
         this.parent = parent;
+        this.couleurBasique = couleurBasique;
         this.init();
         this.donneesInscription = donneesInscription;
         this.parametreInscription = parametreInscription;
-        this.ecouteurEleveAyantDroit = ecouteurEleveAyantDroit;
+        this.ecouteurInscription = ecouteurInscription;
 
         //Initialisaterus
         this.parametrerTableEleves();
@@ -210,7 +215,7 @@ public class Panel extends javax.swing.JPanel {
     }
 
     private void parametrerTableEleves() {
-        this.modeleListeEleve = new ModeleListeEleve(scrollListeEleves, btEnregistrer, mEnregistrer, this.parametreInscription.getListeClasses(), new EcouteurValeursChangees() {
+        this.modeleListeEleve = new ModeleListeEleve(couleurBasique, scrollListeEleves, btEnregistrer, mEnregistrer, this.parametreInscription.getListeClasses(), new EcouteurValeursChangees() {
             @Override
             public void onValeurChangee() {
                 if (modeleListeAyantDroit != null) {
@@ -272,7 +277,7 @@ public class Panel extends javax.swing.JPanel {
     }
 
     private void parametrerTableAyantDroit() {
-        this.modeleListeAyantDroit = new ModeleListeAyantDroit(scrollListeAyantDroit, btEnregistrer, mEnregistrer, this.parametreInscription.getListeFraises(), this.modeleListeEleve, new EcouteurValeursChangees() {
+        this.modeleListeAyantDroit = new ModeleListeAyantDroit(couleurBasique, scrollListeAyantDroit, btEnregistrer, mEnregistrer, this.parametreInscription.getListeFraises(), this.modeleListeEleve, new EcouteurValeursChangees() {
             @Override
             public void onValeurChangee() {
 
@@ -316,21 +321,21 @@ public class Panel extends javax.swing.JPanel {
     }
 
     private void setBoutons() {
-        btAjouter = new Bouton(12, "Ajouter", icones.getAjouter_02(), new BoutonListener() {
+        btAjouter = new Bouton(12, "Ajouter", "Ajouter", false, icones.getAjouter_02(), new BoutonListener() {
             @Override
             public void OnEcouteLeClick() {
                 ajouter();
             }
         });
 
-        btSupprimer = new Bouton(12, "Supprimer", icones.getSupprimer_02(), new BoutonListener() {
+        btSupprimer = new Bouton(12, "Supprimer", "Supprimer", false, icones.getSupprimer_02(), new BoutonListener() {
             @Override
             public void OnEcouteLeClick() {
                 supprimer();
             }
         });
 
-        btEnregistrer = new Bouton(12, "Enregistrer", icones.getEnregistrer_02(), new BoutonListener() {
+        btEnregistrer = new Bouton(12, "Enregistrer", "Enregistrer", false, icones.getEnregistrer_02(), new BoutonListener() {
             @Override
             public void OnEcouteLeClick() {
                 enregistrer();
@@ -338,35 +343,35 @@ public class Panel extends javax.swing.JPanel {
         });
         btEnregistrer.setGras(true);
 
-        btVider = new Bouton(12, "Vider", icones.getAnnuler_02(), new BoutonListener() {
+        btVider = new Bouton(12, "Vider", "Vider le contenu de cette liste", false, icones.getAnnuler_02(), new BoutonListener() {
             @Override
             public void OnEcouteLeClick() {
                 vider();
             }
         });
 
-        btImprimer = new Bouton(12, "Imprimer", icones.getImprimer_02(), new BoutonListener() {
+        btImprimer = new Bouton(12, "Imprimer", "Imprimer le contenu de cette liste", false, icones.getImprimer_02(), new BoutonListener() {
             @Override
             public void OnEcouteLeClick() {
                 imprimer();
             }
         });
 
-        btFermer = new Bouton(12, "Fermer", icones.getFermer_02(), new BoutonListener() {
+        btFermer = new Bouton(12, "Fermer", "Fermer cette fenêtre", false, icones.getFermer_02(), new BoutonListener() {
             @Override
             public void OnEcouteLeClick() {
                 fermer();
             }
         });
 
-        btPDF = new Bouton(12, "Exp. en PDF", icones.getPDF_02(), new BoutonListener() {
+        btPDF = new Bouton(12, "Exp. en PDF", "Produire un contenu PDF imprimable", false, icones.getPDF_02(), new BoutonListener() {
             @Override
             public void OnEcouteLeClick() {
                 exporterPDF();
             }
         });
 
-        btActualiser = new Bouton(12, "Actualiser", icones.getSynchroniser_02(), new BoutonListener() {
+        btActualiser = new Bouton(12, "Actualiser", "Actualiser cette liste", false, icones.getSynchroniser_02(), new BoutonListener() {
             @Override
             public void OnEcouteLeClick() {
                 actualiser();
@@ -489,10 +494,20 @@ public class Panel extends javax.swing.JPanel {
     public void supprimer() {
         switch (indexTabSelected) {
             case 0: //Tab eleve
-                modeleListeEleve.SupprimerEleve(tableListeEleves.getSelectedRow());
+                modeleListeEleve.SupprimerEleve(tableListeEleves.getSelectedRow(), new EcouteurSuppressionElement() {
+                    @Override
+                    public void onSuppressionConfirmee(int idElement) {
+                        ecouteurInscription.onDetruitElements(idElement, indexTabSelected);
+                    }
+                });
                 break;
             case 1: //Tab ayantdroit
-                modeleListeAyantDroit.SupprimerAyantDroit(tableListeAyantDroit.getSelectedRow());
+                modeleListeAyantDroit.SupprimerAyantDroit(tableListeAyantDroit.getSelectedRow(), new EcouteurSuppressionElement() {
+                    @Override
+                    public void onSuppressionConfirmee(int idElement) {
+                        ecouteurInscription.onDetruitElements(idElement, indexTabSelected);
+                    }
+                });
                 break;
         }
     }
@@ -611,12 +626,12 @@ public class Panel extends javax.swing.JPanel {
         if (mustBeSaved() == true) {
             int dialogResult = JOptionPane.showConfirmDialog(this, "Voulez-vous enregistrer les modifications et/ou ajouts apportés à ces données?", "Avertissement", JOptionPane.YES_NO_CANCEL_OPTION);
             if (dialogResult == JOptionPane.YES_OPTION) {
-                this.ecouteurEleveAyantDroit.onEnregistre(getSortieEleveAyantDroit(btEnregistrer, mEnregistrer));
+                this.ecouteurInscription.onEnregistre(getSortieInscription(btEnregistrer, mEnregistrer));
                 this.ecouteurClose.onFermer();
-            }else if(dialogResult == JOptionPane.NO_OPTION){
+            } else if (dialogResult == JOptionPane.NO_OPTION) {
                 this.ecouteurClose.onFermer();
             }
-        }else{
+        } else {
             int dialogResult = JOptionPane.showConfirmDialog(this, "Etes-vous sûr de vouloir fermer cette fenêtre?", "Avertissement", JOptionPane.YES_NO_OPTION);
             if (dialogResult == JOptionPane.YES_OPTION) {
                 this.ecouteurClose.onFermer();
@@ -628,7 +643,7 @@ public class Panel extends javax.swing.JPanel {
         int dialogResult = JOptionPane.showConfirmDialog(this, "Etes-vous sûr de vouloir imprimer ce document?", "Avertissement", JOptionPane.YES_NO_OPTION);
         if (dialogResult == JOptionPane.YES_OPTION) {
             try {
-                SortiesEleveAyantDroit sortie = getSortieEleveAyantDroit(btImprimer, mImprimer);
+                SortiesInscription sortie = getSortieInscription(btImprimer, mImprimer);
                 DocumentPDF documentPDF = new DocumentPDF(this, DocumentPDF.ACTION_IMPRIMER, sortie);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -637,11 +652,11 @@ public class Panel extends javax.swing.JPanel {
     }
 
     public String getNomfichierPreuve() {
-        return "FicheElevesS2B.pdf";
+        return "Output.pdf";
     }
 
-    private SortiesEleveAyantDroit getSortieEleveAyantDroit(Bouton boutonDeclencheur, RubriqueSimple rubriqueDeclencheur) {
-        SortiesEleveAyantDroit sortieEA = new SortiesEleveAyantDroit(
+    private SortiesInscription getSortieInscription(Bouton boutonDeclencheur, RubriqueSimple rubriqueDeclencheur) {
+        SortiesInscription sortieEA = new SortiesInscription(
                 this.parametreInscription.getListeFraises(),
                 this.parametreInscription.getListeClasses(),
                 this.modeleListeEleve.getListeData(),
@@ -656,12 +671,12 @@ public class Panel extends javax.swing.JPanel {
                 if (rubriqueDeclencheur != null) {
                     rubriqueDeclencheur.appliquerDroitAccessDynamique(true);
                 }
-                
+
                 //On redessine les tableau afin que les couleurs se réinitialisent / Tout redevient noire
-                if(modeleListeEleve != null){
+                if (modeleListeEleve != null) {
                     modeleListeEleve.redessinerTable();
                 }
-                if(modeleListeAyantDroit != null){
+                if (modeleListeAyantDroit != null) {
                     modeleListeAyantDroit.redessinerTable();
                 }
             }
@@ -693,12 +708,12 @@ public class Panel extends javax.swing.JPanel {
     }
 
     public void enregistrer() {
-        if (this.ecouteurEleveAyantDroit != null) {
-            btEnregistrer.setCouleur(Color.black);
+        if (this.ecouteurInscription != null) {
+            btEnregistrer.setForeground(Color.black);
             mEnregistrer.setCouleur(Color.BLACK);
-            
-            SortiesEleveAyantDroit sortie = getSortieEleveAyantDroit(btEnregistrer, mEnregistrer);
-            this.ecouteurEleveAyantDroit.onEnregistre(sortie);
+
+            SortiesInscription sortie = getSortieInscription(btEnregistrer, mEnregistrer);
+            this.ecouteurInscription.onEnregistre(sortie);
         }
     }
 
@@ -706,7 +721,7 @@ public class Panel extends javax.swing.JPanel {
         int dialogResult = JOptionPane.showConfirmDialog(this, "Voulez-vous les exporter dans un fichier PDF?", "Avertissement", JOptionPane.YES_NO_OPTION);
         if (dialogResult == JOptionPane.YES_OPTION) {
             try {
-                SortiesEleveAyantDroit sortie = getSortieEleveAyantDroit(btPDF, mPDF);
+                SortiesInscription sortie = getSortieInscription(btPDF, mPDF);
                 DocumentPDF docpdf = new DocumentPDF(this, DocumentPDF.ACTION_OUVRIR, sortie);
             } catch (Exception e) {
                 e.printStackTrace();

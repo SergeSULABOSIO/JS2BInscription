@@ -12,8 +12,8 @@ import SOURCES.Interfaces.InterfaceEntreprise;
 import SOURCES.Interfaces.InterfaceFrais;
 import SOURCES.UI.Panel;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
-import SOURCES.Utilitaires.SortiesEleveAyantDroit;
-import SOURCES.Utilitaires.Util;
+import SOURCES.Utilitaires.SortiesInscription;
+import SOURCES.Utilitaires.UtilInscription;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -53,11 +53,11 @@ public class DocumentPDF extends PdfPageEventHelper {
     private Font Font_TexteSimple_Gras_Italique = null;
     public static final int ACTION_IMPRIMER = 0;
     public static final int ACTION_OUVRIR = 1;
-    private SortiesEleveAyantDroit sortiesEleveAyantDroit = null;
+    private SortiesInscription sortiesEleveAyantDroit = null;
     private Panel gestionnaireInscription;
     private String monnaie = "";
 
-    public DocumentPDF(Panel panel, int action, SortiesEleveAyantDroit sortiesEleveAyantDroit) {
+    public DocumentPDF(Panel panel, int action, SortiesInscription sortiesEleveAyantDroit) {
         try {
             init(panel, action, sortiesEleveAyantDroit);
         } catch (Exception e) {
@@ -65,7 +65,7 @@ public class DocumentPDF extends PdfPageEventHelper {
         }
     }
 
-    private void init(Panel panel, int action, SortiesEleveAyantDroit sortiesEleveAyantDroit) {
+    private void init(Panel panel, int action, SortiesInscription sortiesEleveAyantDroit) {
         this.gestionnaireInscription = panel;
         this.sortiesEleveAyantDroit = sortiesEleveAyantDroit;
         parametre_initialisation_fichier();
@@ -108,7 +108,7 @@ public class DocumentPDF extends PdfPageEventHelper {
     }
 
     private void parametres_ouvrir_fichier() {
-        String nomFichier = "Annee_S2B.pdf";
+        String nomFichier = "Output.pdf";
         if (this.gestionnaireInscription != null) {
             nomFichier = this.gestionnaireInscription.getNomfichierPreuve();
         }
@@ -131,7 +131,7 @@ public class DocumentPDF extends PdfPageEventHelper {
     }
 
     private void parametres_imprimer_fichier() {
-        String nomFichier = "FicheElevesS2B.pdf";
+        String nomFichier = "Output.pdf";
         if (this.gestionnaireInscription != null) {
             nomFichier = this.gestionnaireInscription.getNomfichierPreuve();
         }
@@ -174,10 +174,10 @@ public class DocumentPDF extends PdfPageEventHelper {
         String titre = this.gestionnaireInscription.getTitreDoc() + "";
 
         if (this.gestionnaireInscription != null) {
-            preface.add(getParagraphe("Date: " + Util.getDateFrancais(this.gestionnaireInscription.getDateDocument()), Font_Titre3, Element.ALIGN_RIGHT));
+            preface.add(getParagraphe("Date: " + UtilInscription.getDateFrancais(this.gestionnaireInscription.getDateDocument()), Font_Titre3, Element.ALIGN_RIGHT));
             preface.add(getParagraphe(titre, Font_Titre1, Element.ALIGN_CENTER));
         } else {
-            preface.add(getParagraphe("Date: " + Util.getDateFrancais(new Date()), Font_Titre3, Element.ALIGN_RIGHT));
+            preface.add(getParagraphe("Date: " + UtilInscription.getDateFrancais(new Date()), Font_Titre3, Element.ALIGN_RIGHT));
             preface.add(getParagraphe("Facture n°XXXXXXXXX/2018", Font_Titre1, Element.ALIGN_CENTER));
         }
         this.document.add(preface);
@@ -241,11 +241,14 @@ public class DocumentPDF extends PdfPageEventHelper {
             String logo = "";
             if (this.gestionnaireInscription != null) {
                 logo = this.gestionnaireInscription.getEntreprise().getLogo();
+                System.out.println("Fic logo: " + logo);
             }
-            File ficLogo = new File(logo);
+            File ficLogo = new File(new File(logo).getName());
+            System.out.println("Fichier Logo: " + ficLogo.getAbsolutePath());
             if (ficLogo.exists() == true) {
+                System.out.println("Fichier Logo: " + ficLogo.getAbsolutePath()+ " - Trouvé!");
                 //Chargement du logo et redimensionnement afin que celui-ci convienne dans l'espace qui lui est accordé
-                Image Imglogo = Image.getInstance(logo);
+                Image Imglogo = Image.getInstance(ficLogo.getName());
                 Imglogo.scaleAbsoluteWidth(70);
                 Imglogo.scaleAbsoluteHeight(70);
                 celluleLogoEntreprise = new PdfPCell(Imglogo);
@@ -384,7 +387,7 @@ public class DocumentPDF extends PdfPageEventHelper {
                                 tableCharge.addCell(getCelluleTableau(Ieleve.getPostnom(), 0.2f, BaseColor.WHITE, null, Element.ALIGN_LEFT, Font_TexteSimple));
                                 tableCharge.addCell(getCelluleTableau(Ieleve.getPrenom(), 0.2f, BaseColor.WHITE, null, Element.ALIGN_LEFT, Font_TexteSimple));
                                 tableCharge.addCell(getCelluleTableau((Ieleve.getSexe() == InterfaceEleve.SEXE_MASCULIN ? "MASCULIN" : "FEMININ"), 0.2f, BaseColor.WHITE, null, Element.ALIGN_CENTER, Font_TexteSimple));
-                                tableCharge.addCell(getCelluleTableau(Util.getDateFrancais(Ieleve.getDateNaissance()), 0.2f, BaseColor.WHITE, null, Element.ALIGN_CENTER, Font_TexteSimple));
+                                tableCharge.addCell(getCelluleTableau(UtilInscription.getDateFrancais(Ieleve.getDateNaissance()), 0.2f, BaseColor.WHITE, null, Element.ALIGN_CENTER, Font_TexteSimple));
                                 tableCharge.addCell(getCelluleTableau(((Ieleve.getStatus() == InterfaceEleve.STATUS_ACTIF ? "REGULIER(E)" : "EXCLU(E)")), 0.2f, BaseColor.WHITE, null, Element.ALIGN_CENTER, Font_TexteSimple));
                                 tableCharge.addCell(getCelluleTableau(Ieleve.getTelephonesParents(), 0.2f, BaseColor.WHITE, null, Element.ALIGN_LEFT, Font_TexteSimple));
                                 //incrémentaion
