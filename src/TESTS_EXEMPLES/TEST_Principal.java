@@ -142,8 +142,6 @@ public class TEST_Principal extends javax.swing.JFrame {
             
             @Override
             public void onEnregistre(SortiesInscription sortiesEleveAyantDroit) {
-                
-                
                 Thread th = new Thread() {
                     @Override
                     public void run() {
