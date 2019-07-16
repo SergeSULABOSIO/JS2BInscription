@@ -23,7 +23,7 @@ import SOURCES.EditeurTable.EditeurDate;
 import SOURCES.EditeurTable.EditeurEleve;
 import SOURCES.EditeurTable.EditeurSexe;
 import SOURCES.EditeurTable.EditeurStatus;
-import SOURCES.GenerateurPDF.DocumentPDF;
+import SOURCES.GenerateurPDF.DocumentPDFInscription;
 import SOURCES.Interfaces.InterfaceAyantDroit;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
@@ -683,7 +683,7 @@ public class PanelInscription extends javax.swing.JPanel {
         if (dialogResult == JOptionPane.YES_OPTION) {
             try {
                 SortiesInscription sortie = getSortieInscription(btImprimer, mImprimer);
-                DocumentPDF documentPDF = new DocumentPDF(this, DocumentPDF.ACTION_IMPRIMER, sortie);
+                DocumentPDFInscription documentPDF = new DocumentPDFInscription(this, DocumentPDFInscription.ACTION_IMPRIMER, sortie);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -761,7 +761,7 @@ public class PanelInscription extends javax.swing.JPanel {
         if (dialogResult == JOptionPane.YES_OPTION) {
             try {
                 SortiesInscription sortie = getSortieInscription(btPDF, mPDF);
-                DocumentPDF docpdf = new DocumentPDF(this, DocumentPDF.ACTION_OUVRIR, sortie);
+                DocumentPDFInscription docpdf = new DocumentPDFInscription(this, DocumentPDFInscription.ACTION_OUVRIR, sortie);
             } catch (Exception e) {
                 e.printStackTrace();
             }

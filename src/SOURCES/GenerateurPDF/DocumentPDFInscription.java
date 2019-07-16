@@ -41,7 +41,7 @@ import javax.swing.JOptionPane;
  *
  * @author Gateway
  */
-public class DocumentPDF extends PdfPageEventHelper {
+public class DocumentPDFInscription extends PdfPageEventHelper {
 
     private Document document = new Document(PageSize.A4);
     private Font Font_Titre1 = null;
@@ -58,7 +58,7 @@ public class DocumentPDF extends PdfPageEventHelper {
     private PanelInscription gestionnaireInscription;
     private String monnaie = "";
 
-    public DocumentPDF(PanelInscription panel, int action, SortiesInscription sortiesEleveAyantDroit) {
+    public DocumentPDFInscription(PanelInscription panel, int action, SortiesInscription sortiesEleveAyantDroit) {
         try {
             init(panel, action, sortiesEleveAyantDroit);
         } catch (Exception e) {
@@ -533,7 +533,7 @@ public class DocumentPDF extends PdfPageEventHelper {
 
     public static void main(String[] a) {
         //Exemple
-        DocumentPDF docpdf = new DocumentPDF(null, ACTION_OUVRIR, null);
+        DocumentPDFInscription docpdf = new DocumentPDFInscription(null, ACTION_OUVRIR, null);
     }
 
 }
