@@ -5,9 +5,9 @@
  */
 package SOURCES.Utilitaires;
 
-import SOURCES.Interfaces.InterfaceAnneeScolaire;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEntreprise;
+import SOURCES.Interfaces.InterfaceExercice;
 import SOURCES.Interfaces.InterfaceFrais;
 import java.util.Vector;
 
@@ -20,15 +20,15 @@ public class ParametreInscription {
     public Vector<InterfaceClasse> listeClasses;
     public Vector<InterfaceFrais> listeFraises;
     public InterfaceEntreprise entreprise;
-    public InterfaceAnneeScolaire anneeScolaire;
+    public InterfaceExercice exercice;
     public int idUtilisateur;
     public String nomUtilisateur;
 
-    public ParametreInscription(Vector<InterfaceClasse> listeClasses, Vector<InterfaceFrais> listeFraises, InterfaceEntreprise entreprise, InterfaceAnneeScolaire anneeScolaire, int idUtilisateur, String nomUtilisateur) {
+    public ParametreInscription(Vector<InterfaceClasse> listeClasses, Vector<InterfaceFrais> listeFraises, InterfaceEntreprise entreprise, InterfaceExercice exercice, int idUtilisateur, String nomUtilisateur) {
         this.listeClasses = listeClasses;
         this.listeFraises = listeFraises;
         this.entreprise = entreprise;
-        this.anneeScolaire = anneeScolaire;
+        this.exercice = exercice;
         this.idUtilisateur = idUtilisateur;
         this.nomUtilisateur = nomUtilisateur;
     }
@@ -57,12 +57,12 @@ public class ParametreInscription {
         this.entreprise = entreprise;
     }
 
-    public InterfaceAnneeScolaire getAnneeScolaire() {
-        return anneeScolaire;
+    public InterfaceExercice getAnneeScolaire() {
+        return exercice;
     }
 
-    public void setAnneeScolaire(InterfaceAnneeScolaire anneeScolaire) {
-        this.anneeScolaire = anneeScolaire;
+    public void setAnneeScolaire(InterfaceExercice exercice) {
+        this.exercice = exercice;
     }
 
     public int getIdUtilisateur() {
@@ -83,7 +83,7 @@ public class ParametreInscription {
 
     @Override
     public String toString() {
-        return "ParametreInscription{" + "listeClasses=" + listeClasses + ", listeFraises=" + listeFraises + ", entreprise=" + entreprise + ", anneeScolaire=" + anneeScolaire + ", idUtilisateur=" + idUtilisateur + ", nomUtilisateur=" + nomUtilisateur + '}';
+        return "ParametreInscription{" + "listeClasses=" + listeClasses + ", listeFraises=" + listeFraises + ", entreprise=" + entreprise + ", anneeScolaire=" + exercice + ", idUtilisateur=" + idUtilisateur + ", nomUtilisateur=" + nomUtilisateur + '}';
     }
     
 }

@@ -6,13 +6,13 @@
 package TESTS_EXEMPLES;
 
 import java.util.Date;
-import SOURCES.Interfaces.InterfaceAnneeScolaire;
+import SOURCES.Interfaces.InterfaceExercice;
 
 /**
  *
  * @author HP Pavilion
  */
-public class TEST_AnneeScolaire implements InterfaceAnneeScolaire{
+public class TEST_Exercice implements InterfaceExercice{
     
     public int id;
     public int idEntreprise;
@@ -20,15 +20,31 @@ public class TEST_AnneeScolaire implements InterfaceAnneeScolaire{
     public String nom;
     public Date debut;
     public Date fin;
+    public int beta;
 
-    public TEST_AnneeScolaire(int id, int idEntreprise, int idUtilisateur, String nom, Date debut, Date fin) {
+    public TEST_Exercice(int id, int idEntreprise, int idUtilisateur, String nom, Date debut, Date fin, int beta) {
         this.id = id;
         this.idEntreprise = idEntreprise;
         this.idUtilisateur = idUtilisateur;
         this.nom = nom;
         this.debut = debut;
         this.fin = fin;
+        this.beta = beta;
     }
+
+    public TEST_Exercice() {
+    }
+    
+
+    public int getBeta() {
+        return beta;
+    }
+
+    public void setBeta(int beta) {
+        this.beta = beta;
+    }
+    
+    
 
     public int getId() {
         return id;
@@ -78,6 +94,10 @@ public class TEST_AnneeScolaire implements InterfaceAnneeScolaire{
         this.fin = fin;
     }
 
-    
+    @Override
+    public String toString() {
+        return "XX_Exercice{" + "id=" + id + ", idEntreprise=" + idEntreprise + ", idUtilisateur=" + idUtilisateur + ", nom=" + nom + ", debut=" + debut + ", fin=" + fin + '}';
+    }
     
 }
+

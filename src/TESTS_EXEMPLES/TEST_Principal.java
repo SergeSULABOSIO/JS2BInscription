@@ -9,6 +9,7 @@ import SOURCES.Callback.EcouteurInscription;
 import SOURCES.Interfaces.InterfaceAyantDroit;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
+import SOURCES.Interfaces.InterfaceExercice;
 import SOURCES.Interfaces.InterfaceFrais;
 import SOURCES.UI.Panel;
 import SOURCES.Utilitaires.CouleurBasique;
@@ -41,7 +42,7 @@ public class TEST_Principal extends javax.swing.JFrame {
     public int idEntreprise = 1;
     public int idExercice = 1;
     public TEST_Entreprise entreprise = new TEST_Entreprise(1, "ECOLE CARESIENNE DE KINSHASA", "7e Rue Limeté Industrielle, Kinshasa/RDC", "+243844803514", "infos@cartesien.org", "wwww.cartesien.org", "logo.png", "RCCM/KD/CD/4513", "IDN00111454", "IMP00124100", "Equity Bank Congo SA", "AIB RDC Sarl", "000000121212400", "IBANNN0012", "SWIFTCDK");
-    public TEST_AnneeScolaire anneescolaire = null;
+    public TEST_Exercice anneescolaire = null;
     
     public TEST_Principal() {
         initComponents();
@@ -87,7 +88,7 @@ public class TEST_Principal extends javax.swing.JFrame {
         this.listeFraises.add(Frais_Minervale);
         this.listeFraises.add(Frais_TravailManul);
         
-        anneescolaire = new TEST_AnneeScolaire(12, entreprise.getId(), idUtilisateur, "Année scolaire 2019-2020", new Date(), UtilInscription.getDate_AjouterAnnee(new Date(), 1));
+        anneescolaire = new TEST_Exercice(12, entreprise.getId(), idUtilisateur, "Année 2019-2020", new Date(), UtilInscription.getDate_AjouterAnnee(new Date(), 1), InterfaceExercice.BETA_EXISTANT);
         
         ParametreInscription parametres = new ParametreInscription(listeClasses, listeFraises, entreprise, anneescolaire, idUtilisateur, "Serge SULA BOSIO");
         return parametres;
