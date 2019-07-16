@@ -11,11 +11,13 @@ import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Interfaces.InterfaceExercice;
 import SOURCES.Interfaces.InterfaceFrais;
-import SOURCES.UI.Panel;
+import SOURCES.Interfaces.InterfaceMonnaie;
+import SOURCES.UI.PanelInscription;
 import SOURCES.Utilitaires.CouleurBasique;
 import SOURCES.Utilitaires.DonneesInscription;
 import SOURCES.Utilitaires.LiaisonClasseFrais;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
+import SOURCES.Utilitaires.LiaisonPeriodeFrais;
 import SOURCES.Utilitaires.ParametreInscription;
 import SOURCES.Utilitaires.SortiesInscription;
 import SOURCES.Utilitaires.UtilInscription;
@@ -33,9 +35,11 @@ public class TEST_Principal extends javax.swing.JFrame {
     /**
      * Creates new form TEST_Principal
      */
-    public Panel gestionnaireExercice = null;
+    public PanelInscription gestionnaireExercice = null;
     public Vector<InterfaceClasse> listeClasses = null;
     public Vector<InterfaceFrais> listeFraises = null;
+    public Vector<InterfaceMonnaie> listeMonnaies = null;
+    
     private TEST_Frais Frais_Inscription, Frais_Minervale, Frais_TravailManul = null;
     private TEST_Classe classe_G1, classe_G2, classe_G3, classe_L1 = null;
     public int idUtilisateur = 1;
@@ -49,6 +53,12 @@ public class TEST_Principal extends javax.swing.JFrame {
     }
     
     public ParametreInscription getParametres(){
+        //Chargement des Frais
+        this.listeMonnaies = new Vector<>();
+        this.listeMonnaies.add(new TEST_Monnaie(12, idEntreprise, idUtilisateur, idExercice, "USD - Dollars", "USD", InterfaceMonnaie.NATURE_MONNAIE_ETRANGERE, 1620, 1010101010, InterfaceMonnaie.BETA_EXISTANT));
+        this.listeMonnaies.add(new TEST_Monnaie(13, idEntreprise, idUtilisateur, idExercice, "CDF - Francs", "CDF", InterfaceMonnaie.NATURE_MONNAIE_LOCALE, 1, 0455, InterfaceMonnaie.BETA_EXISTANT));
+        
+        
         this.classe_G1 = new TEST_Classe(10, idUtilisateur, idEntreprise, idExercice, "G1", 50, "Local 2", new Date().getTime());
         this.classe_G2 = new TEST_Classe(11, idUtilisateur, idEntreprise, idExercice, "G2", 50, "Local 3", new Date().getTime()+1);
         this.classe_G3 = new TEST_Classe(12, idUtilisateur, idEntreprise, idExercice, "G3", 50, "Local 4", new Date().getTime()+2);
@@ -64,25 +74,28 @@ public class TEST_Principal extends javax.swing.JFrame {
         //Chargement des Frais
         this.listeFraises = new Vector<>();
         Vector<LiaisonClasseFrais> liaisonsINSCRIPTION = new Vector<>();
-        liaisonsINSCRIPTION.add(new LiaisonClasseFrais(classe_G1, 50));
-        liaisonsINSCRIPTION.add(new LiaisonClasseFrais(classe_G2, 50));
-        liaisonsINSCRIPTION.add(new LiaisonClasseFrais(classe_G3, 50));
-        liaisonsINSCRIPTION.add(new LiaisonClasseFrais(classe_L1, 50));
-        this.Frais_Inscription = new TEST_Frais(12, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, "INSCRIPTION", "$", 1, 50, liaisonsINSCRIPTION);
+        liaisonsINSCRIPTION.add(new LiaisonClasseFrais(classe_G1.getId(), classe_G1.getNom(), classe_G1.getSignature(), 50));
+        liaisonsINSCRIPTION.add(new LiaisonClasseFrais(classe_G2.getId(), classe_G2.getNom(), classe_G2.getSignature(), 50));
+        liaisonsINSCRIPTION.add(new LiaisonClasseFrais(classe_G3.getId(), classe_G3.getNom(), classe_G3.getSignature(), 50));
+        liaisonsINSCRIPTION.add(new LiaisonClasseFrais(classe_L1.getId(), classe_L1.getNom(), classe_L1.getSignature(), 50));
+        //public TEST_Frais(int id, int idUtilisateur, int idEntreprise, int idExercice, int idMonnaie, long signatureMonnaie, String nom, String monnaie, int nbTranches, Vector<LiaisonClasseFrais> liaisonsClasses, Vector<LiaisonPeriodeFrais> liaisonsPeriodes, double montantDefaut, int beta) {
+    
+        this.Frais_Inscription = new TEST_Frais(12, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, "INSCRIPTION", "$", 1, liaisonsINSCRIPTION, new Vector<LiaisonPeriodeFrais>(), 50, InterfaceEleve.BETA_EXISTANT);
         
         Vector<LiaisonClasseFrais> liaisonsMINERVALE = new Vector<>();
-        liaisonsMINERVALE.add(new LiaisonClasseFrais(classe_G1, 1500));
-        liaisonsMINERVALE.add(new LiaisonClasseFrais(classe_G2, 1500));
-        liaisonsMINERVALE.add(new LiaisonClasseFrais(classe_G3, 1500));
-        liaisonsMINERVALE.add(new LiaisonClasseFrais(classe_L1, 1500));
-        this.Frais_Minervale = new TEST_Frais(1, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, "MINERVALE", "$", 3, 1500, liaisonsMINERVALE);
+        liaisonsMINERVALE.add(new LiaisonClasseFrais(classe_G1.getId(), classe_G1.getNom(), classe_G1.getSignature(), 1500));
+        liaisonsMINERVALE.add(new LiaisonClasseFrais(classe_G2.getId(), classe_G2.getNom(), classe_G2.getSignature(), 1500));
+        liaisonsMINERVALE.add(new LiaisonClasseFrais(classe_G3.getId(), classe_G3.getNom(), classe_G3.getSignature(), 1500));
+        liaisonsMINERVALE.add(new LiaisonClasseFrais(classe_L1.getId(), classe_L1.getNom(), classe_L1.getSignature(), 1500));
+        
+        this.Frais_Minervale = new TEST_Frais(1, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, "MINERVALE", "$", 3, liaisonsMINERVALE, new Vector<LiaisonPeriodeFrais>(), 1500, InterfaceEleve.BETA_EXISTANT);
         
         Vector<LiaisonClasseFrais> liaisonsTRAVAILMAN = new Vector<>();
-        liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_G1, 10));
-        liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_G2, 10));
-        liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_G3, 10));
-        liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_L1, 10));
-        this.Frais_TravailManul = new TEST_Frais(51, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, "TRAVAIL MANUEL", "$", 3, 10, liaisonsTRAVAILMAN);
+        liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_G1.getId(), classe_G1.getNom(), classe_G1.getSignature(), 10));
+        liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_G2.getId(), classe_G2.getNom(), classe_G2.getSignature(), 10));
+        liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_G3.getId(), classe_G3.getNom(), classe_G3.getSignature(), 10));
+        liaisonsTRAVAILMAN.add(new LiaisonClasseFrais(classe_L1.getId(), classe_L1.getNom(), classe_L1.getSignature(), 10));
+        this.Frais_TravailManul = new TEST_Frais(51, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, "TRAVAIL MANUEL", "$", 3, liaisonsTRAVAILMAN, new Vector<LiaisonPeriodeFrais>(), 10, InterfaceEleve.BETA_EXISTANT);
         
         this.listeFraises.add(Frais_Inscription);
         this.listeFraises.add(Frais_Minervale);
@@ -90,7 +103,7 @@ public class TEST_Principal extends javax.swing.JFrame {
         
         anneescolaire = new TEST_Exercice(12, entreprise.getId(), idUtilisateur, "Année 2019-2020", new Date(), UtilInscription.getDate_AjouterAnnee(new Date(), 1), InterfaceExercice.BETA_EXISTANT);
         
-        ParametreInscription parametres = new ParametreInscription(listeClasses, listeFraises, entreprise, anneescolaire, idUtilisateur, "Serge SULA BOSIO");
+        ParametreInscription parametres = new ParametreInscription(listeMonnaies, listeClasses, listeFraises, entreprise, anneescolaire, idUtilisateur, "Serge SULA BOSIO");
         return parametres;
     }
     
@@ -128,7 +141,7 @@ public class TEST_Principal extends javax.swing.JFrame {
         couleurs.setCouleur_foreground_objet_modifie(UtilInscription.COULEUR_BLEU_CLAIRE_1);
         couleurs.setCouleur_foreground_objet_nouveau(UtilInscription.COULEUR_ROUGE);
         
-        this.gestionnaireExercice = new Panel(couleurs, this.tabPrincipale, donnees, parametre, new EcouteurInscription() {
+        this.gestionnaireExercice = new PanelInscription(couleurs, this.tabPrincipale, donnees, parametre, new EcouteurInscription() {
             @Override
             public void onDetruitExercice(int idExercice) {
                 System.out.println("RAS=" + idExercice);

@@ -24,6 +24,9 @@ public class LiaisonEleveFrais {
         this.monnaie = monnaie;
     }
 
+    public LiaisonEleveFrais() {
+    }
+    
     
     public long getSignatureEleve() {
         return signatureEleve;

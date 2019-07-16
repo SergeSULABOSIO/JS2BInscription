@@ -5,14 +5,13 @@
  */
 package SOURCES.Interfaces;
 
+import java.util.Date;
+
 /**
  *
  * @author HP Pavilion
  */
-public interface InterfaceMonnaie {
-    //Constante - NATURE MONNAIE
-    public static final int NATURE_MONNAIE_LOCALE = 0;
-    public static final int NATURE_MONNAIE_ETRANGERE = 1;
+public interface InterfacePeriode {
     //Conatantes - BETA
     public static final int BETA_EXISTANT = 0;
     public static final int BETA_MODIFIE = 1;
@@ -23,9 +22,8 @@ public interface InterfaceMonnaie {
     public abstract int getIdUtilisateur();
     public abstract int getIdExercice();
     public abstract String getNom();
-    public abstract String getCode();
-    public abstract int getNature();    //Monnaie locale = 0, Monnaie étrangère = 1; 
-    public abstract double getTauxMonnaieLocale();
+    public abstract Date getDebut();
+    public abstract Date getFin();
     public abstract long getSignature();
     public abstract int getBeta();  // 0 = Existant, 1 =  Modifié, 2 = Nouveau
     
@@ -34,9 +32,8 @@ public interface InterfaceMonnaie {
     public abstract void setIdUtilisateur(int idUtilisateur);
     public abstract void setIdExercice(int idExercice);
     public abstract void setNom(String nom);
-    public abstract void setCode(String code);
-    public abstract void setNature(int nature);    //Monnaie locale = 0, Monnaie étrangère = 1; 
-    public abstract void setTauxMonnaieLocale(double taux);
+    public abstract void setDebut(Date debut);
+    public abstract void setFin(Date fin);
     public abstract void setSignature(long signature);
-    public abstract void setBeta(int newbeta);
+    public abstract void setBeta(int newbeta);   // 0 = Existant, 1 =  Modifié, 2 = Nouveau
 }

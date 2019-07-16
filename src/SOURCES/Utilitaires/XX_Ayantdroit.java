@@ -38,6 +38,11 @@ public class XX_Ayantdroit implements InterfaceAyantDroit{
         this.beta = beta;
     }
 
+    public XX_Ayantdroit() {
+    }
+    
+    
+
     public int getBeta() {
         return beta;
     }

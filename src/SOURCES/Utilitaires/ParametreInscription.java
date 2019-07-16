@@ -9,6 +9,7 @@ import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEntreprise;
 import SOURCES.Interfaces.InterfaceExercice;
 import SOURCES.Interfaces.InterfaceFrais;
+import SOURCES.Interfaces.InterfaceMonnaie;
 import java.util.Vector;
 
 /**
@@ -19,12 +20,14 @@ public class ParametreInscription {
     //Les données non modifiables, mais indispensables au bon fonctionnement de l'API
     public Vector<InterfaceClasse> listeClasses;
     public Vector<InterfaceFrais> listeFraises;
+    public Vector<InterfaceMonnaie> listeMonnaies;
     public InterfaceEntreprise entreprise;
     public InterfaceExercice exercice;
     public int idUtilisateur;
     public String nomUtilisateur;
 
-    public ParametreInscription(Vector<InterfaceClasse> listeClasses, Vector<InterfaceFrais> listeFraises, InterfaceEntreprise entreprise, InterfaceExercice exercice, int idUtilisateur, String nomUtilisateur) {
+    public ParametreInscription(Vector<InterfaceMonnaie> listeMonnaies, Vector<InterfaceClasse> listeClasses, Vector<InterfaceFrais> listeFraises, InterfaceEntreprise entreprise, InterfaceExercice exercice, int idUtilisateur, String nomUtilisateur) {
+        this.listeMonnaies = listeMonnaies;
         this.listeClasses = listeClasses;
         this.listeFraises = listeFraises;
         this.entreprise = entreprise;
@@ -80,6 +83,24 @@ public class ParametreInscription {
     public void setNomUtilisateur(String nomUtilisateur) {
         this.nomUtilisateur = nomUtilisateur;
     }
+
+    public Vector<InterfaceMonnaie> getListeMonnaies() {
+        return listeMonnaies;
+    }
+
+    public void setListeMonnaies(Vector<InterfaceMonnaie> listeMonnaies) {
+        this.listeMonnaies = listeMonnaies;
+    }
+
+    public InterfaceExercice getExercice() {
+        return exercice;
+    }
+
+    public void setExercice(InterfaceExercice exercice) {
+        this.exercice = exercice;
+    }
+    
+    
 
     @Override
     public String toString() {

@@ -14,8 +14,10 @@ import SOURCES.Callback.EcouteurValeursChangees;
 import SOURCES.Interfaces.InterfaceAyantDroit;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Interfaces.InterfaceFrais;
+import SOURCES.Interfaces.InterfaceMonnaie;
 import SOURCES.Utilitaires.CouleurBasique;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
+import SOURCES.Utilitaires.ParametreInscription;
 import SOURCES.Utilitaires.UtilInscription;
 import java.util.Vector;
 import javax.swing.JOptionPane;
@@ -39,8 +41,10 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     private Bouton btEnreg;
     private RubriqueSimple mEnreg;
     private CouleurBasique colBasique;
+    private ParametreInscription parametreInscription;
 
-    public ModeleListeAyantDroit(CouleurBasique colBasique, JScrollPane parent, Bouton btEnreg, RubriqueSimple mEnreg, Vector<InterfaceFrais> listeFrais, ModeleListeEleve modeleListeEleve, EcouteurValeursChangees ecouteurModele, EcouteurUpdateClose ecouteurClose) {
+    public ModeleListeAyantDroit(ParametreInscription parametreInscription, CouleurBasique colBasique, JScrollPane parent, Bouton btEnreg, RubriqueSimple mEnreg, Vector<InterfaceFrais> listeFrais, ModeleListeEleve modeleListeEleve, EcouteurValeursChangees ecouteurModele, EcouteurUpdateClose ecouteurClose) {
+        this.parametreInscription = parametreInscription;
         this.parent = parent;
         this.colBasique = colBasique;
         this.ecouteurModele = ecouteurModele;
@@ -151,9 +155,21 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         //On charge d'abord les liaisons possibles
         this.listeFrais.forEach((frais) -> {
             double montantRabais = 0;
-            LiaisonEleveFrais liaison = new LiaisonEleveFrais(newAyantDroit.getSignatureEleve(), frais.getId(), montantRabais, frais.getIdMonnaie(), frais.getMonnaie());
+            String monnaie = getMonnaie(frais);
+            LiaisonEleveFrais liaison = new LiaisonEleveFrais(newAyantDroit.getSignatureEleve(), frais.getId(), montantRabais, frais.getIdMonnaie(), monnaie); //frais.getMonnaie()
             newAyantDroit.ajouterLiaisons(liaison);
         });
+    }
+
+    private String getMonnaie(InterfaceFrais iff) {
+        if (parametreInscription != null) {
+            for (InterfaceMonnaie im : parametreInscription.getListeMonnaies()) {
+                if (im.getSignature() == iff.getSignatureMonnaie()) {
+                    return im.getCode();
+                }
+            }
+        }
+        return "";
     }
 
     public void SupprimerAyantDroit(int row, EcouteurSuppressionElement ecouteurSuppressionElement) {
@@ -204,8 +220,8 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         if (this.listeFrais != null) {
             for (InterfaceFrais Ifrais : this.listeFrais) {
                 String titre = Ifrais.getNom();
-                String SmontantDefaut = UtilInscription.getMontantFrancais(Ifrais.getMontant_default());
-                String monnaie = Ifrais.getMonnaie();
+                String SmontantDefaut = UtilInscription.getMontantFrancais(Ifrais.getMontantDefaut());
+                String monnaie = getMonnaie(Ifrais); //Ifrais.getMonnaie();
                 if (10 < titre.trim().length()) {
                     titresCols.add(titre.substring(0, 7) + "...(" + SmontantDefaut + " " + monnaie + ")"); //j'ai l'itention de limité la taille de titre de la colonne
                 } else {

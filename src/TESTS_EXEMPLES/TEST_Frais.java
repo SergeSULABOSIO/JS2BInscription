@@ -8,6 +8,7 @@ package TESTS_EXEMPLES;
 import SOURCES.Utilitaires.*;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceFrais;
+import SOURCES.Interfaces.InterfacePeriode;
 import java.util.Vector;
 
 /**
@@ -15,30 +16,49 @@ import java.util.Vector;
  * @author HP Pavilion
  */
 public class TEST_Frais implements InterfaceFrais{
+
     public int id;
     public int idUtilisateur;
     public int idEntreprise;
     public int idExercice;
     public int idMonnaie;
+    public double montantDefaut;
     public String nom;
     public String monnaie;
     public long signatureMonnaie;
-    public int nbTranches;
-    public double montant;
-    public Vector<LiaisonClasseFrais> liaisons = new Vector<LiaisonClasseFrais>();
+    public Vector<LiaisonClasseFrais> liaisonsClasses = new Vector<LiaisonClasseFrais>();
+    public Vector<LiaisonPeriodeFrais> liaisonsPeriodes = new Vector<LiaisonPeriodeFrais>();
+    public int beta;
 
-    public TEST_Frais(int id, int idUtilisateur, int idEntreprise, int idExercice, int idMonnaie, long signatureMonnaie, String nom, String monnaie, int nbTranches, double montant, Vector<LiaisonClasseFrais> liaisons) {
+    public TEST_Frais(int id, int idUtilisateur, int idEntreprise, int idExercice, int idMonnaie, long signatureMonnaie, String nom, String monnaie, int nbTranches, Vector<LiaisonClasseFrais> liaisonsClasses, Vector<LiaisonPeriodeFrais> liaisonsPeriodes, double montantDefaut, int beta) {
         this.id = id;
         this.idUtilisateur = idUtilisateur;
         this.idEntreprise = idEntreprise;
         this.idExercice = idExercice;
         this.nom = nom;
-        this.nbTranches = nbTranches;
-        this.liaisons = liaisons;
-        this.montant = montant;
+        this.liaisonsClasses = liaisonsClasses;
+        this.liaisonsPeriodes = liaisonsPeriodes;
         this.idMonnaie = idMonnaie;
         this.monnaie = monnaie;
         this.signatureMonnaie = signatureMonnaie;
+        this.montantDefaut = montantDefaut;
+        this.beta = beta;
+    }
+
+    public double getMontantDefaut() {
+        return montantDefaut;
+    }
+
+    public void setMontantDefaut(double montantDefaut) {
+        this.montantDefaut = montantDefaut;
+    }
+
+    public int getBeta() {
+        return beta;
+    }
+
+    public void setBeta(int beta) {
+        this.beta = beta;
     }
 
     public int getIdMonnaie() {
@@ -65,16 +85,6 @@ public class TEST_Frais implements InterfaceFrais{
         this.signatureMonnaie = signatureMonnaie;
     }
 
-    public double getMontant() {
-        return montant;
-    }
-
-    public void setMontant(double montant) {
-        this.montant = montant;
-    }
-    
-    
-    
     public int getId() {
         return id;
     }
@@ -115,26 +125,36 @@ public class TEST_Frais implements InterfaceFrais{
         this.nom = nom;
     }
 
-    public int getNbTranches() {
-        return nbTranches;
+    public Vector<LiaisonClasseFrais> getLiaisonsClasses() {
+        return liaisonsClasses;
     }
 
-    public void setNbTranches(int nbTranches) {
-        this.nbTranches = nbTranches;
+    public void setLiaisonsClasses(Vector<LiaisonClasseFrais> liaisonsClasses) {
+        this.liaisonsClasses = liaisonsClasses;
     }
 
-    public Vector<LiaisonClasseFrais> getLiaisons() {
-        return liaisons;
+    public Vector<LiaisonPeriodeFrais> getLiaisonsPeriodes() {
+        return liaisonsPeriodes;
     }
 
-    public void setLiaisons(Vector<LiaisonClasseFrais> liaisons) {
-        this.liaisons = liaisons;
+    public void setLiaisonsPeriodes(Vector<LiaisonPeriodeFrais> liaisonsPeriodes) {
+        this.liaisonsPeriodes = liaisonsPeriodes;
     }
 
     @Override
-    public LiaisonClasseFrais getLiaison(InterfaceClasse classe) {
-        for(LiaisonClasseFrais liaisonClasseFrais : liaisons){
-            if(liaisonClasseFrais.getClasse().getId() == classe.getId() && liaisonClasseFrais.getClasse().getNom().equals(classe.getNom())){
+    public LiaisonPeriodeFrais getLiaisonPeriodes(InterfacePeriode periode) {
+        for (LiaisonPeriodeFrais liaisonPeriodeFrais : liaisonsPeriodes) {
+            if (liaisonPeriodeFrais.getIdPeriode()== periode.getId() && liaisonPeriodeFrais.getNomPeriode().equals(periode.getNom())) {
+                return liaisonPeriodeFrais;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public LiaisonClasseFrais getLiaisonClasses(InterfaceClasse classe) {
+        for (LiaisonClasseFrais liaisonClasseFrais : liaisonsClasses) {
+            if (liaisonClasseFrais.getIdClasse() == classe.getId() && liaisonClasseFrais.getNomClasse().equals(classe.getNom())) {
                 return liaisonClasseFrais;
             }
         }
@@ -142,22 +162,37 @@ public class TEST_Frais implements InterfaceFrais{
     }
 
     @Override
-    public void ajouterLiaisons(LiaisonClasseFrais liaison) {
-        liaisons.add(liaison);
+    public void ajouterLiaisonsPeriode(LiaisonPeriodeFrais liaisons) {
+        if(liaisons != null){
+            if(!this.liaisonsPeriodes.contains(liaisons)){
+                this.liaisonsPeriodes.add(liaisons);
+            }
+        }
+    }
+
+    
+    @Override
+    public void ajouterLiaisonsClasse(LiaisonClasseFrais liaison) {
+        if(liaison != null){
+            if(!this.liaisonsClasses.contains(liaison)){
+                this.liaisonsClasses.add(liaison);
+            }
+        }
     }
 
     @Override
-    public void viderLiaisons() {
-        liaisons.removeAllElements();
+    public void viderLiaisonsClasses() {
+        this.liaisonsClasses.removeAllElements();
     }
 
     @Override
-    public double getMontant_default() {
-        return montant;
+    public void viderLiaisonsPeriodes() {
+        this.liaisonsPeriodes.removeAllElements();
     }
 
+
     @Override
-    public void setMontant_default(double montant) {
-        this.montant = montant;
+    public String toString() {
+        return "TEST_Frais{" + "id=" + id + ", idUtilisateur=" + idUtilisateur + ", idEntreprise=" + idEntreprise + ", idExercice=" + idExercice + ", idMonnaie=" + idMonnaie + ", montantDefaut=" + montantDefaut + ", nom=" + nom + ", monnaie=" + monnaie + ", signatureMonnaie=" + signatureMonnaie + ", liaisonsClasses=" + liaisonsClasses + ", liaisonsPeriodes=" + liaisonsPeriodes + ", beta=" + beta + '}';
     }
 }

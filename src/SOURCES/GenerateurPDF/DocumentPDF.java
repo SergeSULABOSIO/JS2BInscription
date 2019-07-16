@@ -10,7 +10,8 @@ import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Interfaces.InterfaceEntreprise;
 import SOURCES.Interfaces.InterfaceFrais;
-import SOURCES.UI.Panel;
+import SOURCES.Interfaces.InterfaceMonnaie;
+import SOURCES.UI.PanelInscription;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
 import SOURCES.Utilitaires.SortiesInscription;
 import SOURCES.Utilitaires.UtilInscription;
@@ -54,10 +55,10 @@ public class DocumentPDF extends PdfPageEventHelper {
     public static final int ACTION_IMPRIMER = 0;
     public static final int ACTION_OUVRIR = 1;
     private SortiesInscription sortiesEleveAyantDroit = null;
-    private Panel gestionnaireInscription;
+    private PanelInscription gestionnaireInscription;
     private String monnaie = "";
 
-    public DocumentPDF(Panel panel, int action, SortiesInscription sortiesEleveAyantDroit) {
+    public DocumentPDF(PanelInscription panel, int action, SortiesInscription sortiesEleveAyantDroit) {
         try {
             init(panel, action, sortiesEleveAyantDroit);
         } catch (Exception e) {
@@ -65,7 +66,7 @@ public class DocumentPDF extends PdfPageEventHelper {
         }
     }
 
-    private void init(Panel panel, int action, SortiesInscription sortiesEleveAyantDroit) {
+    private void init(PanelInscription panel, int action, SortiesInscription sortiesEleveAyantDroit) {
         this.gestionnaireInscription = panel;
         this.sortiesEleveAyantDroit = sortiesEleveAyantDroit;
         parametre_initialisation_fichier();
@@ -404,13 +405,25 @@ public class DocumentPDF extends PdfPageEventHelper {
         }
 
     }
+    
+    private String getMonnaie(InterfaceFrais iff) {
+        if (gestionnaireInscription.parametreInscription.getListeMonnaies() != null) {
+            for (InterfaceMonnaie im : gestionnaireInscription.parametreInscription.getListeMonnaies()) {
+                if (im.getSignature() == iff.getSignatureMonnaie()) {
+                    return im.getCode();
+                }
+            }
+        }
+        return "";
+    }
 
     private String[] getTabTitresColonnes() {
         Vector listTitre = new Vector();
         listTitre.add("N°");
         listTitre.add("Noms de l'élève");
         for (InterfaceFrais Ifrais : this.sortiesEleveAyantDroit.getListeFrais()) {
-            listTitre.add(Ifrais.getNom() + "(" + Ifrais.getMontant_default() + " " + Ifrais.getMonnaie() + ")");
+            String monnaie = getMonnaie(Ifrais);
+            listTitre.add(Ifrais.getNom() + "(" + Ifrais.getMontantDefaut() + " " + monnaie + ")");
         }
         String[] tabTitres = new String[listTitre.size()];
         for (int i = 0; i < tabTitres.length; i++) {

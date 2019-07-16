@@ -34,6 +34,11 @@ public class XX_Classe implements InterfaceClasse{
         this.signature = signature;
     }
 
+    public XX_Classe() {
+    }
+    
+    
+
     public long getSignature() {
         return signature;
     }

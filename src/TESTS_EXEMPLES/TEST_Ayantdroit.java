@@ -39,6 +39,11 @@ public class TEST_Ayantdroit implements InterfaceAyantDroit{
         this.beta = beta;
     }
 
+    public TEST_Ayantdroit() {
+    }
+    
+    
+
     public int getBeta() {
         return beta;
     }

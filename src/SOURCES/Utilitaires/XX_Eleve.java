@@ -50,6 +50,11 @@ public class XX_Eleve implements InterfaceEleve{
         this.beta = beta;
     }
 
+    public XX_Eleve() {
+    }
+    
+    
+
     public int getBeta() {
         return beta;
     }

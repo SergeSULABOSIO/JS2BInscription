@@ -12,7 +12,7 @@ import SOURCES.ModeleTable.ModeleListeEleve;
  *
  * @author HP Pavilion
  */
-public abstract class EcouteurAjout {
+public abstract class EcouteurAjoutInscription {
     public abstract void setAjoutEleve(ModeleListeEleve modeleListeEleve);
     public abstract void setAjoutAyantDroit(ModeleListeAyantDroit modeleListeAyantDroit);
 }

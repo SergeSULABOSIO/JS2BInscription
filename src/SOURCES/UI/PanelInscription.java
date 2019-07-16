@@ -12,7 +12,7 @@ import BEAN_MenuContextuel.MenuContextuel;
 import BEAN_MenuContextuel.RubriqueListener;
 import BEAN_MenuContextuel.RubriqueSimple;
 import ICONES.Icones;
-import SOURCES.Callback.EcouteurAjout;
+import SOURCES.Callback.EcouteurAjoutInscription;
 import SOURCES.Callback.EcouteurEnregistrement;
 import SOURCES.Callback.EcouteurInscription;
 import SOURCES.Callback.EcouteurSuppressionElement;
@@ -62,7 +62,7 @@ import javax.swing.table.TableColumn;
  *
  * @author HP Pavilion
  */
-public class Panel extends javax.swing.JPanel {
+public class PanelInscription extends javax.swing.JPanel {
 
     /**
      * Creates new form Panel
@@ -70,9 +70,9 @@ public class Panel extends javax.swing.JPanel {
     public int indexTabSelected = 0;
     private Icones icones = null;
     private final JTabbedPane parent;
-    private Panel moi = null;
+    private PanelInscription moi = null;
     private EcouteurUpdateClose ecouteurClose = null;
-    private EcouteurAjout ecouteurAjout = null;
+    private EcouteurAjoutInscription ecouteurAjout = null;
     private Bouton btEnregistrer, btAjouter, btSupprimer, btVider, btImprimer, btPDF, btFermer, btActualiser;
     private RubriqueSimple mEnregistrer, mAjouter, mSupprimer, mVider, mImprimer, mPDF, mFermer, mActualiser;
     private MenuContextuel menuContextuel = null;
@@ -88,7 +88,7 @@ public class Panel extends javax.swing.JPanel {
     public ParametreInscription parametreInscription;
     private CouleurBasique couleurBasique;
 
-    public Panel(CouleurBasique couleurBasique, JTabbedPane parent, DonneesInscription donneesInscription, ParametreInscription parametreInscription, EcouteurInscription ecouteurInscription) {
+    public PanelInscription(CouleurBasique couleurBasique, JTabbedPane parent, DonneesInscription donneesInscription, ParametreInscription parametreInscription, EcouteurInscription ecouteurInscription) {
         this.initComponents();
         this.parent = parent;
         this.couleurBasique = couleurBasique;
@@ -301,7 +301,7 @@ public class Panel extends javax.swing.JPanel {
     }
 
     private void initModelTableAyantDroit() {
-        this.modeleListeAyantDroit = new ModeleListeAyantDroit(couleurBasique, scrollListeAyantDroit, btEnregistrer, mEnregistrer, this.parametreInscription.getListeFraises(), this.modeleListeEleve, new EcouteurValeursChangees() {
+        this.modeleListeAyantDroit = new ModeleListeAyantDroit(parametreInscription, couleurBasique, scrollListeAyantDroit, btEnregistrer, mEnregistrer, this.parametreInscription.getListeFraises(), this.modeleListeEleve, new EcouteurValeursChangees() {
             @Override
             public void onValeurChangee() {
 
@@ -479,7 +479,7 @@ public class Panel extends javax.swing.JPanel {
             }
         };
 
-        this.ecouteurAjout = new EcouteurAjout() {
+        this.ecouteurAjout = new EcouteurAjoutInscription() {
             @Override
             public void setAjoutEleve(ModeleListeEleve modeleListeEleve) {
                 if (modeleListeEleve != null) {
@@ -911,10 +911,21 @@ public class Panel extends javax.swing.JPanel {
         });
 
         chSexe.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TOUT GENRE", "MASCULIN", "FEMININ" }));
+        chSexe.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                chSexeItemStateChanged(evt);
+            }
+        });
 
         chStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TOUT STATUS", "EL. ACTIF", "EL. INACTIF" }));
+        chStatus.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                chStatusItemStateChanged(evt);
+            }
+        });
 
         btCriteres.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Facture01.png"))); // NOI18N
+        btCriteres.setSelected(true);
         btCriteres.setText("Critères++");
         btCriteres.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1002,6 +1013,22 @@ public class Panel extends javax.swing.JPanel {
             gestionnaireRecherche.chercher(chRecherche.getText());
         }
     }//GEN-LAST:event_chClasseItemStateChanged
+
+    private void chSexeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_chSexeItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            System.out.println("Combo: Selection - " + evt.getItem());
+            gestionnaireRecherche.chercher(chRecherche.getText());
+        }
+    }//GEN-LAST:event_chSexeItemStateChanged
+
+    private void chStatusItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_chStatusItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            System.out.println("Combo: Selection - " + evt.getItem());
+            gestionnaireRecherche.chercher(chRecherche.getText());
+        }
+    }//GEN-LAST:event_chStatusItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
