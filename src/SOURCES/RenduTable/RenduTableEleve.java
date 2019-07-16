@@ -9,6 +9,7 @@ import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.ModeleTable.ModeleListeEleve;
 import SOURCES.UI.CelluleSimpleTableau;
+import SOURCES.Utilitaires.CouleurBasique;
 import SOURCES.Utilitaires.UtilInscription;
 import java.awt.Component;
 import java.util.Date;
@@ -26,8 +27,10 @@ public class RenduTableEleve implements TableCellRenderer {
     private ImageIcon iconeEdition;
     private Vector<InterfaceClasse> listeClasses;
     private ModeleListeEleve modeleListeEleve;
+    private CouleurBasique couleurBasique;
 
-    public RenduTableEleve(ImageIcon iconeEdition, ModeleListeEleve modeleListeEleve, Vector<InterfaceClasse> listeClasses) {
+    public RenduTableEleve(CouleurBasique couleurBasique, ImageIcon iconeEdition, ModeleListeEleve modeleListeEleve, Vector<InterfaceClasse> listeClasses) {
+        this.couleurBasique = couleurBasique;
         this.iconeEdition = iconeEdition;
         this.listeClasses = listeClasses;
         this.modeleListeEleve = modeleListeEleve;
@@ -64,31 +67,31 @@ public class RenduTableEleve implements TableCellRenderer {
         CelluleSimpleTableau cellule = null;
         switch (column) {
             case 0: //N°
-                cellule = new CelluleSimpleTableau(" " + value + " ", CelluleSimpleTableau.ALIGNE_CENTRE, null);
+                cellule = new CelluleSimpleTableau(couleurBasique, " " + value + " ", CelluleSimpleTableau.ALIGNE_CENTRE, null);
                 break;
             case 1: //Nom
-                cellule = new CelluleSimpleTableau(" " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleSimpleTableau(couleurBasique, " " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 2: //Postnom
-                cellule = new CelluleSimpleTableau(" " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleSimpleTableau(couleurBasique, " " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 3: //Prenom
-                cellule = new CelluleSimpleTableau(" " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleSimpleTableau(couleurBasique, " " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 4: //Sexe
-                cellule = new CelluleSimpleTableau(" " + getSexe(value) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleSimpleTableau(couleurBasique, " " + getSexe(value) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 5: //Classe
-                cellule = new CelluleSimpleTableau(" " + getClasse(Integer.parseInt(value + "")) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleSimpleTableau(couleurBasique, " " + getClasse(Integer.parseInt(value + "")) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 6: //Date de naissance
-                cellule = new CelluleSimpleTableau(" " + UtilInscription.getDateFrancais((Date) value) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleSimpleTableau(couleurBasique, " " + UtilInscription.getDateFrancais((Date) value) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 7: //Status
-                cellule = new CelluleSimpleTableau(" " + getStatus(value) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleSimpleTableau(couleurBasique, " " + getStatus(value) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 8: //Téléphone
-                cellule = new CelluleSimpleTableau(" " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleSimpleTableau(couleurBasique, " " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
         }
 

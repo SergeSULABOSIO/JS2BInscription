@@ -13,7 +13,6 @@ import BEAN_MenuContextuel.RubriqueListener;
 import BEAN_MenuContextuel.RubriqueSimple;
 import ICONES.Icones;
 import SOURCES.Callback.EcouteurAjout;
-import SOURCES.Callback.EcouteurInscription;
 import SOURCES.Callback.EcouteurEnregistrement;
 import SOURCES.Callback.EcouteurInscription;
 import SOURCES.Callback.EcouteurSuppressionElement;
@@ -29,6 +28,7 @@ import SOURCES.Interfaces.InterfaceAyantDroit;
 import SOURCES.Interfaces.InterfaceClasse;
 import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.Interfaces.InterfaceEntreprise;
+import SOURCES.Interfaces.InterfaceMonnaie;
 import SOURCES.ModeleTable.ModeleListeAyantDroit;
 import SOURCES.ModeleTable.ModeleListeEleve;
 import SOURCES.RenduTable.RenduTableAyantDroit;
@@ -40,9 +40,11 @@ import SOURCES.Utilitaires.DonneesInscription;
 import SOURCES.Utilitaires.LiaisonEleveFrais;
 import SOURCES.Utilitaires.ParametreInscription;
 import SOURCES.Utilitaires.SortiesInscription;
+import SOURCES.Utilitaires.UtilInscription;
 import SOURCES.Utilitaires.XX_Ayantdroit;
 import SOURCES.Utilitaires.XX_Eleve;
 import java.awt.Color;
+import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.util.Date;
 import java.util.Vector;
@@ -50,6 +52,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
 /**
@@ -214,7 +220,55 @@ public class Panel extends javax.swing.JPanel {
         };
     }
 
-    private void parametrerTableEleves() {
+    private void setTaille(TableColumn column, int taille, boolean fixe, TableCellEditor editor) {
+        column.setPreferredWidth(taille);
+        if (fixe == true) {
+            column.setMaxWidth(taille);
+            column.setMinWidth(taille);
+        }
+        if (editor != null) {
+            column.setCellEditor(editor);
+        }
+    }
+    
+    
+
+    private void fixerColonnesTableEleves(boolean resizeTable) {
+        this.tableListeEleves.setDefaultRenderer(Object.class, new RenduTableEleve(couleurBasique, icones.getModifier_01(), this.modeleListeEleve, this.parametreInscription.getListeClasses()));
+        this.tableListeEleves.setRowHeight(25);
+        
+        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"}
+        setTaille(this.tableListeEleves.getColumnModel().getColumn(0), 40, true, null);
+        setTaille(this.tableListeEleves.getColumnModel().getColumn(1), 150, false, null);
+        setTaille(this.tableListeEleves.getColumnModel().getColumn(2), 150, false, null);
+        setTaille(this.tableListeEleves.getColumnModel().getColumn(3), 150, false, null);
+        setTaille(this.tableListeEleves.getColumnModel().getColumn(4), 140, true, new EditeurSexe());
+        setTaille(this.tableListeEleves.getColumnModel().getColumn(5), 90, true, new EditeurClasse(this.parametreInscription.getListeClasses()));
+        setTaille(this.tableListeEleves.getColumnModel().getColumn(6), 150, false, new EditeurDate());
+        setTaille(this.tableListeEleves.getColumnModel().getColumn(7), 120, false, new EditeurStatus());
+        setTaille(this.tableListeEleves.getColumnModel().getColumn(8), 200, false, null);
+
+        //On écoute les sélction
+        this.tableListeEleves.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting() == false) {
+                    if (modeleListeEleve != null) {
+                        InterfaceEleve artcl = modeleListeEleve.getEleve(tableListeEleves.getSelectedRow());
+                        if (artcl != null && ecouteurClose != null) {
+                            ecouteurClose.onActualiser(modeleListeEleve.getRowCount() + " élement(s).", icones.getClient_01());
+                        }
+                    }
+                }
+            }
+        });
+
+        if (resizeTable == true) {
+            this.tableListeEleves.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        }
+    }
+    
+    private void initModelTableEleves() {
         this.modeleListeEleve = new ModeleListeEleve(couleurBasique, scrollListeEleves, btEnregistrer, mEnregistrer, this.parametreInscription.getListeClasses(), new EcouteurValeursChangees() {
             @Override
             public void onValeurChangee() {
@@ -229,54 +283,24 @@ public class Panel extends javax.swing.JPanel {
 
         //Parametrage du modele contenant les données de la table
         this.tableListeEleves.setModel(this.modeleListeEleve);
-
+    }
+    
+    private void chargerDataTableEleves() {
+        //On charge les données existantes (le cas échéant)
         if (this.donneesInscription != null) {
-            if (this.donneesInscription.getListeEleves().size() != 0) {
+            if (!this.donneesInscription.getListeEleves().isEmpty()) {
                 this.modeleListeEleve.setListeEleves(this.donneesInscription.getListeEleves());
             }
         }
-
-        //Parametrage du rendu de la table
-        this.tableListeEleves.setDefaultRenderer(Object.class, new RenduTableEleve(icones.getModifier_01(), this.modeleListeEleve, this.parametreInscription.getListeClasses()));
-        this.tableListeEleves.setRowHeight(25);
-
-        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"}
-        TableColumn col_No = this.tableListeEleves.getColumnModel().getColumn(0);
-        col_No.setPreferredWidth(40);
-        col_No.setMaxWidth(40);
-
-        TableColumn colNom = this.tableListeEleves.getColumnModel().getColumn(1);
-        colNom.setPreferredWidth(150);
-
-        TableColumn colPostnom = this.tableListeEleves.getColumnModel().getColumn(2);
-        colPostnom.setPreferredWidth(150);
-
-        TableColumn colPrenom = this.tableListeEleves.getColumnModel().getColumn(3);
-        colPrenom.setPreferredWidth(150);
-
-        TableColumn colSexe = this.tableListeEleves.getColumnModel().getColumn(4);
-        colSexe.setCellEditor(new EditeurSexe());
-        colSexe.setPreferredWidth(140);
-        colSexe.setMaxWidth(140);
-
-        TableColumn colClasse = this.tableListeEleves.getColumnModel().getColumn(5);
-        colClasse.setCellEditor(new EditeurClasse(this.parametreInscription.getListeClasses()));
-        colClasse.setPreferredWidth(90);
-        colClasse.setMaxWidth(90);
-
-        TableColumn colDateNaissance = this.tableListeEleves.getColumnModel().getColumn(6);
-        colDateNaissance.setCellEditor(new EditeurDate());
-        colDateNaissance.setPreferredWidth(150);
-
-        TableColumn colStatus = this.tableListeEleves.getColumnModel().getColumn(7);
-        colStatus.setCellEditor(new EditeurStatus());
-        colStatus.setPreferredWidth(120);
-
-        TableColumn colTelephone = this.tableListeEleves.getColumnModel().getColumn(8);
-        colTelephone.setPreferredWidth(200);
     }
 
-    private void parametrerTableAyantDroit() {
+    private void parametrerTableEleves() {
+        initModelTableEleves();
+        chargerDataTableEleves();
+        fixerColonnesTableEleves(true);
+    }
+
+    private void initModelTableAyantDroit() {
         this.modeleListeAyantDroit = new ModeleListeAyantDroit(couleurBasique, scrollListeAyantDroit, btEnregistrer, mEnregistrer, this.parametreInscription.getListeFraises(), this.modeleListeEleve, new EcouteurValeursChangees() {
             @Override
             public void onValeurChangee() {
@@ -286,38 +310,53 @@ public class Panel extends javax.swing.JPanel {
 
         //Parametrage du modele contenant les données de la table
         this.tableListeAyantDroit.setModel(this.modeleListeAyantDroit);
-
+    }
+    
+    private void chargerDataTableAyantDroit() {
+        //On charge les données existantes (le cas échéant)
         if (this.donneesInscription != null) {
-            if (this.donneesInscription.getListeAyantDroit().size() != 0) {
+            if (!this.donneesInscription.getListeAyantDroit().isEmpty()) {
                 this.modeleListeAyantDroit.setListeAyantDroit(this.donneesInscription.getListeAyantDroit());
             }
         }
-
+    }
+    
+    private void fixerColonnesTableAyantDroit(boolean resizeTable) {
         this.editeurEleve = new EditeurEleve(this.modeleListeEleve, this.modeleListeAyantDroit);
-
+        
         //Parametrage du rendu de la table
-        this.tableListeAyantDroit.setDefaultRenderer(Object.class, new RenduTableAyantDroit(icones.getModifier_01(), this.modeleListeEleve, modeleListeAyantDroit));
+        this.tableListeAyantDroit.setDefaultRenderer(Object.class, new RenduTableAyantDroit(couleurBasique, icones.getModifier_01(), this.modeleListeEleve, modeleListeAyantDroit));
         this.tableListeAyantDroit.setRowHeight(25);
-
+        
         //{"N°", "Eleve", ...liste des frais}
-        TableColumn col_No = this.tableListeAyantDroit.getColumnModel().getColumn(0);
-        col_No.setPreferredWidth(40);
-        col_No.setMaxWidth(40);
+        setTaille(this.tableListeAyantDroit.getColumnModel().getColumn(0), 40, true, null);
+        setTaille(this.tableListeAyantDroit.getColumnModel().getColumn(1), 150, false, editeurEleve);
+        
 
-        TableColumn colEleve = this.tableListeAyantDroit.getColumnModel().getColumn(1);
-        colEleve.setCellEditor(this.editeurEleve);
-        colEleve.setPreferredWidth(150);
+        //On écoute les sélction
+        this.tableListeAyantDroit.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (e.getValueIsAdjusting() == false) {
+                    if (modeleListeAyantDroit != null) {
+                        InterfaceAyantDroit artcl = modeleListeAyantDroit.getAyantDroit(tableListeAyantDroit.getSelectedRow());
+                        if (artcl != null && ecouteurClose != null) {
+                            ecouteurClose.onActualiser(modeleListeAyantDroit.getRowCount() + " élement(s).", icones.getAdministrateur_01());
+                        }
+                    }
+                }
+            }
+        });
 
-        //Redimensionnement de la colonne des frais
-        /*
-        int index = 1;
-        for (InterfaceFrais frais : this.parametreInscription.getListeFraises()) {
-            TableColumn colFrais = this.tableListeAyantDroit.getColumnModel().getColumn(index);
-            //colFrais.setPreferredWidth(40);
-            //colFrais.setMaxWidth(40);
-            index++;
+        if (resizeTable == true) {
+            this.tableListeAyantDroit.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         }
-         */
+    }
+    
+    private void parametrerTableAyantDroit() {
+        initModelTableAyantDroit();
+        chargerDataTableAyantDroit();
+        fixerColonnesTableAyantDroit(false);
     }
 
     private void setBoutons() {
@@ -446,7 +485,7 @@ public class Panel extends javax.swing.JPanel {
                 if (modeleListeEleve != null) {
                     int index = (modeleListeEleve.getRowCount() + 1);
                     Date date = new Date();
-                    modeleListeEleve.AjouterEleve(new XX_Eleve(-1, parametreInscription.getEntreprise().getId(), parametreInscription.getIdUtilisateur(), parametreInscription.getAnneeScolaire().getId(), -1, date.getTime(), "", "", "(+243)", "Eleve_" + index, "", "", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, date, InterfaceEleve.BETA_NOUVEAU));
+                    modeleListeEleve.AjouterEleve(new XX_Eleve(-1, parametreInscription.getEntreprise().getId(), parametreInscription.getIdUtilisateur(), parametreInscription.getAnneeScolaire().getId(), -1, UtilInscription.generateSignature(), "", "", "(+243)", "Eleve_" + index, "", "", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, date, InterfaceEleve.BETA_NOUVEAU));
                     //On sélectionne la première ligne
                     tableListeEleves.setRowSelectionAllowed(true);
                     tableListeEleves.setRowSelectionInterval(0, 0);
@@ -459,7 +498,7 @@ public class Panel extends javax.swing.JPanel {
                     if (editeurEleve != null) {
                         editeurEleve.initCombo();
                         if (editeurEleve.getTailleCombo() != 0) {
-                            modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, parametreInscription.getEntreprise().getId(), parametreInscription.getIdUtilisateur(), parametreInscription.getAnneeScolaire().getId(), -1, "", new Vector<LiaisonEleveFrais>(), (new Date()).getTime(), -1, InterfaceAyantDroit.BETA_NOUVEAU));
+                            modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, parametreInscription.getEntreprise().getId(), parametreInscription.getIdUtilisateur(), parametreInscription.getAnneeScolaire().getId(), -1, "", new Vector<LiaisonEleveFrais>(), UtilInscription.generateSignature(), -1, InterfaceAyantDroit.BETA_NOUVEAU));
                             //On sélectionne la première ligne
                             tableListeAyantDroit.setRowSelectionAllowed(true);
                             tableListeAyantDroit.setRowSelectionInterval(0, 0);
@@ -787,6 +826,7 @@ public class Panel extends javax.swing.JPanel {
         setBackground(new java.awt.Color(255, 255, 255));
 
         barreOutils.setBackground(new java.awt.Color(255, 255, 255));
+        barreOutils.setFloatable(false);
         barreOutils.setRollover(true);
         barreOutils.setAutoscrolls(true);
         barreOutils.setPreferredSize(new java.awt.Dimension(59, 61));
@@ -800,6 +840,7 @@ public class Panel extends javax.swing.JPanel {
         jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         barreOutils.add(jButton5);
 
+        tabPrincipal.setTabPlacement(javax.swing.JTabbedPane.LEFT);
         tabPrincipal.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 tabPrincipalStateChanged(evt);
@@ -863,6 +904,11 @@ public class Panel extends javax.swing.JPanel {
         chRecherche.setTextInitial("Recherche");
 
         chClasse.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        chClasse.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                chClasseItemStateChanged(evt);
+            }
+        });
 
         chSexe.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TOUT GENRE", "MASCULIN", "FEMININ" }));
 
@@ -948,6 +994,14 @@ public class Panel extends javax.swing.JPanel {
         // TODO add your handling code here:
         activerCriteres();
     }//GEN-LAST:event_btCriteresActionPerformed
+
+    private void chClasseItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_chClasseItemStateChanged
+        // TODO add your handling code here:
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+            System.out.println("Combo: Selection - " + evt.getItem());
+            gestionnaireRecherche.chercher(chRecherche.getText());
+        }
+    }//GEN-LAST:event_chClasseItemStateChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

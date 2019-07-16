@@ -132,12 +132,12 @@ public class TEST_Principal extends javax.swing.JFrame {
             public void onDetruitExercice(int idExercice) {
                 System.out.println("RAS=" + idExercice);
             }
+            
 
             @Override
             public void onDetruitElements(int idElement, int index) {
                 System.out.println("Element supprimé = " + idElement + ", indice = " + index);
             }
-            
             
             
             @Override

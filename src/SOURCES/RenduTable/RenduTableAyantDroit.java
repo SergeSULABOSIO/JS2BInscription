@@ -10,6 +10,7 @@ import SOURCES.Interfaces.InterfaceEleve;
 import SOURCES.ModeleTable.ModeleListeAyantDroit;
 import SOURCES.ModeleTable.ModeleListeEleve;
 import SOURCES.UI.CelluleSimpleTableau;
+import SOURCES.Utilitaires.CouleurBasique;
 import SOURCES.Utilitaires.UtilInscription;
 import java.awt.Component;
 import javax.swing.ImageIcon;
@@ -25,8 +26,10 @@ public class RenduTableAyantDroit implements TableCellRenderer {
     private ImageIcon iconeEdition;
     private ModeleListeEleve modeleListeEleve;
     private ModeleListeAyantDroit modeleListeAyantDroit;
+    private CouleurBasique couleurBasique;
     
-    public RenduTableAyantDroit(ImageIcon iconeEdition, ModeleListeEleve modeleListeEleve, ModeleListeAyantDroit modeleListeAyantDroit) {
+    public RenduTableAyantDroit(CouleurBasique couleurBasique, ImageIcon iconeEdition, ModeleListeEleve modeleListeEleve, ModeleListeAyantDroit modeleListeAyantDroit) {
+        this.couleurBasique = couleurBasique;
         this.iconeEdition = iconeEdition;
         this.modeleListeEleve = modeleListeEleve;
         this.modeleListeAyantDroit = modeleListeAyantDroit;
@@ -48,14 +51,14 @@ public class RenduTableAyantDroit implements TableCellRenderer {
         CelluleSimpleTableau cellule = null;
         switch (column) {
             case 0:
-                cellule = new CelluleSimpleTableau(" " + value + " ", CelluleSimpleTableau.ALIGNE_CENTRE, null);
+                cellule = new CelluleSimpleTableau(couleurBasique, " " + value + " ", CelluleSimpleTableau.ALIGNE_CENTRE, null);
                 break;
             case 1:
-                cellule = new CelluleSimpleTableau(" " + getEleve(Long.parseLong(value+"")) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleSimpleTableau(couleurBasique, " " + getEleve(Long.parseLong(value+"")) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
                 break;
             default:
                 double mont = Double.parseDouble(value+"");
-                cellule = new CelluleSimpleTableau(" " + UtilInscription.getMontantFrancais(mont) + " ", CelluleSimpleTableau.ALIGNE_DROITE, iconeEdition);
+                cellule = new CelluleSimpleTableau(couleurBasique, " " + UtilInscription.getMontantFrancais(mont) + " ", CelluleSimpleTableau.ALIGNE_DROITE, iconeEdition);
                 break;
         }
         cellule.ecouterSelection(isSelected, row, getBeta(row), hasFocus);

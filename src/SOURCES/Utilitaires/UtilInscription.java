@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 /**
  *
@@ -29,6 +30,12 @@ public class UtilInscription {
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);
         return bd.doubleValue();
+    }
+    
+    public static long generateSignature(){
+      Random randomno = new Random();
+      long value = randomno.nextLong();
+      return value;
     }
     
     public static boolean contientMotsCles(String base, String motscles){
