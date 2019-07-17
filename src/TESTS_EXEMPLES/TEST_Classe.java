@@ -7,7 +7,7 @@ package TESTS_EXEMPLES;
  */
 
 
-import SOURCES.Interfaces.InterfaceClasse;
+import SOURCES.Interface.InterfaceClasse;
 
 /**
  *

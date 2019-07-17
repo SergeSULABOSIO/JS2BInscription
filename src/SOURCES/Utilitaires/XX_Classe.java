@@ -7,7 +7,7 @@ package SOURCES.Utilitaires;
  */
 
 
-import SOURCES.Interfaces.InterfaceClasse;
+import SOURCES.Interface.InterfaceClasse;
 
 /**
  *

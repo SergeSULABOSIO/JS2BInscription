@@ -5,7 +5,7 @@
  */
 package SOURCES.EditeurTable;
 
-import SOURCES.Interfaces.InterfaceClasse;
+import SOURCES.Interface.InterfaceClasse;
 import java.awt.Component;
 import java.util.Vector;
 import javax.swing.AbstractCellEditor;

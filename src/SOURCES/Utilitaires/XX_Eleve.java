@@ -5,7 +5,7 @@
  */
 package SOURCES.Utilitaires;
 
-import SOURCES.Interfaces.InterfaceEleve;
+import SOURCES.Interface.InterfaceEleve;
 import java.util.Date;
 
 /**

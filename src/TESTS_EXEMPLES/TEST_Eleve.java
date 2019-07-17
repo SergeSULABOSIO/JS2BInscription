@@ -5,7 +5,7 @@
  */
 package TESTS_EXEMPLES;
 
-import SOURCES.Interfaces.InterfaceEleve;
+import SOURCES.Interface.InterfaceEleve;
 import java.util.Date;
 
 /**

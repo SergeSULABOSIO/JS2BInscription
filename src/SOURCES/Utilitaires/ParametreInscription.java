@@ -5,11 +5,11 @@
  */
 package SOURCES.Utilitaires;
 
-import SOURCES.Interfaces.InterfaceClasse;
-import SOURCES.Interfaces.InterfaceEntreprise;
-import SOURCES.Interfaces.InterfaceExercice;
-import SOURCES.Interfaces.InterfaceFrais;
-import SOURCES.Interfaces.InterfaceMonnaie;
+import SOURCES.Interface.InterfaceClasse;
+import SOURCES.Interface.InterfaceEntreprise;
+import SOURCES.Interface.InterfaceExercice;
+import SOURCES.Interface.InterfaceFrais;
+import SOURCES.Interface.InterfaceMonnaie;
 import java.util.Vector;
 
 /**

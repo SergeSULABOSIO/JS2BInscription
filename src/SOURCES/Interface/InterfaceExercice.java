@@ -3,30 +3,33 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package SOURCES.Interfaces;
+package SOURCES.Interface;
+
+import java.util.Date;
 
 /**
  *
  * @author HP Pavilion
  */
-public interface InterfaceClasse {
+public interface InterfaceExercice {
+    //Conatantes - BETA
+    public static final int BETA_EXISTANT = 0;
+    public static final int BETA_MODIFIE = 1;
+    public static final int BETA_NOUVEAU = 2;
     
     public abstract int getId();
     public abstract int getIdEntreprise();
     public abstract int getIdUtilisateur();
-    public abstract int getIdExercice();
     public abstract String getNom();
-    public abstract String getNomLocal();
-    public abstract int getCapacite();
-    public abstract long getSignature();
+    public abstract Date getDebut();
+    public abstract Date getFin();
+    public abstract int getBeta();  // 0 = Existant, 1 =  Modifié, 2 = Nouveau
     
     public abstract void setId(int id);
     public abstract void setIdEntreprise(int idEntreprise);
     public abstract void setIdUtilisateur(int idUtilisateur);
-    public abstract void setIdExercice(int idExercice);
     public abstract void setNom(String nom);
-    public abstract void setNomLocal(String nom);
-    public abstract void setCapacite(int capacite);  
-    public abstract void setSignature(long signature);
-    
+    public abstract void setDebut(Date dateDebut);
+    public abstract void setFin(Date dateFin);
+    public abstract void setBeta(int newbeta);
 }

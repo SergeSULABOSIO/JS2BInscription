@@ -5,8 +5,8 @@
  */
 package SOURCES.RenduTable;
 
-import SOURCES.Interfaces.InterfaceAyantDroit;
-import SOURCES.Interfaces.InterfaceEleve;
+import SOURCES.Interface.InterfaceAyantDroit;
+import SOURCES.Interface.InterfaceEleve;
 import SOURCES.ModeleTable.ModeleListeAyantDroit;
 import SOURCES.ModeleTable.ModeleListeEleve;
 import SOURCES.UI.CelluleSimpleTableau;

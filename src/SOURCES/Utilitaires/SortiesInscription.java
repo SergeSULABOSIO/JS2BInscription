@@ -6,10 +6,10 @@
 package SOURCES.Utilitaires;
 
 import SOURCES.Callback.EcouteurEnregistrement;
-import SOURCES.Interfaces.InterfaceAyantDroit;
-import SOURCES.Interfaces.InterfaceClasse;
-import SOURCES.Interfaces.InterfaceEleve;
-import SOURCES.Interfaces.InterfaceFrais;
+import SOURCES.Interface.InterfaceAyantDroit;
+import SOURCES.Interface.InterfaceClasse;
+import SOURCES.Interface.InterfaceEleve;
+import SOURCES.Interface.InterfaceFrais;
 import java.util.Vector;
 
 /**

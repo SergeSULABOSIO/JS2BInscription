@@ -6,7 +6,7 @@
 package TESTS_EXEMPLES;
 
 import SOURCES.Utilitaires.*;
-import SOURCES.Interfaces.InterfaceAyantDroit;
+import SOURCES.Interface.InterfaceAyantDroit;
 import java.util.Vector;
 
 /**

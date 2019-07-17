@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package SOURCES.Interfaces;
+package SOURCES.Interface;
 
 import SOURCES.Utilitaires.LiaisonClasseFrais;
 import SOURCES.Utilitaires.LiaisonPeriodeFrais;

@@ -6,9 +6,9 @@
 package TESTS_EXEMPLES;
 
 import SOURCES.Utilitaires.*;
-import SOURCES.Interfaces.InterfaceClasse;
-import SOURCES.Interfaces.InterfaceFrais;
-import SOURCES.Interfaces.InterfacePeriode;
+import SOURCES.Interface.InterfaceClasse;
+import SOURCES.Interface.InterfaceFrais;
+import SOURCES.Interface.InterfacePeriode;
 import java.util.Vector;
 
 /**

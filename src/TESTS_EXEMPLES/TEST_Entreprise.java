@@ -5,7 +5,7 @@
  */
 package TESTS_EXEMPLES;
 
-import SOURCES.Interfaces.InterfaceEntreprise;
+import SOURCES.Interface.InterfaceEntreprise;
 
 /**
  *

@@ -3,44 +3,40 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package SOURCES.Interfaces;
-
-import SOURCES.Utilitaires.LiaisonEleveFrais;
-import java.util.Vector;
+package SOURCES.Interface;
 
 /**
  *
  * @author HP Pavilion
  */
-public interface InterfaceAyantDroit {
+public interface InterfaceMonnaie {
+    //Constante - NATURE MONNAIE
+    public static final int NATURE_MONNAIE_LOCALE = 0;
+    public static final int NATURE_MONNAIE_ETRANGERE = 1;
     //Conatantes - BETA
     public static final int BETA_EXISTANT = 0;
     public static final int BETA_MODIFIE = 1;
     public static final int BETA_NOUVEAU = 2;
     
-    //les getters //ModeleListeAyantDroit
     public abstract int getId();
     public abstract int getIdEntreprise();
     public abstract int getIdUtilisateur();
     public abstract int getIdExercice();
-    public abstract int getIdEleve();
-    public abstract String getEleve();
-    public abstract Vector<LiaisonEleveFrais> getListeLiaisons();
+    public abstract String getNom();
+    public abstract String getCode();
+    public abstract int getNature();    //Monnaie locale = 0, Monnaie étrangère = 1; 
+    public abstract double getTauxMonnaieLocale();
     public abstract long getSignature();
-    public abstract long getSignatureEleve();
     public abstract int getBeta();  // 0 = Existant, 1 =  Modifié, 2 = Nouveau
-    //Stters
+    
     public abstract void setId(int id);
     public abstract void setIdEntreprise(int idEntreprise);
     public abstract void setIdUtilisateur(int idUtilisateur);
     public abstract void setIdExercice(int idExercice);
-    public abstract void setIdEleve(int idEleve);
-    public abstract void setListeLiaisons(Vector<LiaisonEleveFrais>  listeLiaisons);
-    public abstract void ajouterLiaisons(LiaisonEleveFrais newLiaison);
-    public abstract void viderLiaisons();
-    public abstract void setLiaisons(int idFrais, double montant);
+    public abstract void setNom(String nom);
+    public abstract void setCode(String code);
+    public abstract void setNature(int nature);    //Monnaie locale = 0, Monnaie étrangère = 1; 
+    public abstract void setTauxMonnaieLocale(double taux);
     public abstract void setSignature(long signature);
-    public abstract void setSignatureEleve(long signature);
-    public abstract void setEleve(String eleve);
     public abstract void setBeta(int newbeta);
 }

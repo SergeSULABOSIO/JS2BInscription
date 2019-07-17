@@ -6,12 +6,12 @@
 package TESTS_EXEMPLES;
 
 import SOURCES.Callback.EcouteurInscription;
-import SOURCES.Interfaces.InterfaceAyantDroit;
-import SOURCES.Interfaces.InterfaceClasse;
-import SOURCES.Interfaces.InterfaceEleve;
-import SOURCES.Interfaces.InterfaceExercice;
-import SOURCES.Interfaces.InterfaceFrais;
-import SOURCES.Interfaces.InterfaceMonnaie;
+import SOURCES.Interface.InterfaceAyantDroit;
+import SOURCES.Interface.InterfaceClasse;
+import SOURCES.Interface.InterfaceEleve;
+import SOURCES.Interface.InterfaceExercice;
+import SOURCES.Interface.InterfaceFrais;
+import SOURCES.Interface.InterfaceMonnaie;
 import SOURCES.UI.PanelInscription;
 import SOURCES.Utilitaires.CouleurBasique;
 import SOURCES.Utilitaires.DonneesInscription;

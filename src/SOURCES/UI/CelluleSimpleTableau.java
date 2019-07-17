@@ -6,7 +6,7 @@
 package SOURCES.UI;
 
 
-import SOURCES.Interfaces.InterfaceAyantDroit;
+import SOURCES.Interface.InterfaceAyantDroit;
 import SOURCES.Utilitaires.CouleurBasique;
 import java.awt.Color;
 import java.awt.Font;

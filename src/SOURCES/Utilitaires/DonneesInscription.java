@@ -5,8 +5,8 @@
  */
 package SOURCES.Utilitaires;
 
-import SOURCES.Interfaces.InterfaceAyantDroit;
-import SOURCES.Interfaces.InterfaceEleve;
+import SOURCES.Interface.InterfaceAyantDroit;
+import SOURCES.Interface.InterfaceEleve;
 import java.util.Vector;
 
 /**

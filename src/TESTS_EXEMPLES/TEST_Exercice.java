@@ -6,7 +6,7 @@
 package TESTS_EXEMPLES;
 
 import java.util.Date;
-import SOURCES.Interfaces.InterfaceExercice;
+import SOURCES.Interface.InterfaceExercice;
 
 /**
  *
