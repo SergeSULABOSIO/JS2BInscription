@@ -6,7 +6,7 @@
 package SOURCES.MoteurRecherche_Insc;
 
 import ICONES.Icones;
-import SOURCES.Callback_Insc.EcouteurUpdateClose;
+import Source.Callbacks.EcouteurUpdateClose;
 import UI.JS2bTextField;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;

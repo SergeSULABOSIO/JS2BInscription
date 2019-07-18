@@ -5,13 +5,14 @@
  */
 package SOURCES.RenduTable_Insc;
 
-import SOURCES.Interface.InterfaceAyantDroit;
-import SOURCES.Interface.InterfaceEleve;
+
 import SOURCES.ModeleTable_Insc.ModeleListeAyantDroit;
 import SOURCES.ModeleTable_Insc.ModeleListeEleve;
-import SOURCES.UI_Insc.CelluleSimpleTableau;
-import SOURCES.Utilitaires_Insc.CouleurBasique;
 import SOURCES.Utilitaires_Insc.UtilInscription;
+import Source.Interface.InterfaceAyantDroit;
+import Source.Interface.InterfaceEleve;
+import Source.Objet.CouleurBasique;
+import Source.UI.CelluleTableauSimple;
 import java.awt.Component;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
@@ -48,17 +49,17 @@ public class RenduTableAyantDroit implements TableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         //{"N°", "Elève"}
-        CelluleSimpleTableau cellule = null;
+        CelluleTableauSimple cellule = null;
         switch (column) {
             case 0:
-                cellule = new CelluleSimpleTableau(couleurBasique, " " + value + " ", CelluleSimpleTableau.ALIGNE_CENTRE, null);
+                cellule = new CelluleTableauSimple(couleurBasique, " " + value + " ", CelluleTableauSimple.ALIGNE_CENTRE, null);
                 break;
             case 1:
-                cellule = new CelluleSimpleTableau(couleurBasique, " " + getEleve(Long.parseLong(value+"")) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleTableauSimple(couleurBasique, " " + getEleve(Long.parseLong(value+"")) + " ", CelluleTableauSimple.ALIGNE_GAUCHE, iconeEdition);
                 break;
             default:
                 double mont = Double.parseDouble(value+"");
-                cellule = new CelluleSimpleTableau(couleurBasique, " " + UtilInscription.getMontantFrancais(mont) + " ", CelluleSimpleTableau.ALIGNE_DROITE, iconeEdition);
+                cellule = new CelluleTableauSimple(couleurBasique, " " + UtilInscription.getMontantFrancais(mont) + " ", CelluleTableauSimple.ALIGNE_DROITE, iconeEdition);
                 break;
         }
         cellule.ecouterSelection(isSelected, row, getBeta(row), hasFocus);

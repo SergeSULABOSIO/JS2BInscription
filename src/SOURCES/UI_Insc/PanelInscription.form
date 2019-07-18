@@ -93,7 +93,7 @@
               <Font name="Tahoma" size="13" style="1"/>
             </Property>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/IMG/Facture02.png"/>
+              <Image iconType="3" name="/IMG_Insc/Facture02.png"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Ajouter"/>
             <Property name="focusable" type="boolean" value="false"/>
@@ -204,7 +204,7 @@
     <Component class="javax.swing.JLabel" name="labInfos">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/IMG/Facture01.png"/>
+          <Image iconType="3" name="/IMG_Insc/Facture01.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Pr&#xea;t."/>
       </Properties>
@@ -212,7 +212,7 @@
     <Component class="UI.JS2bTextField" name="chRecherche">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/IMG/Facture01.png"/>
+          <Image iconType="3" name="/IMG_Insc/Facture01.png"/>
         </Property>
         <Property name="textInitial" type="java.lang.String" value="Recherche"/>
       </Properties>
@@ -272,7 +272,7 @@
     <Component class="javax.swing.JToggleButton" name="btCriteres">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/IMG/Facture01.png"/>
+          <Image iconType="3" name="/IMG_Insc/Facture01.png"/>
         </Property>
         <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="Crit&#xe8;res++"/>

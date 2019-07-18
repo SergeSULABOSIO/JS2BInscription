@@ -5,12 +5,13 @@
  */
 package SOURCES.RenduTable_Insc;
 
-import SOURCES.Interface.InterfaceClasse;
-import SOURCES.Interface.InterfaceEleve;
+
 import SOURCES.ModeleTable_Insc.ModeleListeEleve;
-import SOURCES.UI_Insc.CelluleSimpleTableau;
-import SOURCES.Utilitaires_Insc.CouleurBasique;
 import SOURCES.Utilitaires_Insc.UtilInscription;
+import Source.Interface.InterfaceEleve;
+import Source.Objet.Classe;
+import Source.Objet.CouleurBasique;
+import Source.UI.CelluleTableauSimple;
 import java.awt.Component;
 import java.util.Date;
 import java.util.Vector;
@@ -25,11 +26,11 @@ import javax.swing.table.TableCellRenderer;
 public class RenduTableEleve implements TableCellRenderer {
 
     private ImageIcon iconeEdition;
-    private Vector<InterfaceClasse> listeClasses;
+    private Vector<Classe> listeClasses;
     private ModeleListeEleve modeleListeEleve;
     private CouleurBasique couleurBasique;
 
-    public RenduTableEleve(CouleurBasique couleurBasique, ImageIcon iconeEdition, ModeleListeEleve modeleListeEleve, Vector<InterfaceClasse> listeClasses) {
+    public RenduTableEleve(CouleurBasique couleurBasique, ImageIcon iconeEdition, ModeleListeEleve modeleListeEleve, Vector<Classe> listeClasses) {
         this.couleurBasique = couleurBasique;
         this.iconeEdition = iconeEdition;
         this.listeClasses = listeClasses;
@@ -53,7 +54,7 @@ public class RenduTableEleve implements TableCellRenderer {
     }
 
     private String getClasse(int idClasse) {
-        for (InterfaceClasse clss : this.listeClasses) {
+        for (Classe clss : this.listeClasses) {
             if (clss.getId() == idClasse) {
                 return clss.getNom();
             }
@@ -64,34 +65,34 @@ public class RenduTableEleve implements TableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"}
-        CelluleSimpleTableau cellule = null;
+        CelluleTableauSimple cellule = null;
         switch (column) {
             case 0: //N°
-                cellule = new CelluleSimpleTableau(couleurBasique, " " + value + " ", CelluleSimpleTableau.ALIGNE_CENTRE, null);
+                cellule = new CelluleTableauSimple(couleurBasique, " " + value + " ", CelluleTableauSimple.ALIGNE_CENTRE, null);
                 break;
             case 1: //Nom
-                cellule = new CelluleSimpleTableau(couleurBasique, " " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleTableauSimple(couleurBasique, " " + value + " ", CelluleTableauSimple.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 2: //Postnom
-                cellule = new CelluleSimpleTableau(couleurBasique, " " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleTableauSimple(couleurBasique, " " + value + " ", CelluleTableauSimple.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 3: //Prenom
-                cellule = new CelluleSimpleTableau(couleurBasique, " " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleTableauSimple(couleurBasique, " " + value + " ", CelluleTableauSimple.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 4: //Sexe
-                cellule = new CelluleSimpleTableau(couleurBasique, " " + getSexe(value) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleTableauSimple(couleurBasique, " " + getSexe(value) + " ", CelluleTableauSimple.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 5: //Classe
-                cellule = new CelluleSimpleTableau(couleurBasique, " " + getClasse(Integer.parseInt(value + "")) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleTableauSimple(couleurBasique, " " + getClasse(Integer.parseInt(value + "")) + " ", CelluleTableauSimple.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 6: //Date de naissance
-                cellule = new CelluleSimpleTableau(couleurBasique, " " + UtilInscription.getDateFrancais((Date) value) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleTableauSimple(couleurBasique, " " + UtilInscription.getDateFrancais((Date) value) + " ", CelluleTableauSimple.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 7: //Status
-                cellule = new CelluleSimpleTableau(couleurBasique, " " + getStatus(value) + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleTableauSimple(couleurBasique, " " + getStatus(value) + " ", CelluleTableauSimple.ALIGNE_GAUCHE, iconeEdition);
                 break;
             case 8: //Téléphone
-                cellule = new CelluleSimpleTableau(couleurBasique, " " + value + " ", CelluleSimpleTableau.ALIGNE_GAUCHE, iconeEdition);
+                cellule = new CelluleTableauSimple(couleurBasique, " " + value + " ", CelluleTableauSimple.ALIGNE_GAUCHE, iconeEdition);
                 break;
         }
 

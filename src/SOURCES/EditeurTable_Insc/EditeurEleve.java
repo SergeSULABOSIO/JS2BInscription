@@ -6,10 +6,11 @@
 package SOURCES.EditeurTable_Insc;
 
 
-import SOURCES.Interface.InterfaceAyantDroit;
-import SOURCES.Interface.InterfaceEleve;
+
 import SOURCES.ModeleTable_Insc.ModeleListeAyantDroit;
 import SOURCES.ModeleTable_Insc.ModeleListeEleve;
+import Source.Interface.InterfaceEleve;
+import Source.Objet.Eleve;
 import java.awt.Component;
 import java.util.Vector;
 import javax.swing.AbstractCellEditor;
@@ -41,7 +42,7 @@ public class EditeurEleve extends AbstractCellEditor implements TableCellEditor 
     public void initCombo() {
         this.champEditionCombo.removeAllItems();
         if (this.modeleListeEleve != null) {
-            Vector<InterfaceEleve> listeEleves = this.modeleListeEleve.getListeData();
+            Vector<Eleve> listeEleves = this.modeleListeEleve.getListeData();
             if(listeEleves != null){
                 for(InterfaceEleve eleve : listeEleves){
                     this.champEditionCombo.addItem(eleve.getNom() + " " + eleve.getPostnom()+ ", " + eleve.getPrenom()+" ("+eleve.getClasse()+")");

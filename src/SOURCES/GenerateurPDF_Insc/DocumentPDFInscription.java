@@ -5,16 +5,19 @@
  */
 package SOURCES.GenerateurPDF_Insc;
 
-import SOURCES.Interface.InterfaceAyantDroit;
-import SOURCES.Interface.InterfaceClasse;
-import SOURCES.Interface.InterfaceEleve;
-import SOURCES.Interface.InterfaceEntreprise;
-import SOURCES.Interface.InterfaceFrais;
-import SOURCES.Interface.InterfaceMonnaie;
+
 import SOURCES.UI_Insc.PanelInscription;
-import SOURCES.Utilitaires.LiaisonEleveFrais;
 import SOURCES.Utilitaires_Insc.SortiesInscription;
 import SOURCES.Utilitaires_Insc.UtilInscription;
+import Source.Interface.InterfaceAyantDroit;
+import Source.Interface.InterfaceClasse;
+import Source.Interface.InterfaceEleve;
+import Source.Interface.InterfaceEntreprise;
+import Source.Interface.InterfaceFrais;
+import Source.Interface.InterfaceMonnaie;
+import Source.Objet.Ayantdroit;
+import Source.Objet.Eleve;
+import Source.Objet.LiaisonFraisEleve;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -377,7 +380,7 @@ public class DocumentPDFInscription extends PdfPageEventHelper {
                                 Element.ALIGN_CENTER,
                                 0.2f
                         );
-                        Vector<InterfaceEleve> listeEleves = this.sortiesEleveAyantDroit.getListeEleves();
+                        Vector<Eleve> listeEleves = this.sortiesEleveAyantDroit.getListeEleves();
                         int iEleve = 0;
                         for (InterfaceEleve Ieleve : listeEleves) {
                             if (Ieleve.getIdClasse() == Iclasse.getId()) {
@@ -473,7 +476,7 @@ public class DocumentPDFInscription extends PdfPageEventHelper {
                                 Element.ALIGN_CENTER,
                                 0.2f
                         );
-                        Vector<InterfaceAyantDroit> listeAyantDroit = this.sortiesEleveAyantDroit.getListeAyantDroit();
+                        Vector<Ayantdroit> listeAyantDroit = this.sortiesEleveAyantDroit.getListeAyantDroit();
                         int iEleve = 0;
                         for (InterfaceAyantDroit Iaya : listeAyantDroit) {
                             InterfaceEleve Iele = getEleve(Iaya.getSignatureEleve());
@@ -482,7 +485,7 @@ public class DocumentPDFInscription extends PdfPageEventHelper {
                                     //écriture dans chaque cellule de la ligne
                                     tableAyantDroit.addCell(getCelluleTableau("" + (iEleve + 1), 0.2f, BaseColor.WHITE, null, Element.ALIGN_RIGHT, Font_TexteSimple));
                                     tableAyantDroit.addCell(getCelluleTableau(Iele.getNom() + " " + Iele.getPostnom() + " " + Iele.getPrenom() + " (" + Iele.getClasse() + ")", 0.2f, BaseColor.WHITE, null, Element.ALIGN_LEFT, Font_TexteSimple));
-                                    for (LiaisonEleveFrais liaisonEF : Iaya.getListeLiaisons()) {
+                                    for (LiaisonFraisEleve liaisonEF : Iaya.getListeLiaisons()) {
                                         tableAyantDroit.addCell(getCelluleTableau(liaisonEF.getMontant() + " " + liaisonEF.getMonnaie(), 0.2f, BaseColor.WHITE, null, Element.ALIGN_RIGHT, Font_TexteSimple));
                                     }
                                     //incrémentaion

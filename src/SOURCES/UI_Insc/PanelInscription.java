@@ -13,36 +13,35 @@ import BEAN_MenuContextuel.RubriqueListener;
 import BEAN_MenuContextuel.RubriqueSimple;
 import ICONES.Icones;
 import SOURCES.Callback_Insc.EcouteurAjoutInscription;
-import SOURCES.Callback_Insc.EcouteurEnregistrement;
 import SOURCES.Callback_Insc.EcouteurInscription;
-import SOURCES.Callback_Insc.EcouteurSuppressionElement;
-import SOURCES.Callback_Insc.EcouteurUpdateClose;
-import SOURCES.Callback_Insc.EcouteurValeursChangees;
 import SOURCES.EditeurTable_Insc.EditeurClasse;
 import SOURCES.EditeurTable_Insc.EditeurDate;
 import SOURCES.EditeurTable_Insc.EditeurEleve;
 import SOURCES.EditeurTable_Insc.EditeurSexe;
 import SOURCES.EditeurTable_Insc.EditeurStatus;
 import SOURCES.GenerateurPDF_Insc.DocumentPDFInscription;
-import SOURCES.Interface.InterfaceAyantDroit;
-import SOURCES.Interface.InterfaceClasse;
-import SOURCES.Interface.InterfaceEleve;
-import SOURCES.Interface.InterfaceEntreprise;
-import SOURCES.Interface.InterfaceMonnaie;
 import SOURCES.ModeleTable_Insc.ModeleListeAyantDroit;
 import SOURCES.ModeleTable_Insc.ModeleListeEleve;
-import SOURCES.RenduTable_Insc.RenduTableAyantDroit;
-import SOURCES.RenduTable_Insc.RenduTableEleve;
 import SOURCES.MoteurRecherche_Insc.MoteurRecherche;
 import SOURCES.RenduComboBox_Insc.RenduCombo;
-import SOURCES.Utilitaires_Insc.CouleurBasique;
+import SOURCES.RenduTable_Insc.RenduTableAyantDroit;
+import SOURCES.RenduTable_Insc.RenduTableEleve;
 import SOURCES.Utilitaires_Insc.DonneesInscription;
-import SOURCES.Utilitaires.LiaisonEleveFrais;
 import SOURCES.Utilitaires_Insc.ParametreInscription;
 import SOURCES.Utilitaires_Insc.SortiesInscription;
 import SOURCES.Utilitaires_Insc.UtilInscription;
-import SOURCES.Utilitaires.XX_Ayantdroit;
-import SOURCES.Utilitaires.XX_Eleve;
+import Source.Callbacks.EcouteurEnregistrement;
+import Source.Callbacks.EcouteurSuppressionElement;
+import Source.Callbacks.EcouteurUpdateClose;
+import Source.Callbacks.EcouteurValeursChangees;
+import Source.Interface.InterfaceAyantDroit;
+import Source.Interface.InterfaceClasse;
+import Source.Interface.InterfaceEleve;
+import Source.Interface.InterfaceEntreprise;
+import Source.Objet.Ayantdroit;
+import Source.Objet.CouleurBasique;
+import Source.Objet.Eleve;
+import Source.Objet.LiaisonFraisEleve;
 import java.awt.Color;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
@@ -485,7 +484,7 @@ public class PanelInscription extends javax.swing.JPanel {
                 if (modeleListeEleve != null) {
                     int index = (modeleListeEleve.getRowCount() + 1);
                     Date date = new Date();
-                    modeleListeEleve.AjouterEleve(new XX_Eleve(-1, parametreInscription.getEntreprise().getId(), parametreInscription.getIdUtilisateur(), parametreInscription.getAnneeScolaire().getId(), -1, UtilInscription.generateSignature(), "", "", "(+243)", "Eleve_" + index, "", "", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, date, InterfaceEleve.BETA_NOUVEAU));
+                    modeleListeEleve.AjouterEleve(new Eleve(-1, parametreInscription.getEntreprise().getId(), parametreInscription.getIdUtilisateur(), parametreInscription.getExercice().getId(), -1, UtilInscription.generateSignature(), "", "", "(+243)", "Eleve_" + index, "", "", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, date, InterfaceEleve.BETA_NOUVEAU));
                     //On sélectionne la première ligne
                     tableListeEleves.setRowSelectionAllowed(true);
                     tableListeEleves.setRowSelectionInterval(0, 0);
@@ -498,7 +497,7 @@ public class PanelInscription extends javax.swing.JPanel {
                     if (editeurEleve != null) {
                         editeurEleve.initCombo();
                         if (editeurEleve.getTailleCombo() != 0) {
-                            modeleListeAyantDroit.AjouterAyantDroit(new XX_Ayantdroit(-1, parametreInscription.getEntreprise().getId(), parametreInscription.getIdUtilisateur(), parametreInscription.getAnneeScolaire().getId(), -1, "", new Vector<LiaisonEleveFrais>(), UtilInscription.generateSignature(), -1, InterfaceAyantDroit.BETA_NOUVEAU));
+                            modeleListeAyantDroit.AjouterAyantDroit(new Ayantdroit(-1, parametreInscription.getEntreprise().getId(), parametreInscription.getIdUtilisateur(), parametreInscription.getExercice().getId(), -1, "", new Vector<LiaisonFraisEleve>(), UtilInscription.generateSignature(), -1, InterfaceAyantDroit.BETA_NOUVEAU));
                             //On sélectionne la première ligne
                             tableListeAyantDroit.setRowSelectionAllowed(true);
                             tableListeAyantDroit.setRowSelectionInterval(0, 0);
@@ -833,7 +832,7 @@ public class PanelInscription extends javax.swing.JPanel {
 
         jButton5.setBackground(new java.awt.Color(255, 255, 255));
         jButton5.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Facture02.png"))); // NOI18N
+        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG_Insc/Facture02.png"))); // NOI18N
         jButton5.setText("Ajouter");
         jButton5.setFocusable(false);
         jButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -897,10 +896,10 @@ public class PanelInscription extends javax.swing.JPanel {
 
         tabPrincipal.addTab("Ayant-droit", scrollListeAyantDroit);
 
-        labInfos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Facture01.png"))); // NOI18N
+        labInfos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG_Insc/Facture01.png"))); // NOI18N
         labInfos.setText("Prêt.");
 
-        chRecherche.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Facture01.png"))); // NOI18N
+        chRecherche.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG_Insc/Facture01.png"))); // NOI18N
         chRecherche.setTextInitial("Recherche");
 
         chClasse.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -924,7 +923,7 @@ public class PanelInscription extends javax.swing.JPanel {
             }
         });
 
-        btCriteres.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Facture01.png"))); // NOI18N
+        btCriteres.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG_Insc/Facture01.png"))); // NOI18N
         btCriteres.setSelected(true);
         btCriteres.setText("Critères++");
         btCriteres.addActionListener(new java.awt.event.ActionListener() {

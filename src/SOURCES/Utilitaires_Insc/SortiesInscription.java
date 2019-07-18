@@ -5,11 +5,11 @@
  */
 package SOURCES.Utilitaires_Insc;
 
-import SOURCES.Callback_Insc.EcouteurEnregistrement;
-import SOURCES.Interface.InterfaceAyantDroit;
-import SOURCES.Interface.InterfaceClasse;
-import SOURCES.Interface.InterfaceEleve;
-import SOURCES.Interface.InterfaceFrais;
+import Source.Callbacks.EcouteurEnregistrement;
+import Source.Objet.Ayantdroit;
+import Source.Objet.Classe;
+import Source.Objet.Eleve;
+import Source.Objet.Frais;
 import java.util.Vector;
 
 /**
@@ -19,12 +19,12 @@ import java.util.Vector;
 
 public class SortiesInscription {
     private EcouteurEnregistrement ecouteurEnregistrement;
-    private Vector<InterfaceEleve> listeEleves;
-    private Vector<InterfaceAyantDroit> listeAyantDroit;
-    private Vector<InterfaceClasse> listeClasses;
-    private Vector<InterfaceFrais> listeFrais;
+    private Vector<Eleve> listeEleves;
+    private Vector<Ayantdroit> listeAyantDroit;
+    private Vector<Classe> listeClasses;
+    private Vector<Frais> listeFrais;
 
-    public SortiesInscription(Vector<InterfaceFrais> listeFrais, Vector<InterfaceClasse> listeClasses, Vector<InterfaceEleve> listeEleves, Vector<InterfaceAyantDroit> listeAyantDroit, EcouteurEnregistrement ecouteurEnregistrement) {
+    public SortiesInscription(Vector<Frais> listeFrais, Vector<Classe> listeClasses, Vector<Eleve> listeEleves, Vector<Ayantdroit> listeAyantDroit, EcouteurEnregistrement ecouteurEnregistrement) {
         this.ecouteurEnregistrement = ecouteurEnregistrement;
         this.listeEleves = listeEleves;
         this.listeAyantDroit = listeAyantDroit;
@@ -41,37 +41,40 @@ public class SortiesInscription {
         this.ecouteurEnregistrement = ecouteurEnregistrement;
     }
 
-    public Vector<InterfaceClasse> getListeClasses() {
-        return listeClasses;
-    }
-    
-    public void setListeClasses(Vector<InterfaceClasse> listeClasses) {
-        this.listeClasses = listeClasses;
-    }
-
-    public Vector<InterfaceFrais> getListeFrais() {
-        return listeFrais;
-    }
-    
-    
-    public Vector<InterfaceEleve> getListeEleves() {
+    public Vector<Eleve> getListeEleves() {
         return listeEleves;
     }
 
-    public void setListeEleves(Vector<InterfaceEleve> listeEleves) {
+    public void setListeEleves(Vector<Eleve> listeEleves) {
         this.listeEleves = listeEleves;
     }
 
-    public Vector<InterfaceAyantDroit> getListeAyantDroit() {
+    public Vector<Ayantdroit> getListeAyantDroit() {
         return listeAyantDroit;
     }
 
-    public void setListeAyantDroit(Vector<InterfaceAyantDroit> listeAyantDroit) {
+    public void setListeAyantDroit(Vector<Ayantdroit> listeAyantDroit) {
         this.listeAyantDroit = listeAyantDroit;
+    }
+
+    public Vector<Classe> getListeClasses() {
+        return listeClasses;
+    }
+
+    public void setListeClasses(Vector<Classe> listeClasses) {
+        this.listeClasses = listeClasses;
+    }
+
+    public Vector<Frais> getListeFrais() {
+        return listeFrais;
+    }
+
+    public void setListeFrais(Vector<Frais> listeFrais) {
+        this.listeFrais = listeFrais;
     }
 
     @Override
     public String toString() {
-        return "SortiesEleveAyantDroit{" + "ecouteurEnregistrement=" + ecouteurEnregistrement + ", listeEleves=" + listeEleves + ", listeAyantDroit=" + listeAyantDroit + '}';
+        return "SortiesInscription{" + "ecouteurEnregistrement=" + ecouteurEnregistrement + ", listeEleves=" + listeEleves + ", listeAyantDroit=" + listeAyantDroit + ", listeClasses=" + listeClasses + ", listeFrais=" + listeFrais + '}';
     }
 }

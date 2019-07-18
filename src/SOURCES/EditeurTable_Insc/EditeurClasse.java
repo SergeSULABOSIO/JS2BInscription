@@ -5,7 +5,9 @@
  */
 package SOURCES.EditeurTable_Insc;
 
-import SOURCES.Interface.InterfaceClasse;
+
+
+import Source.Objet.Classe;
 import java.awt.Component;
 import java.util.Vector;
 import javax.swing.AbstractCellEditor;
@@ -20,9 +22,9 @@ import javax.swing.table.TableCellEditor;
 public class EditeurClasse extends AbstractCellEditor implements TableCellEditor {
 
     private JComboBox<String> champEditionCombo = new JComboBox();
-    private Vector<InterfaceClasse> listeClasses;
+    private Vector<Classe> listeClasses;
 
-    public EditeurClasse(Vector<InterfaceClasse> listeClasses) {
+    public EditeurClasse(Vector<Classe> listeClasses) {
         this.listeClasses = listeClasses;
         initCombo();
     }
@@ -30,7 +32,7 @@ public class EditeurClasse extends AbstractCellEditor implements TableCellEditor
     public void initCombo() {
         this.champEditionCombo.removeAllItems();
         if (this.listeClasses != null) {
-            for (InterfaceClasse classe : listeClasses) {
+            for (Classe classe : listeClasses) {
                 this.champEditionCombo.addItem(classe.getNom());
             }
         }
@@ -38,7 +40,7 @@ public class EditeurClasse extends AbstractCellEditor implements TableCellEditor
 
     private String getClasse(int idClasse) {
         String classe = "Inconnue";
-        for (InterfaceClasse Iclasse : this.listeClasses) {
+        for (Classe Iclasse : this.listeClasses) {
             if (Iclasse.getId() == idClasse) {
                 classe = Iclasse.getNom();
                 break;
@@ -49,7 +51,7 @@ public class EditeurClasse extends AbstractCellEditor implements TableCellEditor
 
     private int getIdClasse(String nomClasse) {
         int id = -1;
-        for (InterfaceClasse Iclasse : this.listeClasses) {
+        for (Classe Iclasse : this.listeClasses) {
             if (Iclasse.getNom().trim().equals(nomClasse.trim())) {
                 id = Iclasse.getId();
             }

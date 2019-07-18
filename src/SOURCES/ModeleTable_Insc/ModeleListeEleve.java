@@ -7,13 +7,14 @@ package SOURCES.ModeleTable_Insc;
 
 import BEAN_BARRE_OUTILS.Bouton;
 import BEAN_MenuContextuel.RubriqueSimple;
-import SOURCES.Callback_Insc.EcouteurSuppressionElement;
-import SOURCES.Callback_Insc.EcouteurValeursChangees;
-import SOURCES.Interface.InterfaceClasse;
-import SOURCES.Interface.InterfaceEleve;
-import SOURCES.Utilitaires_Insc.CouleurBasique;
 import SOURCES.Utilitaires_Insc.UtilInscription;
-import java.awt.Color;
+import Source.Callbacks.EcouteurSuppressionElement;
+import Source.Callbacks.EcouteurValeursChangees;
+import Source.Interface.InterfaceClasse;
+import Source.Interface.InterfaceEleve;
+import Source.Objet.Classe;
+import Source.Objet.CouleurBasique;
+import Source.Objet.Eleve;
 import java.util.Date;
 import java.util.Vector;
 import javax.swing.JOptionPane;
@@ -27,16 +28,16 @@ import javax.swing.table.AbstractTableModel;
 public class ModeleListeEleve extends AbstractTableModel {
 
     private String[] titreColonnes = {"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Status", "Téléphone"};
-    private Vector<InterfaceEleve> listeData = new Vector<>();
+    private Vector<Eleve> listeData = new Vector<>();
     private JScrollPane parent;
     private EcouteurValeursChangees ecouteurModele;
-    private Vector<InterfaceClasse> listeClasses = new Vector<>();
-    private Vector<InterfaceEleve> listeDataExclus = new Vector<>();
+    private Vector<Classe> listeClasses = new Vector<>();
+    private Vector<Eleve> listeDataExclus = new Vector<>();
     private Bouton btEnreg;
     private RubriqueSimple mEnreg;
     private CouleurBasique couleurBasique;
 
-    public ModeleListeEleve(CouleurBasique couleurBasique, JScrollPane parent, Bouton btEnreg, RubriqueSimple mEnreg, Vector<InterfaceClasse> listeClasses, EcouteurValeursChangees ecouteurModele) {
+    public ModeleListeEleve(CouleurBasique couleurBasique, JScrollPane parent, Bouton btEnreg, RubriqueSimple mEnreg, Vector<Classe> listeClasses, EcouteurValeursChangees ecouteurModele) {
         this.parent = parent;
         this.couleurBasique = couleurBasique;
         this.ecouteurModele = ecouteurModele;
@@ -48,7 +49,7 @@ public class ModeleListeEleve extends AbstractTableModel {
     public void chercher(String motcle, int idclasse, int sexe, int status) {
         this.listeData.addAll(this.listeDataExclus);
         this.listeDataExclus.removeAllElements();
-        for (InterfaceEleve Ieleve : this.listeData) {
+        for (Eleve Ieleve : this.listeData) {
             if (Ieleve != null) {
                 search_verifier_status(motcle, status, idclasse, sexe, Ieleve);
             }
@@ -57,7 +58,7 @@ public class ModeleListeEleve extends AbstractTableModel {
         search_nettoyer();
     }
 
-    private void search_verifier_motcle(String motcle, int idclasse, InterfaceEleve Ieleve) {
+    private void search_verifier_motcle(String motcle, int idclasse, Eleve Ieleve) {
         if (Ieleve != null) {
             boolean isNeContientPasMotCle = (!(UtilInscription.contientMotsCles(Ieleve.getNom() + " " + Ieleve.getPostnom() + " " + Ieleve.getPrenom(), motcle)));
             if (isNeContientPasMotCle == true) {
@@ -66,7 +67,7 @@ public class ModeleListeEleve extends AbstractTableModel {
         }
     }
 
-    private void search_verifier_status(String motcle, int status, int idclasse, int sexe, InterfaceEleve Ieleve) {
+    private void search_verifier_status(String motcle, int status, int idclasse, int sexe, Eleve Ieleve) {
         if (Ieleve != null) {
             if (status == -1) {
                 //On ne fait rien
@@ -77,7 +78,7 @@ public class ModeleListeEleve extends AbstractTableModel {
         }
     }
 
-    private void search_verifier_sexe(String motcle, int idclasse, int sexe, InterfaceEleve Ieleve) {
+    private void search_verifier_sexe(String motcle, int idclasse, int sexe, Eleve Ieleve) {
         if (Ieleve != null) {
             if (sexe == -1) {
                 //On ne fait rien
@@ -88,7 +89,7 @@ public class ModeleListeEleve extends AbstractTableModel {
         }
     }
 
-    private void search_verifier_classe(String motcle, int idclasse, InterfaceEleve Ieleve) {
+    private void search_verifier_classe(String motcle, int idclasse, Eleve Ieleve) {
         if (Ieleve != null) {
             if (idclasse == -1) {
                 //On ne fait rien
@@ -99,7 +100,7 @@ public class ModeleListeEleve extends AbstractTableModel {
         }
     }
 
-    private void search_blacklister(InterfaceEleve Ieleve) {
+    private void search_blacklister(Eleve Ieleve) {
         if (Ieleve != null && this.listeDataExclus != null) {
             if (!listeDataExclus.contains(Ieleve)) {
                 this.listeDataExclus.add(Ieleve);
@@ -116,14 +117,14 @@ public class ModeleListeEleve extends AbstractTableModel {
         }
     }
 
-    public void setListeEleves(Vector<InterfaceEleve> listeData) {
+    public void setListeEleves(Vector<Eleve> listeData) {
         this.listeData = listeData;
         redessinerTable();
     }
 
-    public InterfaceEleve getEleve(int row) {
+    public Eleve getEleve(int row) {
         if (row < listeData.size() && row != -1) {
-            InterfaceEleve art = listeData.elementAt(row);
+            Eleve art = listeData.elementAt(row);
             if (art != null) {
                 return art;
             } else {
@@ -134,9 +135,9 @@ public class ModeleListeEleve extends AbstractTableModel {
         }
     }
 
-    public InterfaceEleve getEleve_id(int id) {
+    public Eleve getEleve_id(int id) {
         if (id != -1) {
-            for (InterfaceEleve art : listeData) {
+            for (Eleve art : listeData) {
                 if (id == art.getId()) {
                     return art;
                 }
@@ -145,9 +146,9 @@ public class ModeleListeEleve extends AbstractTableModel {
         return null;
     }
 
-    public InterfaceEleve getEleve_signature(long signature) {
+    public Eleve getEleve_signature(long signature) {
         if (signature != -1) {
-            for (InterfaceEleve art : listeData) {
+            for (Eleve art : listeData) {
                 if (signature == art.getSignature()) {
                     return art;
                 }
@@ -156,7 +157,7 @@ public class ModeleListeEleve extends AbstractTableModel {
         return null;
     }
 
-    public Vector<InterfaceEleve> getListeData() {
+    public Vector<Eleve> getListeData() {
         return this.listeData;
     }
 
@@ -165,7 +166,7 @@ public class ModeleListeEleve extends AbstractTableModel {
         redessinerTable();
     }
 
-    public void AjouterEleve(InterfaceEleve newEleve) {
+    public void AjouterEleve(Eleve newEleve) {
         this.listeData.add(0, newEleve);
         ecouteurModele.onValeurChangee();
         mEnreg.setCouleur(couleurBasique.getCouleur_foreground_objet_nouveau());                                        //mEnreg.setCouleur(Color.blue);
@@ -175,7 +176,7 @@ public class ModeleListeEleve extends AbstractTableModel {
 
     public void SupprimerEleve(int row, EcouteurSuppressionElement ecouteurSuppressionElement) {
         if (row < listeData.size() && row != -1) {
-            InterfaceEleve articl = listeData.elementAt(row);
+            Eleve articl = listeData.elementAt(row);
             if (articl != null) {
                 int idASupp = articl.getId();
                 int dialogResult = JOptionPane.showConfirmDialog(parent, "Etes-vous sûr de vouloir supprimer cette liste?", "Avertissement", JOptionPane.YES_NO_OPTION);
@@ -303,7 +304,7 @@ public class ModeleListeEleve extends AbstractTableModel {
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone"}
-        InterfaceEleve Ieleve = listeData.get(rowIndex);
+        Eleve Ieleve = listeData.get(rowIndex);
         String avant = Ieleve.toString();
         switch (columnIndex) {
             case 1: //Nom

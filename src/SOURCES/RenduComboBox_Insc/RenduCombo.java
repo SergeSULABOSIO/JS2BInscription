@@ -5,9 +5,8 @@
  */
 package SOURCES.RenduComboBox_Insc;
 
-import ICONES.Icones;
-import SOURCES.UI_Insc.CelluleCombo;
-import SOURCES.UI_Insc.CelluleSimpleTableau;
+import Source.UI.CelluleCombo;
+import Source.UI.CelluleTableauSimple;
 import java.awt.Component;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
@@ -27,7 +26,7 @@ public class RenduCombo implements ListCellRenderer{
 
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        CelluleCombo cellule = new CelluleCombo(" " + value + " ", CelluleSimpleTableau.ALIGNE_DROITE, icone);
+        CelluleCombo cellule = new CelluleCombo(" " + value + " ", CelluleTableauSimple.ALIGNE_GAUCHE, icone);
         cellule.ecouterSelection(isSelected, index);
         return cellule;
     }
