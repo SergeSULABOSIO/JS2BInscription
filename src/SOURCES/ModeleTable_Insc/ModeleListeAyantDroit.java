@@ -157,7 +157,7 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         this.listeFrais.forEach((frais) -> {
             double montantRabais = 0;
             String monnaie = getMonnaie(frais);
-            LiaisonFraisEleve liaison = new LiaisonFraisEleve(newAyantDroit.getSignatureEleve(), frais.getId(), montantRabais, frais.getIdMonnaie(), monnaie); //frais.getMonnaie()
+            LiaisonFraisEleve liaison = new LiaisonFraisEleve(newAyantDroit.getSignatureEleve(), frais.getSignature(), frais.getId(), montantRabais, frais.getIdMonnaie(), monnaie); //frais.getMonnaie()
             newAyantDroit.ajouterLiaisons(liaison);
         });
     }

@@ -86,7 +86,7 @@ public class Principal_Insc extends javax.swing.JFrame {
         liaisonsINSCRIPTION.add(new LiaisonFraisClasse(classe_L1.getId(), classe_L1.getNom(), classe_L1.getSignature(), 50));
         //public TEST_Frais(int id, int idUtilisateur, int idEntreprise, int idExercice, int idMonnaie, long signatureMonnaie, String nom, String monnaie, int nbTranches, Vector<LiaisonClasseFrais> liaisonsClasses, Vector<LiaisonPeriodeFrais> liaisonsPeriodes, double montantDefaut, int beta) {
     
-        this.Frais_Inscription = new Frais(12, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, "INSCRIPTION", "$", 1, liaisonsINSCRIPTION, new Vector<LiaisonFraisPeriode>(), 50, InterfaceEleve.BETA_EXISTANT);
+        this.Frais_Inscription = new Frais(12, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, UtilInscription.generateSignature(), "INSCRIPTION", "$", 1, liaisonsINSCRIPTION, new Vector<LiaisonFraisPeriode>(), 50, InterfaceEleve.BETA_EXISTANT);
         
         Vector<LiaisonFraisClasse> liaisonsMINERVALE = new Vector<>();
         liaisonsMINERVALE.add(new LiaisonFraisClasse(classe_G1.getId(), classe_G1.getNom(), classe_G1.getSignature(), 1500));
@@ -94,14 +94,14 @@ public class Principal_Insc extends javax.swing.JFrame {
         liaisonsMINERVALE.add(new LiaisonFraisClasse(classe_G3.getId(), classe_G3.getNom(), classe_G3.getSignature(), 1500));
         liaisonsMINERVALE.add(new LiaisonFraisClasse(classe_L1.getId(), classe_L1.getNom(), classe_L1.getSignature(), 1500));
         
-        this.Frais_Minervale = new Frais(1, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, "MINERVALE", "$", 3, liaisonsMINERVALE, new Vector<LiaisonFraisPeriode>(), 1500, InterfaceEleve.BETA_EXISTANT);
+        this.Frais_Minervale = new Frais(1, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, UtilInscription.generateSignature(), "MINERVALE", "$", 3, liaisonsMINERVALE, new Vector<LiaisonFraisPeriode>(), 1500, InterfaceEleve.BETA_EXISTANT);
         
         Vector<LiaisonFraisClasse> liaisonsTRAVAILMAN = new Vector<>();
         liaisonsTRAVAILMAN.add(new LiaisonFraisClasse(classe_G1.getId(), classe_G1.getNom(), classe_G1.getSignature(), 10));
         liaisonsTRAVAILMAN.add(new LiaisonFraisClasse(classe_G2.getId(), classe_G2.getNom(), classe_G2.getSignature(), 10));
         liaisonsTRAVAILMAN.add(new LiaisonFraisClasse(classe_G3.getId(), classe_G3.getNom(), classe_G3.getSignature(), 10));
         liaisonsTRAVAILMAN.add(new LiaisonFraisClasse(classe_L1.getId(), classe_L1.getNom(), classe_L1.getSignature(), 10));
-        this.Frais_TravailManul = new Frais(51, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, "TRAVAIL MANUEL", "$", 3, liaisonsTRAVAILMAN, new Vector<LiaisonFraisPeriode>(), 10, InterfaceEleve.BETA_EXISTANT);
+        this.Frais_TravailManul = new Frais(51, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, UtilInscription.generateSignature(), "TRAVAIL MANUEL", "$", 3, liaisonsTRAVAILMAN, new Vector<LiaisonFraisPeriode>(), 10, InterfaceEleve.BETA_EXISTANT);
         
         this.listeFraises.add(Frais_Inscription);
         this.listeFraises.add(Frais_Minervale);
@@ -125,9 +125,9 @@ public class Principal_Insc extends javax.swing.JFrame {
         
         Vector<Ayantdroit> listeAyantDroitsExistants = new Vector<>();
         Vector<LiaisonFraisEleve> liaison = new Vector<>();
-        liaison.add(new LiaisonFraisEleve(new Date().getTime(), 12, 0, 3, "$"));
-        liaison.add(new LiaisonFraisEleve(new Date().getTime(), 1, 0, 3, "$"));
-        liaison.add(new LiaisonFraisEleve(new Date().getTime(), 51, 0, 3, "$"));
+        liaison.add(new LiaisonFraisEleve(new Date().getTime(), Frais_Inscription.getSignature(), 12, 0, 3, "$"));
+        liaison.add(new LiaisonFraisEleve(new Date().getTime(), Frais_Minervale.getSignature(), 1, 0, 3, "$"));
+        liaison.add(new LiaisonFraisEleve(new Date().getTime(), Frais_TravailManul.getSignature(), 51, 0, 3, "$"));
         
         listeAyantDroitsExistants.add(new Ayantdroit(1, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 1, "SULA", liaison, new Date().getTime(), signEle, InterfaceAyantDroit.BETA_EXISTANT));
         
