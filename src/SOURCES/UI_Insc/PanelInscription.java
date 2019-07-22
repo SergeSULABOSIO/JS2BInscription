@@ -30,6 +30,7 @@ import SOURCES.Utilitaires_Insc.DonneesInscription;
 import SOURCES.Utilitaires_Insc.ParametreInscription;
 import SOURCES.Utilitaires_Insc.SortiesInscription;
 import SOURCES.Utilitaires_Insc.UtilInscription;
+import Source.Callbacks.EcouteurCrossCanal;
 import Source.Callbacks.EcouteurEnregistrement;
 import Source.Callbacks.EcouteurSuppressionElement;
 import Source.Callbacks.EcouteurUpdateClose;
@@ -72,8 +73,8 @@ public class PanelInscription extends javax.swing.JPanel {
     private PanelInscription moi = null;
     private EcouteurUpdateClose ecouteurClose = null;
     private EcouteurAjoutInscription ecouteurAjout = null;
-    private Bouton btEnregistrer, btAjouter, btSupprimer, btVider, btImprimer, btPDF, btFermer, btActualiser;
-    private RubriqueSimple mEnregistrer, mAjouter, mSupprimer, mVider, mImprimer, mPDF, mFermer, mActualiser;
+    private Bouton btEnregistrer, btAjouter, btSupprimer, btVider, btImprimer, btPDF, btFermer, btActualiser, btPaiement;
+    private RubriqueSimple mEnregistrer, mAjouter, mSupprimer, mVider, mImprimer, mPDF, mFermer, mActualiser, mPaiement;
     private MenuContextuel menuContextuel = null;
     private BarreOutils bOutils = null;
     private EcouteurInscription ecouteurInscription = null;
@@ -86,9 +87,12 @@ public class PanelInscription extends javax.swing.JPanel {
     public DonneesInscription donneesInscription;
     public ParametreInscription parametreInscription;
     private CouleurBasique couleurBasique;
+    private EcouteurCrossCanal ecouteurCrossCanal;
+    public Eleve selectedEleve = null;
 
-    public PanelInscription(CouleurBasique couleurBasique, JTabbedPane parent, DonneesInscription donneesInscription, ParametreInscription parametreInscription, EcouteurInscription ecouteurInscription) {
+    public PanelInscription(CouleurBasique couleurBasique, JTabbedPane parent, DonneesInscription donneesInscription, ParametreInscription parametreInscription, EcouteurInscription ecouteurInscription, EcouteurCrossCanal ecouteurCrossCanal) {
         this.initComponents();
+        this.ecouteurCrossCanal = ecouteurCrossCanal;
         this.parent = parent;
         this.couleurBasique = couleurBasique;
         this.init();
@@ -229,14 +233,12 @@ public class PanelInscription extends javax.swing.JPanel {
             column.setCellEditor(editor);
         }
     }
-    
-    
 
     private void fixerColonnesTableEleves(boolean resizeTable) {
         this.tableListeEleves.setDefaultRenderer(Object.class, new RenduTableEleve(couleurBasique, icones.getModifier_01(), this.modeleListeEleve, this.parametreInscription.getListeClasses()));
         this.tableListeEleves.setRowHeight(25);
-        
-        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)"}
+
+        //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)", "Adresse"}
         setTaille(this.tableListeEleves.getColumnModel().getColumn(0), 40, true, null);
         setTaille(this.tableListeEleves.getColumnModel().getColumn(1), 150, false, null);
         setTaille(this.tableListeEleves.getColumnModel().getColumn(2), 150, false, null);
@@ -246,6 +248,7 @@ public class PanelInscription extends javax.swing.JPanel {
         setTaille(this.tableListeEleves.getColumnModel().getColumn(6), 150, false, new EditeurDate());
         setTaille(this.tableListeEleves.getColumnModel().getColumn(7), 120, false, new EditeurStatus());
         setTaille(this.tableListeEleves.getColumnModel().getColumn(8), 200, false, null);
+        setTaille(this.tableListeEleves.getColumnModel().getColumn(9), 300, false, null);
 
         //On écoute les sélction
         this.tableListeEleves.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -253,8 +256,10 @@ public class PanelInscription extends javax.swing.JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting() == false) {
                     if (modeleListeEleve != null) {
-                        InterfaceEleve artcl = modeleListeEleve.getEleve(tableListeEleves.getSelectedRow());
-                        if (artcl != null && ecouteurClose != null) {
+                        selectedEleve = modeleListeEleve.getEleve(tableListeEleves.getSelectedRow());
+                        if (selectedEleve != null && ecouteurClose != null) {
+                            btPaiement.appliquerDroitAccessDynamique(true);
+                            mPaiement.appliquerDroitAccessDynamique(true);
                             ecouteurClose.onActualiser(modeleListeEleve.getRowCount() + " élement(s).", icones.getClient_01());
                         }
                     }
@@ -266,7 +271,7 @@ public class PanelInscription extends javax.swing.JPanel {
             this.tableListeEleves.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         }
     }
-    
+
     private void initModelTableEleves() {
         this.modeleListeEleve = new ModeleListeEleve(couleurBasique, scrollListeEleves, btEnregistrer, mEnregistrer, this.parametreInscription.getListeClasses(), new EcouteurValeursChangees() {
             @Override
@@ -283,7 +288,7 @@ public class PanelInscription extends javax.swing.JPanel {
         //Parametrage du modele contenant les données de la table
         this.tableListeEleves.setModel(this.modeleListeEleve);
     }
-    
+
     private void chargerDataTableEleves() {
         //On charge les données existantes (le cas échéant)
         if (this.donneesInscription != null) {
@@ -310,7 +315,7 @@ public class PanelInscription extends javax.swing.JPanel {
         //Parametrage du modele contenant les données de la table
         this.tableListeAyantDroit.setModel(this.modeleListeAyantDroit);
     }
-    
+
     private void chargerDataTableAyantDroit() {
         //On charge les données existantes (le cas échéant)
         if (this.donneesInscription != null) {
@@ -319,18 +324,17 @@ public class PanelInscription extends javax.swing.JPanel {
             }
         }
     }
-    
+
     private void fixerColonnesTableAyantDroit(boolean resizeTable) {
         this.editeurEleve = new EditeurEleve(this.modeleListeEleve, this.modeleListeAyantDroit);
-        
+
         //Parametrage du rendu de la table
         this.tableListeAyantDroit.setDefaultRenderer(Object.class, new RenduTableAyantDroit(couleurBasique, icones.getModifier_01(), this.modeleListeEleve, modeleListeAyantDroit));
         this.tableListeAyantDroit.setRowHeight(25);
-        
+
         //{"N°", "Eleve", ...liste des frais}
         setTaille(this.tableListeAyantDroit.getColumnModel().getColumn(0), 40, true, null);
         setTaille(this.tableListeAyantDroit.getColumnModel().getColumn(1), 150, false, editeurEleve);
-        
 
         //On écoute les sélction
         this.tableListeAyantDroit.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -338,9 +342,13 @@ public class PanelInscription extends javax.swing.JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting() == false) {
                     if (modeleListeAyantDroit != null) {
-                        InterfaceAyantDroit artcl = modeleListeAyantDroit.getAyantDroit(tableListeAyantDroit.getSelectedRow());
+                        Ayantdroit artcl = modeleListeAyantDroit.getAyantDroit(tableListeAyantDroit.getSelectedRow());
                         if (artcl != null && ecouteurClose != null) {
                             ecouteurClose.onActualiser(modeleListeAyantDroit.getRowCount() + " élement(s).", icones.getAdministrateur_01());
+                            
+                            selectedEleve = modeleListeEleve.getEleve_signature(artcl.getSignatureEleve());
+                            btPaiement.appliquerDroitAccessDynamique(true);
+                            mPaiement.appliquerDroitAccessDynamique(true);
                         }
                     }
                 }
@@ -351,7 +359,7 @@ public class PanelInscription extends javax.swing.JPanel {
             this.tableListeAyantDroit.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         }
     }
-    
+
     private void parametrerTableAyantDroit() {
         initModelTableAyantDroit();
         chargerDataTableAyantDroit();
@@ -416,8 +424,19 @@ public class PanelInscription extends javax.swing.JPanel {
             }
         });
 
+        btPaiement = new Bouton(12, "Paiement", "Ouvrir la fiche de paiement", false, icones.getCaisse_02(), new BoutonListener() {
+            @Override
+            public void OnEcouteLeClick() {
+                if (ecouteurCrossCanal != null) {
+                    ecouteurCrossCanal.onOuvrirPaiements(selectedEleve);
+                }
+            }
+        });
+        btPaiement.appliquerDroitAccessDynamique(false);
+
         bOutils = new BarreOutils(barreOutils);
         bOutils.AjouterBouton(btEnregistrer);
+        bOutils.AjouterBouton(btPaiement);
         bOutils.AjouterSeparateur();
         bOutils.AjouterBouton(btAjouter);
         bOutils.AjouterBouton(btSupprimer);
@@ -626,9 +645,20 @@ public class PanelInscription extends javax.swing.JPanel {
                 actualiser();
             }
         });
+        
+        mPaiement = new RubriqueSimple("Paiement", 12, false, icones.getCaisse_01(), new RubriqueListener() {
+            @Override
+            public void OnEcouterLaSelection() {
+                if(ecouteurCrossCanal != null){
+                    ecouteurCrossCanal.onOuvrirPaiements(selectedEleve);
+                }
+            }
+        });
+        mPaiement.appliquerDroitAccessDynamique(false);
 
         menuContextuel = new MenuContextuel();
         menuContextuel.Ajouter(mEnregistrer);
+        menuContextuel.Ajouter(mPaiement);
         menuContextuel.Ajouter(new JPopupMenu.Separator());
         menuContextuel.Ajouter(mAjouter);
         menuContextuel.Ajouter(mSupprimer);
@@ -776,6 +806,8 @@ public class PanelInscription extends javax.swing.JPanel {
                 modeleListeAyantDroit.actualiser();
                 break;
         }
+        btPaiement.appliquerDroitAccessDynamique(false);
+        mPaiement.appliquerDroitAccessDynamique(false);
     }
 
     private void activerCriteres() {
@@ -839,7 +871,6 @@ public class PanelInscription extends javax.swing.JPanel {
         jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         barreOutils.add(jButton5);
 
-        tabPrincipal.setTabPlacement(javax.swing.JTabbedPane.LEFT);
         tabPrincipal.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 tabPrincipalStateChanged(evt);

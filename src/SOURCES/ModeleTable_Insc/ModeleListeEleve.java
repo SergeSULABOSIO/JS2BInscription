@@ -27,7 +27,7 @@ import javax.swing.table.AbstractTableModel;
  */
 public class ModeleListeEleve extends AbstractTableModel {
 
-    private String[] titreColonnes = {"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Status", "Téléphone"};
+    private String[] titreColonnes = {"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Status", "Téléphone", "Adresse physique"};
     private Vector<Eleve> listeData = new Vector<>();
     private JScrollPane parent;
     private EcouteurValeursChangees ecouteurModele;
@@ -242,6 +242,8 @@ public class ModeleListeEleve extends AbstractTableModel {
                 return Ieleve.getStatus();
             case 8: //Telephone
                 return Ieleve.getTelephonesParents();
+            case 9: //Telephone
+                return Ieleve.getAdresse();
             default:
                 return "Null";
         }
@@ -268,6 +270,8 @@ public class ModeleListeEleve extends AbstractTableModel {
             case 7: //Status
                 return Integer.class;
             case 8: //Téléphone des parents
+                return String.class;
+            case 9: //Téléphone des parents
                 return String.class;
             default:
                 return Object.class;
@@ -331,6 +335,9 @@ public class ModeleListeEleve extends AbstractTableModel {
                 break;
             case 8: //Téléphone des parents
                 Ieleve.setTelephonesParents(aValue + "");
+                break;
+            case 9: //Adresse physique
+                Ieleve.setAdresse(aValue + "");
                 break;
             default:
                 break;

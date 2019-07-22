@@ -94,6 +94,9 @@ public class RenduTableEleve implements TableCellRenderer {
             case 8: //Téléphone
                 cellule = new CelluleTableauSimple(couleurBasique, " " + value + " ", CelluleTableauSimple.ALIGNE_GAUCHE, iconeEdition);
                 break;
+            case 9: //Adresse
+                cellule = new CelluleTableauSimple(couleurBasique, " " + value + " ", CelluleTableauSimple.ALIGNE_GAUCHE, iconeEdition);
+                break;
         }
 
         cellule.ecouterSelection(isSelected, row, getBeta(row), hasFocus);

@@ -104,9 +104,6 @@
       </SubComponents>
     </Container>
     <Container class="javax.swing.JTabbedPane" name="tabPrincipal">
-      <Properties>
-        <Property name="tabPlacement" type="int" value="2"/>
-      </Properties>
       <Events>
         <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="tabPrincipalStateChanged"/>
       </Events>

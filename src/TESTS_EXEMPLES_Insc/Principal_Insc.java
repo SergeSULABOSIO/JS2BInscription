@@ -11,6 +11,7 @@ import SOURCES.Utilitaires_Insc.DonneesInscription;
 import SOURCES.Utilitaires_Insc.ParametreInscription;
 import SOURCES.Utilitaires_Insc.SortiesInscription;
 import SOURCES.Utilitaires_Insc.UtilInscription;
+import Source.Callbacks.EcouteurCrossCanal;
 import Source.Interface.InterfaceAyantDroit;
 import Source.Interface.InterfaceClasse;
 import Source.Interface.InterfaceEleve;
@@ -198,6 +199,16 @@ public class Principal_Insc extends javax.swing.JFrame {
                 
                 
                 
+            }
+        }, new EcouteurCrossCanal() {
+            @Override
+            public void onOuvrirPaiements(Eleve eleve) {
+                System.out.println("Ouverture des paiements de " + eleve.getNom());
+            }
+
+            @Override
+            public void onOuvrirInscription(Eleve eleve) {
+                System.out.println("Ouverture de la fiche d'inscription de " + eleve.getNom());
             }
         });
     }
