@@ -202,6 +202,12 @@ public class Principal_Insc extends javax.swing.JFrame {
             }
         }, new EcouteurCrossCanal() {
             @Override
+            public void onOuvrirLitiges(Eleve eleve) {
+                System.out.println("Ouverture des litiges de " + eleve.getNom());
+            }
+            
+            
+            @Override
             public void onOuvrirPaiements(Eleve eleve) {
                 System.out.println("Ouverture des paiements de " + eleve.getNom());
             }

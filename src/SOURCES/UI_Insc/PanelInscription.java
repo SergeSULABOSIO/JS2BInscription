@@ -73,8 +73,8 @@ public class PanelInscription extends javax.swing.JPanel {
     private PanelInscription moi = null;
     private EcouteurUpdateClose ecouteurClose = null;
     private EcouteurAjoutInscription ecouteurAjout = null;
-    private Bouton btEnregistrer, btAjouter, btSupprimer, btVider, btImprimer, btPDF, btFermer, btActualiser, btPaiement;
-    private RubriqueSimple mEnregistrer, mAjouter, mSupprimer, mVider, mImprimer, mPDF, mFermer, mActualiser, mPaiement;
+    private Bouton btEnregistrer, btAjouter, btSupprimer, btVider, btImprimer, btPDF, btFermer, btActualiser, btPaiement, btLitiges;
+    private RubriqueSimple mEnregistrer, mAjouter, mSupprimer, mVider, mImprimer, mPDF, mFermer, mActualiser, mPaiement, mLitige;
     private MenuContextuel menuContextuel = null;
     private BarreOutils bOutils = null;
     private EcouteurInscription ecouteurInscription = null;
@@ -258,8 +258,13 @@ public class PanelInscription extends javax.swing.JPanel {
                     if (modeleListeEleve != null) {
                         selectedEleve = modeleListeEleve.getEleve(tableListeEleves.getSelectedRow());
                         if (selectedEleve != null && ecouteurClose != null) {
+                            //Paiement
                             btPaiement.appliquerDroitAccessDynamique(true);
                             mPaiement.appliquerDroitAccessDynamique(true);
+                            //Litige
+                            btLitiges.appliquerDroitAccessDynamique(true);
+                            mLitige.appliquerDroitAccessDynamique(true);
+                            
                             ecouteurClose.onActualiser(modeleListeEleve.getRowCount() + " élement(s).", icones.getClient_01());
                         }
                     }
@@ -347,8 +352,13 @@ public class PanelInscription extends javax.swing.JPanel {
                             ecouteurClose.onActualiser(modeleListeAyantDroit.getRowCount() + " élement(s).", icones.getAdministrateur_01());
                             
                             selectedEleve = modeleListeEleve.getEleve_signature(artcl.getSignatureEleve());
+                            //Paiement
                             btPaiement.appliquerDroitAccessDynamique(true);
                             mPaiement.appliquerDroitAccessDynamique(true);
+                            
+                            //Litige
+                            btLitiges.appliquerDroitAccessDynamique(true);
+                            mLitige.appliquerDroitAccessDynamique(true);
                         }
                     }
                 }
@@ -433,10 +443,22 @@ public class PanelInscription extends javax.swing.JPanel {
             }
         });
         btPaiement.appliquerDroitAccessDynamique(false);
+        
+        
+        btLitiges = new Bouton(12, "Litiges", "Ouvrir les litiges", false, icones.getFournisseur_02(), new BoutonListener() {
+            @Override
+            public void OnEcouteLeClick() {
+                if (ecouteurCrossCanal != null) {
+                    ecouteurCrossCanal.onOuvrirLitiges(selectedEleve);
+                }
+            }
+        });
+        btLitiges.appliquerDroitAccessDynamique(false);
 
         bOutils = new BarreOutils(barreOutils);
         bOutils.AjouterBouton(btEnregistrer);
         bOutils.AjouterBouton(btPaiement);
+        bOutils.AjouterBouton(btLitiges);
         bOutils.AjouterSeparateur();
         bOutils.AjouterBouton(btAjouter);
         bOutils.AjouterBouton(btSupprimer);
@@ -655,10 +677,20 @@ public class PanelInscription extends javax.swing.JPanel {
             }
         });
         mPaiement.appliquerDroitAccessDynamique(false);
+        
+        mLitige = new RubriqueSimple("Litiges", 12, false, icones.getFournisseur_01(), new RubriqueListener() {
+            @Override
+            public void OnEcouterLaSelection() {
+                if(ecouteurCrossCanal != null){
+                    ecouteurCrossCanal.onOuvrirLitiges(selectedEleve);
+                }
+            }
+        });
 
         menuContextuel = new MenuContextuel();
         menuContextuel.Ajouter(mEnregistrer);
         menuContextuel.Ajouter(mPaiement);
+        menuContextuel.Ajouter(mLitige);
         menuContextuel.Ajouter(new JPopupMenu.Separator());
         menuContextuel.Ajouter(mAjouter);
         menuContextuel.Ajouter(mSupprimer);
