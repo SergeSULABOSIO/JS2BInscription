@@ -12,6 +12,8 @@ import SOURCES.ModeleTable_Insc.ModeleListeEleve;
 import Source.Interface.InterfaceEleve;
 import Source.Objet.Eleve;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Vector;
 import javax.swing.AbstractCellEditor;
 import javax.swing.JComboBox;
@@ -40,6 +42,13 @@ public class EditeurEleve extends AbstractCellEditor implements TableCellEditor 
     
 
     public void initCombo() {
+        this.champEditionCombo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //System.out.println("Clic: " + e.getActionCommand());
+                fireEditingStopped();
+            }
+        });
         this.champEditionCombo.removeAllItems();
         if (this.modeleListeEleve != null) {
             Vector<Eleve> listeEleves = this.modeleListeEleve.getListeData();
@@ -88,3 +97,4 @@ public class EditeurEleve extends AbstractCellEditor implements TableCellEditor 
     }
 
 }
+

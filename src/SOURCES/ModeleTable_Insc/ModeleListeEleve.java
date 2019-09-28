@@ -7,9 +7,9 @@ package SOURCES.ModeleTable_Insc;
 
 import BEAN_BARRE_OUTILS.Bouton;
 import BEAN_MenuContextuel.RubriqueSimple;
-import SOURCES.Utilitaires_Insc.UtilInscription;
 import Source.Callbacks.EcouteurSuppressionElement;
 import Source.Callbacks.EcouteurValeursChangees;
+import Source.GestionEdition;
 import Source.Interface.InterfaceClasse;
 import Source.Interface.InterfaceEleve;
 import Source.Objet.Classe;
@@ -36,83 +36,21 @@ public class ModeleListeEleve extends AbstractTableModel {
     private Bouton btEnreg;
     private RubriqueSimple mEnreg;
     private CouleurBasique couleurBasique;
+    private GestionEdition gestionEdition;
 
-    public ModeleListeEleve(CouleurBasique couleurBasique, JScrollPane parent, Bouton btEnreg, RubriqueSimple mEnreg, Vector<Classe> listeClasses, EcouteurValeursChangees ecouteurModele) {
+    public ModeleListeEleve(GestionEdition gestionEdition, CouleurBasique couleurBasique, JScrollPane parent, Bouton btEnreg, RubriqueSimple mEnreg, Vector<Classe> listeClasses, EcouteurValeursChangees ecouteurModele) {
         this.parent = parent;
         this.couleurBasique = couleurBasique;
         this.ecouteurModele = ecouteurModele;
         this.listeClasses = listeClasses;
         this.mEnreg = mEnreg;
         this.btEnreg = btEnreg;
+        this.gestionEdition = gestionEdition;
     }
 
-    public void chercher(String motcle, int idclasse, int sexe, int status) {
-        this.listeData.addAll(this.listeDataExclus);
-        this.listeDataExclus.removeAllElements();
-        for (Eleve Ieleve : this.listeData) {
-            if (Ieleve != null) {
-                search_verifier_status(motcle, status, idclasse, sexe, Ieleve);
-            }
-        }
-        //En fin, on va nettoyer la liste - en enlevant tout objet qui a été black listé
-        search_nettoyer();
-    }
-
-    private void search_verifier_motcle(String motcle, int idclasse, Eleve Ieleve) {
-        if (Ieleve != null) {
-            boolean isNeContientPasMotCle = (!(UtilInscription.contientMotsCles(Ieleve.getNom() + " " + Ieleve.getPostnom() + " " + Ieleve.getPrenom(), motcle)));
-            if (isNeContientPasMotCle == true) {
-                search_blacklister(Ieleve);
-            }
-        }
-    }
-
-    private void search_verifier_status(String motcle, int status, int idclasse, int sexe, Eleve Ieleve) {
-        if (Ieleve != null) {
-            if (status == -1) {
-                //On ne fait rien
-            } else if (Ieleve.getStatus() != status) {
-                search_blacklister(Ieleve);
-            }
-            search_verifier_sexe(motcle, idclasse, sexe, Ieleve);
-        }
-    }
-
-    private void search_verifier_sexe(String motcle, int idclasse, int sexe, Eleve Ieleve) {
-        if (Ieleve != null) {
-            if (sexe == -1) {
-                //On ne fait rien
-            } else if (Ieleve.getSexe() != sexe) {
-                search_blacklister(Ieleve);
-            }
-            search_verifier_classe(motcle, idclasse, Ieleve);
-        }
-    }
-
-    private void search_verifier_classe(String motcle, int idclasse, Eleve Ieleve) {
-        if (Ieleve != null) {
-            if (idclasse == -1) {
-                //On ne fait rien
-            } else if (Ieleve.getIdClasse() != idclasse) {
-                search_blacklister(Ieleve);
-            }
-            search_verifier_motcle(motcle, idclasse, Ieleve);
-        }
-    }
-
-    private void search_blacklister(Eleve Ieleve) {
-        if (Ieleve != null && this.listeDataExclus != null) {
-            if (!listeDataExclus.contains(Ieleve)) {
-                this.listeDataExclus.add(Ieleve);
-            }
-        }
-    }
-
-    private void search_nettoyer() {
-        if (this.listeDataExclus != null && this.listeData != null) {
-            this.listeDataExclus.forEach((IeleveASupp) -> {
-                this.listeData.removeElement(IeleveASupp);
-            });
+    public void addData(Eleve Data) {
+        if (!this.listeData.contains(Data)) {
+            this.listeData.add(Data);
             redessinerTable();
         }
     }
@@ -183,7 +121,7 @@ public class ModeleListeEleve extends AbstractTableModel {
                 if (dialogResult == JOptionPane.YES_OPTION) {
                     if (row <= listeData.size()) {
                         this.listeData.removeElementAt(row);
-                        ecouteurSuppressionElement.onSuppressionConfirmee(idASupp);
+                        ecouteurSuppressionElement.onSuppressionConfirmee(idASupp, articl.getSignature());
                     }
                     redessinerTable();
                 }
@@ -197,6 +135,11 @@ public class ModeleListeEleve extends AbstractTableModel {
             this.listeData.removeAllElements();
             redessinerTable();
         }
+    }
+
+    public void reinitialiserListe() {
+        this.listeData.removeAllElements();
+        redessinerTable();
     }
 
     public void redessinerTable() {
@@ -281,10 +224,20 @@ public class ModeleListeEleve extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        if (columnIndex == 0) {
+        Eleve eleve = null;
+        boolean canEdit = false;
+        if (listeData.size() > rowIndex) {
+            eleve = listeData.elementAt(rowIndex);
+            canEdit = gestionEdition.isEditable(eleve.getId(), 0);
+        }
+        if (canEdit == true) {
+            if (columnIndex == 0) {
+                return false;
+            } else {
+                return true;
+            }
+        }else{
             return false;
-        } else {
-            return true;
         }
     }
 
@@ -356,3 +309,10 @@ public class ModeleListeEleve extends AbstractTableModel {
     }
 
 }
+
+
+
+
+
+
+

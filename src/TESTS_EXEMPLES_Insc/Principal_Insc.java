@@ -5,18 +5,22 @@
  */
 package TESTS_EXEMPLES_Insc;
 
+import ICONES.Icones;
 import SOURCES.Callback_Insc.EcouteurInscription;
 import SOURCES.UI_Insc.PanelInscription;
-import SOURCES.Utilitaires_Insc.DonneesInscription;
+import SOURCES.Utilitaires_Insc.DataInscription;
 import SOURCES.Utilitaires_Insc.ParametreInscription;
 import SOURCES.Utilitaires_Insc.SortiesInscription;
 import SOURCES.Utilitaires_Insc.UtilInscription;
+import Source.Callbacks.ConstructeurCriteres;
 import Source.Callbacks.EcouteurCrossCanal;
+import Source.Callbacks.EcouteurNavigateurPages;
 import Source.Interface.InterfaceAyantDroit;
 import Source.Interface.InterfaceClasse;
 import Source.Interface.InterfaceEleve;
 import Source.Interface.InterfaceExercice;
 import Source.Interface.InterfaceMonnaie;
+import Source.Interface.InterfaceUtilisateur;
 import Source.Objet.Ayantdroit;
 import Source.Objet.Classe;
 import Source.Objet.CouleurBasique;
@@ -28,7 +32,12 @@ import Source.Objet.LiaisonFraisClasse;
 import Source.Objet.LiaisonFraisEleve;
 import Source.Objet.LiaisonFraisPeriode;
 import Source.Objet.Monnaie;
-import java.awt.Color;
+import Source.Objet.UtilObjet;
+import Source.Objet.Utilisateur;
+import Source.UI.NavigateurPages;
+import Sources.CHAMP_LOCAL;
+import Sources.PROPRIETE;
+import Sources.UI.JS2BPanelPropriete;
 import static java.lang.Thread.sleep;
 import java.util.Date;
 import java.util.Vector;
@@ -46,38 +55,41 @@ public class Principal_Insc extends javax.swing.JFrame {
     public Vector<Classe> listeClasses = null;
     public Vector<Frais> listeFraises = null;
     public Vector<Monnaie> listeMonnaies = null;
-    
+
     private Frais Frais_Inscription, Frais_Minervale, Frais_TravailManul = null;
     private Classe classe_G1, classe_G2, classe_G3, classe_L1 = null;
-    public int idUtilisateur = 1;
-    public int idEntreprise = 1;
-    public int idExercice = 1;
-    public Entreprise entreprise = new Entreprise(1, "ECOLE CARESIENNE DE KINSHASA", "7e Rue Limeté Industrielle, Kinshasa/RDC", "+243844803514", "infos@cartesien.org", "wwww.cartesien.org", "logo.png", "RCCM/KD/CD/4513", "IDN00111454", "IMP00124100", "Equity Bank Congo SA", "AIB RDC Sarl", "000000121212400", "IBANNN0012", "SWIFTCDK");
-    public Exercice anneescolaire = null;
     
+    public Entreprise entreprise = new Entreprise(1, "ECOLE CARESIENNE DE KINSHASA", "7e Rue Limeté Industrielle, Kinshasa/RDC", "+243844803514", "infos@cartesien.org", "wwww.cartesien.org", "logo.png", "RCCM/KD/CD/4513", "IDN00111454", "IMP00124100", "Equity Bank Congo SA", "AIB RDC Sarl", "000000121212400", "IBANNN0012", "SWIFTCDK");
+    public Utilisateur utilisateur = new Utilisateur(12, entreprise.getId(), "SULA", "BOSIO", "Serge", "sulabosiog@gmail.com", "abc", InterfaceUtilisateur.TYPE_ADMIN, UtilInscription.generateSignature(), InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.BETA_EXISTANT);
+    public Exercice anneescolaire = new Exercice(12, entreprise.getId(), utilisateur.getId(), "Année 2019-2020", new Date(), UtilInscription.getDate_AjouterAnnee(new Date(), 1), UtilObjet.getSignature(), InterfaceExercice.BETA_EXISTANT);
+    
+    public Vector<Eleve> listeElevesExistants = new Vector<>();
+    public Vector<Ayantdroit> listeAyantDroitsExistants = new Vector<>();
+
     public Principal_Insc() {
         initComponents();
+        Icones icones = new Icones();
+        this.setIconImage(icones.getAdresse_03().getImage());
     }
-    
-    public ParametreInscription getParametres(){
+
+    public ParametreInscription getParametres() {
         //Chargement des Frais
         this.listeMonnaies = new Vector<>();
-        this.listeMonnaies.add(new Monnaie(12, idEntreprise, idUtilisateur, idExercice, "USD - Dollars", "USD", InterfaceMonnaie.NATURE_MONNAIE_ETRANGERE, 1620, 1010101010, InterfaceMonnaie.BETA_EXISTANT));
-        this.listeMonnaies.add(new Monnaie(13, idEntreprise, idUtilisateur, idExercice, "CDF - Francs", "CDF", InterfaceMonnaie.NATURE_MONNAIE_LOCALE, 1, 0455, InterfaceMonnaie.BETA_EXISTANT));
-        
-        
-        this.classe_G1 = new Classe(10, idUtilisateur, idEntreprise, idExercice, "G1", 50, "Local 2", UtilInscription.generateSignature(), InterfaceClasse.BETA_EXISTANT);
-        this.classe_G2 = new Classe(11, idUtilisateur, idEntreprise, idExercice, "G2", 50, "Local 3", UtilInscription.generateSignature(), InterfaceClasse.BETA_EXISTANT);
-        this.classe_G3 = new Classe(12, idUtilisateur, idEntreprise, idExercice, "G3", 50, "Local 4", UtilInscription.generateSignature(), InterfaceClasse.BETA_EXISTANT);
-        this.classe_L1 = new Classe(13, idUtilisateur, idEntreprise, idExercice, "L2", 50, "Local 5", UtilInscription.generateSignature(), InterfaceClasse.BETA_EXISTANT);
-        
+        this.listeMonnaies.add(new Monnaie(12, entreprise.getId(), utilisateur.getId(), anneescolaire.getId(), "USD - Dollars", "USD", InterfaceMonnaie.NATURE_MONNAIE_ETRANGERE, 1620, 1010101010, InterfaceMonnaie.BETA_EXISTANT));
+        this.listeMonnaies.add(new Monnaie(13, entreprise.getId(), utilisateur.getId(), anneescolaire.getId(), "CDF - Francs", "CDF", InterfaceMonnaie.NATURE_MONNAIE_LOCALE, 1, 0455, InterfaceMonnaie.BETA_EXISTANT));
+
+        this.classe_G1 = new Classe(10, utilisateur.getId(), entreprise.getId(), anneescolaire.getId(), "G1", 50, "Local 2", UtilInscription.generateSignature(), InterfaceClasse.BETA_EXISTANT);
+        this.classe_G2 = new Classe(11, utilisateur.getId(), entreprise.getId(), anneescolaire.getId(), "G2", 50, "Local 3", UtilInscription.generateSignature(), InterfaceClasse.BETA_EXISTANT);
+        this.classe_G3 = new Classe(12, utilisateur.getId(), entreprise.getId(), anneescolaire.getId(), "G3", 50, "Local 4", UtilInscription.generateSignature(), InterfaceClasse.BETA_EXISTANT);
+        this.classe_L1 = new Classe(13, utilisateur.getId(), entreprise.getId(), anneescolaire.getId(), "L2", 50, "Local 5", UtilInscription.generateSignature(), InterfaceClasse.BETA_EXISTANT);
+
         //Chargement des classes
         this.listeClasses = new Vector<>();
         this.listeClasses.add(classe_G1);
         this.listeClasses.add(classe_G2);
         this.listeClasses.add(classe_G3);
         this.listeClasses.add(classe_L1);
-        
+
         //Chargement des Frais
         this.listeFraises = new Vector<>();
         Vector<LiaisonFraisClasse> liaisonsINSCRIPTION = new Vector<>();
@@ -86,81 +98,63 @@ public class Principal_Insc extends javax.swing.JFrame {
         liaisonsINSCRIPTION.add(new LiaisonFraisClasse(classe_G3.getId(), classe_G3.getNom(), classe_G3.getSignature(), 50));
         liaisonsINSCRIPTION.add(new LiaisonFraisClasse(classe_L1.getId(), classe_L1.getNom(), classe_L1.getSignature(), 50));
         //public TEST_Frais(int id, int idUtilisateur, int idEntreprise, int idExercice, int idMonnaie, long signatureMonnaie, String nom, String monnaie, int nbTranches, Vector<LiaisonClasseFrais> liaisonsClasses, Vector<LiaisonPeriodeFrais> liaisonsPeriodes, double montantDefaut, int beta) {
-    
-        this.Frais_Inscription = new Frais(12, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, UtilInscription.generateSignature(), "INSCRIPTION", "$", 1, liaisonsINSCRIPTION, new Vector<LiaisonFraisPeriode>(), 50, InterfaceEleve.BETA_EXISTANT);
-        
+
+        this.Frais_Inscription = new Frais(12, utilisateur.getId(), entreprise.getId(), anneescolaire.getId(), 10, 1010101010, UtilInscription.generateSignature(), "INSCRIPTION", "$", 1, liaisonsINSCRIPTION, new Vector<LiaisonFraisPeriode>(), 50, InterfaceEleve.BETA_EXISTANT);
+
         Vector<LiaisonFraisClasse> liaisonsMINERVALE = new Vector<>();
         liaisonsMINERVALE.add(new LiaisonFraisClasse(classe_G1.getId(), classe_G1.getNom(), classe_G1.getSignature(), 1500));
         liaisonsMINERVALE.add(new LiaisonFraisClasse(classe_G2.getId(), classe_G2.getNom(), classe_G2.getSignature(), 1500));
         liaisonsMINERVALE.add(new LiaisonFraisClasse(classe_G3.getId(), classe_G3.getNom(), classe_G3.getSignature(), 1500));
         liaisonsMINERVALE.add(new LiaisonFraisClasse(classe_L1.getId(), classe_L1.getNom(), classe_L1.getSignature(), 1500));
-        
-        this.Frais_Minervale = new Frais(1, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, UtilInscription.generateSignature(), "MINERVALE", "$", 3, liaisonsMINERVALE, new Vector<LiaisonFraisPeriode>(), 1500, InterfaceEleve.BETA_EXISTANT);
-        
+
+        this.Frais_Minervale = new Frais(1, utilisateur.getId(), entreprise.getId(), anneescolaire.getId(), 10, 1010101010, UtilInscription.generateSignature(), "MINERVALE", "$", 3, liaisonsMINERVALE, new Vector<LiaisonFraisPeriode>(), 1500, InterfaceEleve.BETA_EXISTANT);
+
         Vector<LiaisonFraisClasse> liaisonsTRAVAILMAN = new Vector<>();
         liaisonsTRAVAILMAN.add(new LiaisonFraisClasse(classe_G1.getId(), classe_G1.getNom(), classe_G1.getSignature(), 10));
         liaisonsTRAVAILMAN.add(new LiaisonFraisClasse(classe_G2.getId(), classe_G2.getNom(), classe_G2.getSignature(), 10));
         liaisonsTRAVAILMAN.add(new LiaisonFraisClasse(classe_G3.getId(), classe_G3.getNom(), classe_G3.getSignature(), 10));
         liaisonsTRAVAILMAN.add(new LiaisonFraisClasse(classe_L1.getId(), classe_L1.getNom(), classe_L1.getSignature(), 10));
-        this.Frais_TravailManul = new Frais(51, idUtilisateur, idEntreprise, idExercice, 10, 1010101010, UtilInscription.generateSignature(), "TRAVAIL MANUEL", "$", 3, liaisonsTRAVAILMAN, new Vector<LiaisonFraisPeriode>(), 10, InterfaceEleve.BETA_EXISTANT);
-        
+        this.Frais_TravailManul = new Frais(51, utilisateur.getId(), entreprise.getId(), anneescolaire.getId(), 10, 1010101010, UtilInscription.generateSignature(), "TRAVAIL MANUEL", "$", 3, liaisonsTRAVAILMAN, new Vector<LiaisonFraisPeriode>(), 10, InterfaceEleve.BETA_EXISTANT);
+
         this.listeFraises.add(Frais_Inscription);
         this.listeFraises.add(Frais_Minervale);
         this.listeFraises.add(Frais_TravailManul);
+
         
-        anneescolaire = new Exercice(12, entreprise.getId(), idUtilisateur, "Année 2019-2020", new Date(), UtilInscription.getDate_AjouterAnnee(new Date(), 1), InterfaceExercice.BETA_EXISTANT);
-        
-        ParametreInscription parametres = new ParametreInscription(listeMonnaies, listeClasses, listeFraises, entreprise, anneescolaire, idUtilisateur, "Serge SULA BOSIO");
-        return parametres;
+        return new ParametreInscription(listeMonnaies, listeClasses, listeFraises, entreprise, anneescolaire, utilisateur);
     }
-    
-    
-    public DonneesInscription getDonnees(){
-        Vector<Eleve> listeElevesExistants = new Vector<>();
-        long signEle = (new Date().getTime());
-        listeElevesExistants.add(new Eleve(1, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 10, signEle, "G1", "", "(+243)844803514", "SULA", "BOSIO", "SERGE", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, new Date(), InterfaceEleve.BETA_EXISTANT));
-        listeElevesExistants.add(new Eleve(2, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 10, new Date().getTime()+1, "G1", "", "(+243)844803514", "MAKULA", "BOFANDO", "ALAIN", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, new Date(), InterfaceEleve.BETA_EXISTANT));
-        listeElevesExistants.add(new Eleve(3, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 10, new Date().getTime()+2, "G1", "", "(+243)844803514", "MUTA", "KANKU", "CHRISTIAN", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, new Date(), InterfaceEleve.BETA_EXISTANT));
-        listeElevesExistants.add(new Eleve(4, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 10, new Date().getTime()+3, "G1", "", "(+243)844803514", "SULA", "OKONDJI", "HERMINE", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_FEMININ, new Date(), InterfaceEleve.BETA_EXISTANT));
-        
-        
-        Vector<Ayantdroit> listeAyantDroitsExistants = new Vector<>();
+
+    public void initDonnees() {
+        Eleve elSULA = new Eleve(1, entreprise.getId(), utilisateur.getId(), anneescolaire.getId(), 10, UtilInscription.generateSignature(), "G1", "", "(+243)844803514", "SULA", "BOSIO", "SERGE", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, new Date(), InterfaceEleve.BETA_EXISTANT);
+        listeElevesExistants.removeAllElements();
+        listeElevesExistants.add(elSULA);
+        listeElevesExistants.add(new Eleve(2, entreprise.getId(), utilisateur.getId(), anneescolaire.getId(), 10, UtilInscription.generateSignature(), "G1", "", "(+243)844803514", "MAKULA", "BOFANDO", "ALAIN", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, new Date(), InterfaceEleve.BETA_EXISTANT));
+        listeElevesExistants.add(new Eleve(3, entreprise.getId(), utilisateur.getId(), anneescolaire.getId(), 10, UtilInscription.generateSignature(), "G1", "", "(+243)844803514", "MUTA", "KANKU", "CHRISTIAN", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, new Date(), InterfaceEleve.BETA_EXISTANT));
+        listeElevesExistants.add(new Eleve(4, entreprise.getId(), utilisateur.getId(), anneescolaire.getId(), 10, UtilInscription.generateSignature(), "G1", "", "(+243)844803514", "SULA", "OKONDJI", "HERMINE", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_FEMININ, new Date(), InterfaceEleve.BETA_EXISTANT));
+
         Vector<LiaisonFraisEleve> liaison = new Vector<>();
         liaison.add(new LiaisonFraisEleve(new Date().getTime(), Frais_Inscription.getSignature(), 12, 0, 3, "$"));
         liaison.add(new LiaisonFraisEleve(new Date().getTime(), Frais_Minervale.getSignature(), 1, 0, 3, "$"));
         liaison.add(new LiaisonFraisEleve(new Date().getTime(), Frais_TravailManul.getSignature(), 51, 0, 3, "$"));
-        
-        listeAyantDroitsExistants.add(new Ayantdroit(1, entreprise.getId(), idUtilisateur, anneescolaire.getId(), 1, "SULA", liaison, new Date().getTime(), signEle, InterfaceAyantDroit.BETA_EXISTANT));
-        
-        DonneesInscription donnees = new DonneesInscription(listeElevesExistants, listeAyantDroitsExistants);
-        return donnees;
+
+        listeAyantDroitsExistants.removeAllElements();
+        listeAyantDroitsExistants.add(new Ayantdroit(1, entreprise.getId(), utilisateur.getId(), anneescolaire.getId(), 1, "SULA", liaison, new Date().getTime(), elSULA.getSignature(), InterfaceAyantDroit.BETA_EXISTANT));
     }
 
     private void initParametres() {
         ParametreInscription parametre = getParametres();
-        DonneesInscription donnees = getDonnees();
-        
-        CouleurBasique couleurs = new CouleurBasique();
-        couleurs.setCouleur_background_normal(Color.white);
-        couleurs.setCouleur_background_selection(UtilInscription.COULEUR_BLEU);
-        couleurs.setCouleur_encadrement_selection(UtilInscription.COULEUR_ORANGE);
-        couleurs.setCouleur_foreground_objet_existant(UtilInscription.COULEUR_BLEU);
-        couleurs.setCouleur_foreground_objet_modifie(UtilInscription.COULEUR_BLEU_CLAIRE_1);
-        couleurs.setCouleur_foreground_objet_nouveau(UtilInscription.COULEUR_ROUGE);
-        
-        this.gestionnaireExercice = new PanelInscription(couleurs, this.tabPrincipale, donnees, parametre, new EcouteurInscription() {
+
+        this.gestionnaireExercice = new PanelInscription(new CouleurBasique(), this.tabPrincipale, new DataInscription(parametre), null, new EcouteurInscription() {
             @Override
             public void onDetruitExercice(int idExercice) {
                 System.out.println("RAS=" + idExercice);
             }
-            
 
             @Override
-            public void onDetruitElements(int idElement, int index) {
-                System.out.println("Element supprimé = " + idElement + ", indice = " + index);
+            public void onDetruitElements(int idElement, int index, long signature) {
+                System.out.println("Element supprimé = " + idElement + ", indice = " + index + ", signature = " + signature);
             }
-            
-            
+
             @Override
             public void onEnregistre(SortiesInscription sortiesEleveAyantDroit) {
                 Thread th = new Thread() {
@@ -169,22 +163,23 @@ public class Principal_Insc extends javax.swing.JFrame {
                         try {
                             sortiesEleveAyantDroit.getEcouteurEnregistrement().onUploading("Chargement...");
                             sleep(10);
-                            
-                            
+
                             sortiesEleveAyantDroit.getListeEleves().forEach((Oeleve) -> {
-                                if(Oeleve.getBeta() == InterfaceEleve.BETA_MODIFIE || Oeleve.getBeta() == InterfaceEleve.BETA_NOUVEAU){
+                                if (Oeleve.getBeta() == InterfaceEleve.BETA_MODIFIE || Oeleve.getBeta() == InterfaceEleve.BETA_NOUVEAU) {
                                     System.out.println(" * " + Oeleve.toString());
-                                    
+
                                     //Après enregistrement
+                                    Oeleve.setId(new Date().getSeconds());
                                     Oeleve.setBeta(InterfaceEleve.BETA_EXISTANT);
                                 }
                             });
-                          
+
                             sortiesEleveAyantDroit.getListeAyantDroit().forEach((Oeleve) -> {
-                                if(Oeleve.getBeta() == InterfaceAyantDroit.BETA_MODIFIE || Oeleve.getBeta() == InterfaceAyantDroit.BETA_NOUVEAU){
+                                if (Oeleve.getBeta() == InterfaceAyantDroit.BETA_MODIFIE || Oeleve.getBeta() == InterfaceAyantDroit.BETA_NOUVEAU) {
                                     System.out.println(" * " + Oeleve.toString() + " : ");
-                                    
+
                                     //Après enregistrement
+                                    Oeleve.setId(new Date().getSeconds());
                                     Oeleve.setBeta(InterfaceAyantDroit.BETA_EXISTANT);
                                 }
                             });
@@ -196,17 +191,14 @@ public class Principal_Insc extends javax.swing.JFrame {
                     }
                 };
                 th.start();
-                
-                
-                
+
             }
         }, new EcouteurCrossCanal() {
             @Override
             public void onOuvrirLitiges(Eleve eleve) {
                 System.out.println("Ouverture des litiges de " + eleve.getNom());
             }
-            
-            
+
             @Override
             public void onOuvrirPaiements(Eleve eleve) {
                 System.out.println("Ouverture des paiements de " + eleve.getNom());
@@ -217,6 +209,96 @@ public class Principal_Insc extends javax.swing.JFrame {
                 System.out.println("Ouverture de la fiche d'inscription de " + eleve.getNom());
             }
         });
+
+    }
+    
+    
+    private boolean verifierNomEleve(String motCle, Eleve Ieleve) {
+        boolean reponse = false;
+        if (motCle.trim().length() == 0) {
+            reponse = true;
+        } else {
+            reponse = ((UtilInscription.contientMotsCles(Ieleve.getNom() + " " + Ieleve.getPostnom() + " " + Ieleve.getPrenom(), motCle)));
+        }
+        return reponse;
+    }
+
+    private void chercherEleves(String motCle, int taillePage, JS2BPanelPropriete criteresAvances) {
+        int index = 1;
+        gestionnaireExercice.reiniliserEleves();
+        gestionnaireExercice.reiniliserAyantDroit();
+        
+        for (Eleve ee : listeElevesExistants) {
+            if (index == taillePage) {
+                break;
+            }
+            boolean repMotCle = verifierNomEleve(motCle, ee);
+            boolean repSexe = false;
+            boolean repStat = false;
+            boolean repClasse = false;
+
+            if (criteresAvances != null) {
+                for (PROPRIETE prop : criteresAvances.getListePro()) {
+                    String nomCritere = prop.getNom();
+                    Object valeur = prop.getValeurSelectionne();
+
+                    System.out.println("Nom: " + prop.getNom() + ", val: " + valeur);
+
+                    switch (nomCritere) {
+                        case "Genre":
+                            if (ee.getSexe() == InterfaceEleve.SEXE_MASCULIN && (valeur + "").equals("Masculin")) {
+                                repSexe = true;
+                            } else if (ee.getSexe() == InterfaceEleve.SEXE_FEMININ && (valeur + "").equals("Féminin")) {
+                                repSexe = true;
+                            } else if ((valeur + "").trim().length() == 0) {
+                                repSexe = true;
+                            } else {
+                                repSexe = false;
+                            }
+                            break;
+                        case "Statut":
+                            if (ee.getStatus() == InterfaceEleve.STATUS_ACTIF && (valeur + "").equals("ACTIF")) {
+                                repStat = true;
+                            } else if (ee.getStatus() == InterfaceEleve.STATUS_INACTIF && (valeur + "").equals("INACTIF")) {
+                                repStat = true;
+                            } else if ((valeur + "").trim().length() == 0) {
+                                repStat = true;
+                            } else {
+                                repStat = false;
+                            }
+                            break;
+                        case "Classe":
+                            if ((valeur + "").trim().length() == 0) {
+                                repClasse = true;
+                            } else {
+                                Classe clss = gestionnaireExercice.getClasse(valeur + "");
+                                if (clss != null) {
+                                    if (clss.getId() == ee.getIdClasse()) {
+                                        repClasse = true;
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            } else {
+                repSexe = true;
+                repStat = true;
+                repClasse = true;
+            }
+            if (repMotCle == true && repSexe == true && repStat == true && repClasse == true) {
+                gestionnaireExercice.setDonneesEleves(ee);
+                for(Ayantdroit ayd: listeAyantDroitsExistants){
+                    if(ayd.getIdEleve() == ee.getId()){
+                        gestionnaireExercice.setDonneesAyantDroit(ayd);
+                    }
+                }
+                
+            }
+            index++;
+        }
     }
 
     /**
@@ -264,14 +346,58 @@ public class Principal_Insc extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-
+        Icones icones = new Icones();
         initParametres();
-        
-        //Chargement du gestionnaire sur l'onglet
-        tabPrincipale.addTab("Fiche d'inscription", gestionnaireExercice);
-        
-        //On séléctionne l'onglet actuel
-        tabPrincipale.setSelectedComponent(gestionnaireExercice);
+        initDonnees();
+        if (gestionnaireExercice != null) {
+            NavigateurPages navigateur = gestionnaireExercice.getNavigateur();
+            navigateur.initialiser(this, new EcouteurNavigateurPages() {
+                @Override
+                public void onRecharge(String motCle, int pageActuelle, int taillePage, JS2BPanelPropriete criteresAvances) {
+                    new Thread() {
+                        public void run() {
+                            navigateur.patienter(true, "Chargement...");
+                            System.out.println("CHARGEMENT DE DONNEES...");
+                            chercherEleves(motCle, taillePage, criteresAvances);
+                            navigateur.setInfos(100, 10);
+                            navigateur.patienter(false, "Prêt.");
+                        }
+                    }.start();
+                }
+            }, new ConstructeurCriteres() {
+                @Override
+                public JS2BPanelPropriete onInitialise() {
+                    Vector listeClasses = new Vector();
+                    listeClasses.add("TOUTES LES CLASSES");
+                    for (Classe cl : gestionnaireExercice.getDataInscription().getParametreInscription().getListeClasses()) {
+                        listeClasses.add(cl.getNom());
+                    }
+
+                    Vector listeGenre = new Vector();
+                    listeGenre.add("TOUT GENRE");
+                    listeGenre.add("Masculin");
+                    listeGenre.add("Féminin");
+
+                    Vector listeStatut = new Vector();
+                    listeStatut.add("TOUT STATUT");
+                    listeStatut.add("ACTIF");
+                    listeStatut.add("INACTIF");
+
+                    JS2BPanelPropriete panProp = new JS2BPanelPropriete(icones.getFiltrer_01(), "Critères avancés", true);
+                    panProp.viderListe();
+                    panProp.AjouterPropriete(new CHAMP_LOCAL(icones.getClasse_01(), "Classe", "cls", listeClasses, "", PROPRIETE.TYPE_CHOIX_LISTE), 0);
+                    panProp.AjouterPropriete(new CHAMP_LOCAL(icones.getClient_01(), "Genre", "cls", listeGenre, "", PROPRIETE.TYPE_CHOIX_LISTE), 0);
+                    panProp.AjouterPropriete(new CHAMP_LOCAL(icones.getAimer_01(), "Statut", "cls", listeStatut, "", PROPRIETE.TYPE_CHOIX_LISTE), 0);
+
+                    return panProp;
+                }
+            });
+
+            tabPrincipale.addTab("Fiche d'inscription", gestionnaireExercice);
+            tabPrincipale.setSelectedComponent(gestionnaireExercice);
+
+            navigateur.reload();
+        }
 
 
     }//GEN-LAST:event_jButton1ActionPerformed

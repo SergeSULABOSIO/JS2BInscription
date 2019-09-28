@@ -6,6 +6,8 @@
 package SOURCES.EditeurTable_Insc;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.AbstractCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
@@ -24,6 +26,13 @@ public class EditeurStatus extends AbstractCellEditor implements TableCellEditor
     }
 
     private void initCombo() {
+        this.champEditionCombo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //System.out.println("Clic: " + e.getActionCommand());
+                fireEditingStopped();
+            }
+        });
         this.champEditionCombo.removeAllItems();
         this.champEditionCombo.addItem("REGULIER(E)");
         this.champEditionCombo.addItem("EXCLU(E)");
@@ -43,3 +52,4 @@ public class EditeurStatus extends AbstractCellEditor implements TableCellEditor
     }
 
 }
+

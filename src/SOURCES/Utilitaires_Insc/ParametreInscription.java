@@ -11,6 +11,7 @@ import Source.Objet.Entreprise;
 import Source.Objet.Exercice;
 import Source.Objet.Frais;
 import Source.Objet.Monnaie;
+import Source.Objet.Utilisateur;
 import java.util.Vector;
 
 /**
@@ -24,17 +25,15 @@ public class ParametreInscription {
     public Vector<Monnaie> listeMonnaies;
     public Entreprise entreprise;
     public Exercice exercice;
-    public int idUtilisateur;
-    public String nomUtilisateur;
+    public Utilisateur utilisateur;
 
-    public ParametreInscription(Vector<Monnaie> listeMonnaies, Vector<Classe> listeClasses, Vector<Frais> listeFraises, Entreprise entreprise, Exercice exercice, int idUtilisateur, String nomUtilisateur) {
+    public ParametreInscription(Vector<Monnaie> listeMonnaies, Vector<Classe> listeClasses, Vector<Frais> listeFraises, Entreprise entreprise, Exercice exercice, Utilisateur utilisateur) {
         this.listeMonnaies = listeMonnaies;
         this.listeClasses = listeClasses;
         this.listeFraises = listeFraises;
         this.entreprise = entreprise;
         this.exercice = exercice;
-        this.idUtilisateur = idUtilisateur;
-        this.nomUtilisateur = nomUtilisateur;
+        this.utilisateur = utilisateur;
     }
 
     public Vector<Classe> getListeClasses() {
@@ -77,24 +76,21 @@ public class ParametreInscription {
         this.exercice = exercice;
     }
 
-    public int getIdUtilisateur() {
-        return idUtilisateur;
+    public Utilisateur getUtilisateur() {
+        return utilisateur;
     }
 
-    public void setIdUtilisateur(int idUtilisateur) {
-        this.idUtilisateur = idUtilisateur;
-    }
-
-    public String getNomUtilisateur() {
-        return nomUtilisateur;
-    }
-
-    public void setNomUtilisateur(String nomUtilisateur) {
-        this.nomUtilisateur = nomUtilisateur;
+    public void setUtilisateur(Utilisateur utilisateur) {
+        this.utilisateur = utilisateur;
     }
 
     @Override
     public String toString() {
-        return "ParametreInscription{" + "listeClasses=" + listeClasses + ", listeFraises=" + listeFraises + ", listeMonnaies=" + listeMonnaies + ", entreprise=" + entreprise + ", exercice=" + exercice + ", idUtilisateur=" + idUtilisateur + ", nomUtilisateur=" + nomUtilisateur + '}';
+        return "ParametreInscription{" + "listeClasses=" + listeClasses + ", listeFraises=" + listeFraises + ", listeMonnaies=" + listeMonnaies + ", entreprise=" + entreprise + ", exercice=" + exercice + ", utilisateur=" + utilisateur + '}';
     }
 }
+
+
+
+
+

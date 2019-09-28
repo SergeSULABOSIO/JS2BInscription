@@ -39,14 +39,14 @@ public class UtilInscription {
     }
     
     public static boolean contientMotsCles(String base, String motscles){
-        boolean rep = false;
-        String[] tabMotsCles = motscles.split(" ");
-        for(int i=0; i<tabMotsCles.length; i++){
-            if(base.toLowerCase().contains(tabMotsCles[i].toLowerCase().trim())){
-                return true;
+        String[] tabMotsCles = (motscles.trim()).split(" ");
+        int index = 0;
+        for (int i = 0; i < tabMotsCles.length; i++) {
+            if (base.toLowerCase().contains(tabMotsCles[i].toLowerCase().trim())) {
+                index++;
             }
         }
-        return rep;
+        return index == tabMotsCles.length;
     }
 
     public static String getLettres(double montant, String NomMonnaie) {
@@ -132,3 +132,5 @@ public class UtilInscription {
         System.out.println("Résultat = " + res);
     }
 }
+
+

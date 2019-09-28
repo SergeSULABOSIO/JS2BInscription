@@ -16,5 +16,6 @@ import SOURCES.Utilitaires_Insc.SortiesInscription;
 public abstract class EcouteurInscription {
     public abstract void onEnregistre(SortiesInscription sortiesFacture);
     public abstract void onDetruitExercice(int idExercice);
-    public abstract void onDetruitElements(int idElement, int index);
+    public abstract void onDetruitElements(int idElement, int index, long signature);
 }
+

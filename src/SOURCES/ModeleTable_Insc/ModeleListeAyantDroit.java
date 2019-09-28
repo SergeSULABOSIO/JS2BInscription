@@ -13,6 +13,7 @@ import SOURCES.Utilitaires_Insc.UtilInscription;
 import Source.Callbacks.EcouteurSuppressionElement;
 import Source.Callbacks.EcouteurUpdateClose;
 import Source.Callbacks.EcouteurValeursChangees;
+import Source.GestionEdition;
 import Source.Interface.InterfaceAyantDroit;
 import Source.Interface.InterfaceMonnaie;
 import Source.Objet.Ayantdroit;
@@ -43,8 +44,9 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     private RubriqueSimple mEnreg;
     private CouleurBasique colBasique;
     private ParametreInscription parametreInscription;
+    private GestionEdition gestionEdition;
 
-    public ModeleListeAyantDroit(ParametreInscription parametreInscription, CouleurBasique colBasique, JScrollPane parent, Bouton btEnreg, RubriqueSimple mEnreg, Vector<Frais> listeFrais, ModeleListeEleve modeleListeEleve, EcouteurValeursChangees ecouteurModele, EcouteurUpdateClose ecouteurClose) {
+    public ModeleListeAyantDroit(GestionEdition gestionEdition, ParametreInscription parametreInscription, CouleurBasique colBasique, JScrollPane parent, Bouton btEnreg, RubriqueSimple mEnreg, Vector<Frais> listeFrais, ModeleListeEleve modeleListeEleve, EcouteurValeursChangees ecouteurModele, EcouteurUpdateClose ecouteurClose) {
         this.parametreInscription = parametreInscription;
         this.parent = parent;
         this.colBasique = colBasique;
@@ -54,7 +56,7 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
         this.ecouteurClose = ecouteurClose;
         this.mEnreg = mEnreg;
         this.btEnreg = btEnreg;
-        //System.out.println(" * ModeleListeFrais");
+        this.gestionEdition = gestionEdition;
     }
 
     public void chercher(Vector<Eleve> listeEleveFiltres) {
@@ -96,6 +98,13 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     public void setListeAyantDroit(Vector<Ayantdroit> listeData) {
         this.listeData = listeData;
         redessinerTable();
+    }
+
+    public void addData(Ayantdroit Data) {
+        if (!this.listeData.contains(Data)) {
+            this.listeData.add(Data);
+            redessinerTable();
+        }
     }
 
     private Eleve getEleve(long signatureEleve) {
@@ -182,7 +191,7 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
                 if (dialogResult == JOptionPane.YES_OPTION) {
                     if (row <= listeData.size()) {
                         this.listeData.removeElementAt(row);
-                        ecouteurSuppressionElement.onSuppressionConfirmee(idASupp);
+                        ecouteurSuppressionElement.onSuppressionConfirmee(idASupp, articl.getSignature());
                     }
                     redessinerTable();
                 }
@@ -196,6 +205,11 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
             this.listeData.removeAllElements();
             redessinerTable();
         }
+    }
+
+    public void reinitialiserListe() {
+        this.listeData.removeAllElements();
+        redessinerTable();
     }
 
     public void redessinerTable() {
@@ -288,10 +302,20 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        if (columnIndex == 0) {
-            return false;
+        Ayantdroit eleve = null;
+        boolean canEdit = false;
+        if (listeData.size() > rowIndex) {
+            eleve = listeData.elementAt(rowIndex);
+            canEdit = gestionEdition.isEditable(eleve.getId(), 1);
+        }
+        if (canEdit == true) {
+            if (columnIndex == 0) {
+                return false;
+            } else {
+                return true;
+            }
         } else {
-            return true;
+            return false;
         }
     }
 
@@ -354,3 +378,6 @@ public class ModeleListeAyantDroit extends AbstractTableModel {
     }
 
 }
+
+
+

@@ -372,7 +372,9 @@ public class DocumentPDFInscription extends PdfPageEventHelper {
                     int taille = getNBEleves(Iclasse);
                     if (taille != 0) {
                         document.add(getParagraphe("LISTE D'ELEVES - CLASSE: " + Iclasse.getNom() + " (" + Iclasse.getNomLocal() + "), " + taille + " ELEVE(S).", Font_TexteSimple_Gras_Italique, Element.ALIGN_LEFT));
-                        document.add(getParagraphe("SEXE: " + this.gestionnaireInscription.getCritereSexe() + " || CLASSE: " + this.gestionnaireInscription.getCritereClasse() + " || STATUS: " + this.gestionnaireInscription.getCritereStatus(), Font_TexteSimple_petit, Element.ALIGN_LEFT));
+                        document.add(getParagraphe("" + gestionnaireInscription.getNavigateur().toStringCriteres(), Font_TexteSimple_petit, Element.ALIGN_LEFT));
+                        
+                        //document.add(getParagraphe("SEXE: " + this.gestionnaireInscription.getCritereSexe() + " || CLASSE: " + this.gestionnaireInscription.getCritereClasse() + " || STATUS: " + this.gestionnaireInscription.getCritereStatus(), Font_TexteSimple_petit, Element.ALIGN_LEFT));
                         PdfPTable tableCharge = getTableau(
                                 -1,
                                 new String[]{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Date naiss.", "Status", "Téléphone"},
@@ -410,8 +412,8 @@ public class DocumentPDFInscription extends PdfPageEventHelper {
     }
     
     private String getMonnaie(InterfaceFrais iff) {
-        if (gestionnaireInscription.parametreInscription.getListeMonnaies() != null) {
-            for (InterfaceMonnaie im : gestionnaireInscription.parametreInscription.getListeMonnaies()) {
+        if (gestionnaireInscription.dataInscription.getParametreInscription().getListeMonnaies() != null) {
+            for (InterfaceMonnaie im : gestionnaireInscription.dataInscription.getParametreInscription().getListeMonnaies()) {
                 if (im.getSignature() == iff.getSignatureMonnaie()) {
                     return im.getCode();
                 }
@@ -468,7 +470,8 @@ public class DocumentPDFInscription extends PdfPageEventHelper {
                     int taille = getNBAyantDroits(Iclasse);
                     if (taille != 0) {
                         document.add(getParagraphe("LISTE D'AYANT-DROITS - CLASSE: " + Iclasse.getNom() + " (" + Iclasse.getNomLocal() + "), " + taille + " ELEVE(S).", Font_TexteSimple_Gras_Italique, Element.ALIGN_LEFT));
-                        document.add(getParagraphe("SEXE: " + this.gestionnaireInscription.getCritereSexe() + " || CLASSE: " + this.gestionnaireInscription.getCritereClasse() + " || STATUS: " + this.gestionnaireInscription.getCritereStatus(), Font_TexteSimple_petit, Element.ALIGN_LEFT));
+                        document.add(getParagraphe("" + gestionnaireInscription.getNavigateur().toStringCriteres(), Font_TexteSimple_petit, Element.ALIGN_LEFT));
+                        //document.add(getParagraphe("SEXE: " + this.gestionnaireInscription.getCritereSexe() + " || CLASSE: " + this.gestionnaireInscription.getCritereClasse() + " || STATUS: " + this.gestionnaireInscription.getCritereStatus(), Font_TexteSimple_petit, Element.ALIGN_LEFT));
                         PdfPTable tableAyantDroit = getTableau(
                                 -1,
                                 getTabTitresColonnes(),
@@ -540,3 +543,5 @@ public class DocumentPDFInscription extends PdfPageEventHelper {
     }
 
 }
+
+

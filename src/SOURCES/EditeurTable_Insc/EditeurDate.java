@@ -9,6 +9,8 @@ package SOURCES.EditeurTable_Insc;
 
 import com.toedter.calendar.JDateChooser;
 import java.awt.Component;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Date;
 import javax.swing.AbstractCellEditor;
 import javax.swing.JTable;
@@ -25,7 +27,12 @@ public class EditeurDate extends AbstractCellEditor implements TableCellEditor {
     
     
     public EditeurDate() {
-        
+        this.dateChooser.getDateEditor().addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent e) {
+                fireEditingStopped();
+            }
+        });
     }
 
     @Override
@@ -42,3 +49,4 @@ public class EditeurDate extends AbstractCellEditor implements TableCellEditor {
     }
 
 }
+
