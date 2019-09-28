@@ -22,12 +22,9 @@ import SOURCES.EditeurTable_Insc.EditeurStatus;
 import SOURCES.GenerateurPDF_Insc.DocumentPDFInscription;
 import SOURCES.ModeleTable_Insc.ModeleListeAyantDroit;
 import SOURCES.ModeleTable_Insc.ModeleListeEleve;
-import SOURCES.MoteurRecherche_Insc.MoteurRecherche;
-import SOURCES.RenduComboBox_Insc.RenduCombo;
 import SOURCES.RenduTable_Insc.RenduTableAyantDroit;
 import SOURCES.RenduTable_Insc.RenduTableEleve;
-import SOURCES.Utilitaires_Insc.DonneesInscription;
-import SOURCES.Utilitaires_Insc.ParametreInscription;
+import SOURCES.Utilitaires_Insc.DataInscription;
 import SOURCES.Utilitaires_Insc.SortiesInscription;
 import SOURCES.Utilitaires_Insc.UtilInscription;
 import Source.Callbacks.EcouteurCrossCanal;
@@ -35,22 +32,26 @@ import Source.Callbacks.EcouteurEnregistrement;
 import Source.Callbacks.EcouteurSuppressionElement;
 import Source.Callbacks.EcouteurUpdateClose;
 import Source.Callbacks.EcouteurValeursChangees;
+import Source.GestionClickDroit;
+import Source.GestionEdition;
 import Source.Interface.InterfaceAyantDroit;
-import Source.Interface.InterfaceClasse;
 import Source.Interface.InterfaceEleve;
 import Source.Interface.InterfaceEntreprise;
+import Source.Interface.InterfaceUtilisateur;
 import Source.Objet.Ayantdroit;
+import Source.Objet.Classe;
 import Source.Objet.CouleurBasique;
 import Source.Objet.Eleve;
 import Source.Objet.LiaisonFraisEleve;
+import Source.Objet.Utilisateur;
+import Source.UI.NavigateurPages;
 import java.awt.Color;
-import java.awt.event.ItemEvent;
-import java.awt.event.MouseEvent;
 import java.util.Date;
 import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
@@ -73,43 +74,51 @@ public class PanelInscription extends javax.swing.JPanel {
     private PanelInscription moi = null;
     private EcouteurUpdateClose ecouteurClose = null;
     private EcouteurAjoutInscription ecouteurAjout = null;
-    private Bouton btEnregistrer, btAjouter, btSupprimer, btVider, btImprimer, btPDF, btFermer, btActualiser, btPaiement, btLitiges;
-    private RubriqueSimple mEnregistrer, mAjouter, mSupprimer, mVider, mImprimer, mPDF, mFermer, mActualiser, mPaiement, mLitige;
+    private Bouton btEnregistrer, btAjouter, btSupprimer, btVider, btImprimer, btPDF, btFermer, btActualiser, btPaiement, btLitiges, btEdition;
+    private RubriqueSimple mEnregistrer, mAjouter, mSupprimer, mVider, mImprimer, mPDF, mFermer, mActualiser, mPaiement, mLitige, mEdition;
     private MenuContextuel menuContextuel = null;
     private BarreOutils bOutils = null;
     private EcouteurInscription ecouteurInscription = null;
-
     private ModeleListeEleve modeleListeEleve;
     private ModeleListeAyantDroit modeleListeAyantDroit;
     private EditeurEleve editeurEleve = null;
-    private MoteurRecherche gestionnaireRecherche;
 
-    public DonneesInscription donneesInscription;
-    public ParametreInscription parametreInscription;
+    public DataInscription dataInscription;
     private CouleurBasique couleurBasique;
     private EcouteurCrossCanal ecouteurCrossCanal;
     public Eleve selectedEleve = null;
+    public Ayantdroit selectedAyantDroit = null;
+    public JProgressBar progress;
+    private GestionEdition gestionEdition = new GestionEdition();
 
-    public PanelInscription(CouleurBasique couleurBasique, JTabbedPane parent, DonneesInscription donneesInscription, ParametreInscription parametreInscription, EcouteurInscription ecouteurInscription, EcouteurCrossCanal ecouteurCrossCanal) {
+    public PanelInscription(CouleurBasique couleurBasique, JTabbedPane parent, DataInscription dataInscription, JProgressBar progress, EcouteurInscription ecouteurInscription, EcouteurCrossCanal ecouteurCrossCanal) {
         this.initComponents();
+        this.progress = progress;
         this.ecouteurCrossCanal = ecouteurCrossCanal;
         this.parent = parent;
         this.couleurBasique = couleurBasique;
-        this.init();
-        this.donneesInscription = donneesInscription;
-        this.parametreInscription = parametreInscription;
+        this.dataInscription = dataInscription;
         this.ecouteurInscription = ecouteurInscription;
-
-        //Initialisaterus
+        this.init();
         this.parametrerTableEleves();
         this.parametrerTableAyantDroit();
         this.setIconesTabs();
-        this.activerMoteurRecherche();
-        this.initCombos();
+
+        //On ecoute les click droit afin d'afficher le menu contextuel
+        new GestionClickDroit(menuContextuel, tableListeEleves, scrollListeEleves).init();
+        new GestionClickDroit(menuContextuel, tableListeAyantDroit, scrollListeAyantDroit).init();
+    }
+
+    public DataInscription getDataInscription() {
+        return dataInscription;
+    }
+
+    public NavigateurPages getNavigateur() {
+        return navigateur;
     }
 
     public InterfaceEntreprise getEntreprise() {
-        return this.parametreInscription.getEntreprise();
+        return dataInscription.getParametreInscription().getEntreprise();
     }
 
     public int getIndexTabSelected() {
@@ -117,7 +126,7 @@ public class PanelInscription extends javax.swing.JPanel {
     }
 
     public String getNomUtilisateur() {
-        return this.parametreInscription.getNomUtilisateur();
+        return dataInscription.getParametreInscription().getUtilisateur().getNom();
     }
 
     public String getTitreDoc() {
@@ -132,97 +141,6 @@ public class PanelInscription extends javax.swing.JPanel {
         return new Date();
     }
 
-    private void initCombos() {
-        //Les sexes
-        chSexe.removeAllItems();
-        chSexe.addItem("MASCULIN & FEMININ");
-        chSexe.addItem("MASCULIN");
-        chSexe.addItem("FEMININ");
-        chSexe.setRenderer(new RenduCombo(icones.getClient_01()));
-
-        //Les status
-        chStatus.removeAllItems();
-        chStatus.addItem("REGULIER(E) & EXCLU(E)");
-        chStatus.addItem("REGULIER(E)");
-        chStatus.addItem("EXCLU(E)");
-        chStatus.setRenderer(new RenduCombo(icones.getAimer_01()));
-
-        //Les calsses
-        chClasse.removeAllItems();
-        chClasse.addItem("TOUTES LES CLASSES");
-        if (this.parametreInscription.getListeClasses() != null) {
-            for (InterfaceClasse iClasse : this.parametreInscription.getListeClasses()) {
-                chClasse.addItem(iClasse.getNom() + "");
-            }
-        }
-        chClasse.setRenderer(new RenduCombo(icones.getClasse_01()));
-
-        chRecherche.setTextInitial("Recherche : Saisissez votre mot clé ici, puis tapez ENTER");
-        activerCriteres();
-    }
-
-    public String getCritereSexe() {
-        return this.chSexe.getSelectedItem() + "";
-    }
-
-    public String getCritereClasse() {
-        return this.chClasse.getSelectedItem() + "";
-    }
-
-    public String getCritereStatus() {
-        return this.chStatus.getSelectedItem() + "";
-    }
-
-    private void activerMoteurRecherche() {
-        gestionnaireRecherche = new MoteurRecherche(icones, chRecherche, ecouteurClose) {
-
-            @Override
-            public void chercher(String motcle) {
-                //classe
-                int idClasse = -1;
-                for (InterfaceClasse iClasse : parametreInscription.getListeClasses()) {
-                    if (iClasse.getNom().trim().equals(chClasse.getSelectedItem() + "")) {
-                        idClasse = iClasse.getId();
-                        break;
-                    }
-                }
-
-                //Sexe
-                int sexe = -1;
-                switch (chSexe.getSelectedIndex()) {
-                    case 1:
-                        sexe = InterfaceEleve.SEXE_MASCULIN;
-                        break;
-                    case 2:
-                        sexe = InterfaceEleve.SEXE_FEMININ;
-                        break;
-                    default:
-                        sexe = -1;
-                        break;
-                }
-
-                //status
-                int status = -1;
-                switch (chStatus.getSelectedIndex()) {
-                    case 1:
-                        status = InterfaceEleve.STATUS_ACTIF;
-                        break;
-                    case 2:
-                        status = InterfaceEleve.STATUS_INACTIF;
-                        break;
-                    default:
-                        status = -1;
-                        break;
-                }
-
-                modeleListeEleve.chercher(motcle, idClasse, sexe, status);
-                if (modeleListeAyantDroit != null) {
-                    modeleListeAyantDroit.chercher(modeleListeEleve.getListeData());
-                }
-            }
-        };
-    }
-
     private void setTaille(TableColumn column, int taille, boolean fixe, TableCellEditor editor) {
         column.setPreferredWidth(taille);
         if (fixe == true) {
@@ -235,7 +153,7 @@ public class PanelInscription extends javax.swing.JPanel {
     }
 
     private void fixerColonnesTableEleves(boolean resizeTable) {
-        this.tableListeEleves.setDefaultRenderer(Object.class, new RenduTableEleve(couleurBasique, icones.getModifier_01(), this.modeleListeEleve, this.parametreInscription.getListeClasses()));
+        this.tableListeEleves.setDefaultRenderer(Object.class, new RenduTableEleve(gestionEdition, couleurBasique, icones.getModifier_01(), this.modeleListeEleve, this.dataInscription.getParametreInscription().getListeClasses()));
         this.tableListeEleves.setRowHeight(25);
 
         //{"N°", "Nom", "Postnom", "Prénom", "Sexe", "Classe", "Date naiss.", "Lieu de naiss.", "Téléphone (parents)", "Adresse"}
@@ -244,7 +162,7 @@ public class PanelInscription extends javax.swing.JPanel {
         setTaille(this.tableListeEleves.getColumnModel().getColumn(2), 150, false, null);
         setTaille(this.tableListeEleves.getColumnModel().getColumn(3), 150, false, null);
         setTaille(this.tableListeEleves.getColumnModel().getColumn(4), 140, true, new EditeurSexe());
-        setTaille(this.tableListeEleves.getColumnModel().getColumn(5), 90, true, new EditeurClasse(this.parametreInscription.getListeClasses()));
+        setTaille(this.tableListeEleves.getColumnModel().getColumn(5), 90, true, new EditeurClasse(this.dataInscription.getParametreInscription().getListeClasses()));
         setTaille(this.tableListeEleves.getColumnModel().getColumn(6), 150, false, new EditeurDate());
         setTaille(this.tableListeEleves.getColumnModel().getColumn(7), 120, false, new EditeurStatus());
         setTaille(this.tableListeEleves.getColumnModel().getColumn(8), 200, false, null);
@@ -264,7 +182,7 @@ public class PanelInscription extends javax.swing.JPanel {
                             //Litige
                             btLitiges.appliquerDroitAccessDynamique(true);
                             mLitige.appliquerDroitAccessDynamique(true);
-                            
+
                             ecouteurClose.onActualiser(modeleListeEleve.getRowCount() + " élement(s).", icones.getClient_01());
                         }
                     }
@@ -278,7 +196,7 @@ public class PanelInscription extends javax.swing.JPanel {
     }
 
     private void initModelTableEleves() {
-        this.modeleListeEleve = new ModeleListeEleve(couleurBasique, scrollListeEleves, btEnregistrer, mEnregistrer, this.parametreInscription.getListeClasses(), new EcouteurValeursChangees() {
+        this.modeleListeEleve = new ModeleListeEleve(gestionEdition, couleurBasique, scrollListeEleves, btEnregistrer, mEnregistrer, this.dataInscription.getParametreInscription().getListeClasses(), new EcouteurValeursChangees() {
             @Override
             public void onValeurChangee() {
                 if (modeleListeAyantDroit != null) {
@@ -294,23 +212,13 @@ public class PanelInscription extends javax.swing.JPanel {
         this.tableListeEleves.setModel(this.modeleListeEleve);
     }
 
-    private void chargerDataTableEleves() {
-        //On charge les données existantes (le cas échéant)
-        if (this.donneesInscription != null) {
-            if (!this.donneesInscription.getListeEleves().isEmpty()) {
-                this.modeleListeEleve.setListeEleves(this.donneesInscription.getListeEleves());
-            }
-        }
-    }
-
     private void parametrerTableEleves() {
         initModelTableEleves();
-        chargerDataTableEleves();
         fixerColonnesTableEleves(true);
     }
 
     private void initModelTableAyantDroit() {
-        this.modeleListeAyantDroit = new ModeleListeAyantDroit(parametreInscription, couleurBasique, scrollListeAyantDroit, btEnregistrer, mEnregistrer, this.parametreInscription.getListeFraises(), this.modeleListeEleve, new EcouteurValeursChangees() {
+        this.modeleListeAyantDroit = new ModeleListeAyantDroit(gestionEdition, dataInscription.getParametreInscription(), couleurBasique, scrollListeAyantDroit, btEnregistrer, mEnregistrer, this.dataInscription.getParametreInscription().getListeFraises(), this.modeleListeEleve, new EcouteurValeursChangees() {
             @Override
             public void onValeurChangee() {
 
@@ -321,20 +229,51 @@ public class PanelInscription extends javax.swing.JPanel {
         this.tableListeAyantDroit.setModel(this.modeleListeAyantDroit);
     }
 
-    private void chargerDataTableAyantDroit() {
-        //On charge les données existantes (le cas échéant)
-        if (this.donneesInscription != null) {
-            if (!this.donneesInscription.getListeAyantDroit().isEmpty()) {
-                this.modeleListeAyantDroit.setListeAyantDroit(this.donneesInscription.getListeAyantDroit());
+    public void reiniliserEleves() {
+        if (modeleListeEleve != null) {
+            modeleListeEleve.reinitialiserListe();
+        }
+    }
+
+    public void reiniliserAyantDroit() {
+        if (modeleListeAyantDroit != null) {
+            modeleListeAyantDroit.reinitialiserListe();
+        }
+    }
+
+    public void setDonneesAyantDroit(Ayantdroit data) {
+        if (modeleListeAyantDroit != null) {
+            modeleListeAyantDroit.addData(data);
+        }
+    }
+
+    public void setDonneesEleves(Eleve data) {
+        if (modeleListeEleve != null) {
+            modeleListeEleve.addData(data);
+        }
+    }
+
+    public int getTailleResultatEleves() {
+        if (modeleListeEleve != null) {
+            return modeleListeEleve.getListeData().size();
+        }
+        return 0;
+    }
+
+    public Classe getClasse(String nom) {
+        for (Classe cc : dataInscription.getParametreInscription().getListeClasses()) {
+            if (nom.equals(cc.getNom())) {
+                return cc;
             }
         }
+        return null;
     }
 
     private void fixerColonnesTableAyantDroit(boolean resizeTable) {
         this.editeurEleve = new EditeurEleve(this.modeleListeEleve, this.modeleListeAyantDroit);
 
         //Parametrage du rendu de la table
-        this.tableListeAyantDroit.setDefaultRenderer(Object.class, new RenduTableAyantDroit(couleurBasique, icones.getModifier_01(), this.modeleListeEleve, modeleListeAyantDroit));
+        this.tableListeAyantDroit.setDefaultRenderer(Object.class, new RenduTableAyantDroit(gestionEdition, couleurBasique, icones.getModifier_01(), this.modeleListeEleve, modeleListeAyantDroit));
         this.tableListeAyantDroit.setRowHeight(25);
 
         //{"N°", "Eleve", ...liste des frais}
@@ -347,15 +286,15 @@ public class PanelInscription extends javax.swing.JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting() == false) {
                     if (modeleListeAyantDroit != null) {
-                        Ayantdroit artcl = modeleListeAyantDroit.getAyantDroit(tableListeAyantDroit.getSelectedRow());
-                        if (artcl != null && ecouteurClose != null) {
+                        selectedAyantDroit = modeleListeAyantDroit.getAyantDroit(tableListeAyantDroit.getSelectedRow());
+                        if (selectedAyantDroit != null && ecouteurClose != null) {
                             ecouteurClose.onActualiser(modeleListeAyantDroit.getRowCount() + " élement(s).", icones.getAdministrateur_01());
-                            
-                            selectedEleve = modeleListeEleve.getEleve_signature(artcl.getSignatureEleve());
+
+                            selectedEleve = modeleListeEleve.getEleve_signature(selectedAyantDroit.getSignatureEleve());
                             //Paiement
                             btPaiement.appliquerDroitAccessDynamique(true);
                             mPaiement.appliquerDroitAccessDynamique(true);
-                            
+
                             //Litige
                             btLitiges.appliquerDroitAccessDynamique(true);
                             mLitige.appliquerDroitAccessDynamique(true);
@@ -372,8 +311,140 @@ public class PanelInscription extends javax.swing.JPanel {
 
     private void parametrerTableAyantDroit() {
         initModelTableAyantDroit();
-        chargerDataTableAyantDroit();
         fixerColonnesTableAyantDroit(false);
+    }
+
+    public void setBtEnregistrerNouveau() {
+        if (mEnregistrer != null && btEnregistrer != null) {
+            mEnregistrer.setCouleur(couleurBasique.getCouleur_foreground_objet_nouveau());                                        //mEnreg.setCouleur(Color.blue);
+            btEnregistrer.setForeground(couleurBasique.getCouleur_foreground_objet_nouveau());
+        }
+    }
+
+    public void init() {
+        this.icones = new Icones();
+        this.moi = this;
+        this.labInfos.setIcon(icones.getInfos_01());
+        this.labInfos.setText("Prêt.");
+
+        this.ecouteurClose = new EcouteurUpdateClose() {
+            @Override
+            public void onFermer() {
+                parent.remove(moi);
+            }
+
+            @Override
+            public void onActualiser(String texte, ImageIcon icone) {
+                labInfos.setText(texte);
+                labInfos.setIcon(icone);
+            }
+        };
+
+        this.ecouteurAjout = new EcouteurAjoutInscription() {
+            @Override
+            public void setAjoutEleve(ModeleListeEleve modeleListeEleve) {
+                if (modeleListeEleve != null) {
+                    int index = (modeleListeEleve.getRowCount() + 1);
+                    Date date = new Date();
+                    modeleListeEleve.AjouterEleve(new Eleve(-1, dataInscription.getParametreInscription().getEntreprise().getId(), dataInscription.getParametreInscription().getUtilisateur().getId(), dataInscription.getParametreInscription().getExercice().getId(), -1, UtilInscription.generateSignature(), "", "", "(+243)", "Eleve_" + index, "", "", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, date, InterfaceEleve.BETA_NOUVEAU));
+                    //On sélectionne la première ligne
+                    tableListeEleves.setRowSelectionAllowed(true);
+                    tableListeEleves.setRowSelectionInterval(0, 0);
+                }
+            }
+
+            @Override
+            public void setAjoutAyantDroit(ModeleListeAyantDroit modeleListeAyantDroit) {
+                if (modeleListeAyantDroit != null) {
+                    if (editeurEleve != null) {
+                        editeurEleve.initCombo();
+                        if (editeurEleve.getTailleCombo() != 0) {
+                            modeleListeAyantDroit.AjouterAyantDroit(new Ayantdroit(-1, dataInscription.getParametreInscription().getEntreprise().getId(), dataInscription.getParametreInscription().getUtilisateur().getId(), dataInscription.getParametreInscription().getExercice().getId(), -1, "", new Vector<LiaisonFraisEleve>(), UtilInscription.generateSignature(), -1, InterfaceAyantDroit.BETA_NOUVEAU));
+                            //On sélectionne la première ligne
+                            tableListeAyantDroit.setRowSelectionAllowed(true);
+                            tableListeAyantDroit.setRowSelectionInterval(0, 0);
+                        } else {
+                            JOptionPane.showMessageDialog(parent, "Désolé, il n'y a plus d'élève à ajouter dans cette liste.", "Pas d'élève à ajouter", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+
+                }
+            }
+        };
+
+        setBoutons();
+        setMenuContextuel();
+    }
+
+    public void activerBoutons(int selectedTab) {
+        this.indexTabSelected = selectedTab;
+        if (modeleListeEleve != null && tableListeEleves != null && icones != null && modeleListeAyantDroit != null && tableListeAyantDroit != null) {
+            switch (indexTabSelected) {
+                case 0://Tab Eleve
+                    InterfaceEleve eleve = modeleListeEleve.getEleve(tableListeEleves.getSelectedRow());
+                    if (eleve != null) {
+                        this.ecouteurClose.onActualiser(eleve.getNom() + " " + eleve.getPostnom() + " " + eleve.getPrenom() + ".", icones.getClient_01());
+                    }
+                    break;
+                case 1://Tab Ayant-Droit
+                    InterfaceAyantDroit ayantD = modeleListeAyantDroit.getAyantDroit(tableListeAyantDroit.getSelectedRow());
+                    if (ayantD != null) {
+                        this.ecouteurClose.onActualiser(ayantD.getEleve(), icones.getAdministrateur_01());
+                    }
+                    break;
+            }
+        }
+
+    }
+
+    public void ajouter() {
+        switch (indexTabSelected) {
+            case 0: //Tab eleve
+                this.ecouteurAjout.setAjoutEleve(modeleListeEleve);
+                break;
+            case 1: //Tab ayantdroit
+                this.ecouteurAjout.setAjoutAyantDroit(modeleListeAyantDroit);
+                break;
+        }
+    }
+
+    public void supprimer() {
+        switch (indexTabSelected) {
+            case 0: //Tab eleve
+                modeleListeEleve.SupprimerEleve(tableListeEleves.getSelectedRow(), new EcouteurSuppressionElement() {
+                    @Override
+                    public void onSuppressionConfirmee(int idElement, long signature) {
+                        ecouteurInscription.onDetruitElements(idElement, indexTabSelected, signature);
+                    }
+                });
+                break;
+            case 1: //Tab ayantdroit
+                modeleListeAyantDroit.SupprimerAyantDroit(tableListeAyantDroit.getSelectedRow(), new EcouteurSuppressionElement() {
+                    @Override
+                    public void onSuppressionConfirmee(int idElement, long signature) {
+                        ecouteurInscription.onDetruitElements(idElement, indexTabSelected, signature);
+                    }
+                });
+                break;
+        }
+    }
+
+    public void vider() {
+        this.ecouteurClose.onActualiser("Vidé!", icones.getInfos_01());
+        switch (indexTabSelected) {
+            case 0: //eleve
+                modeleListeEleve.viderListe();
+                break;
+            case 1: //ayantdroit
+                modeleListeAyantDroit.viderListe();
+                break;
+        }
+
+    }
+
+    private void setIconesTabs() {
+        this.tabPrincipal.setIconAt(0, icones.getClient_01());  //Elève
+        this.tabPrincipal.setIconAt(1, icones.getAdministrateur_01());  //Ayantdroit
     }
 
     private void setBoutons() {
@@ -443,8 +514,7 @@ public class PanelInscription extends javax.swing.JPanel {
             }
         });
         btPaiement.appliquerDroitAccessDynamique(false);
-        
-        
+
         btLitiges = new Bouton(12, "Litiges", "Ouvrir les litiges", false, icones.getFournisseur_02(), new BoutonListener() {
             @Override
             public void OnEcouteLeClick() {
@@ -455,160 +525,38 @@ public class PanelInscription extends javax.swing.JPanel {
         });
         btLitiges.appliquerDroitAccessDynamique(false);
 
+        btEdition = new Bouton(12, "Edition", "", true, icones.getModifier_02(), new BoutonListener() {
+            @Override
+            public void OnEcouteLeClick() {
+                setEditionMode();
+            }
+        });
+
+        //Il faut respecter les droits d'accès attribué à l'utilisateur actuel!
         bOutils = new BarreOutils(barreOutils);
-        bOutils.AjouterBouton(btEnregistrer);
-        bOutils.AjouterBouton(btPaiement);
-        bOutils.AjouterBouton(btLitiges);
-        bOutils.AjouterSeparateur();
-        bOutils.AjouterBouton(btAjouter);
-        bOutils.AjouterBouton(btSupprimer);
-        bOutils.AjouterBouton(btVider);
-        bOutils.AjouterBouton(btActualiser);
-        bOutils.AjouterSeparateur();
-        bOutils.AjouterBouton(btImprimer);
-        bOutils.AjouterBouton(btPDF);
-        bOutils.AjouterSeparateur();
-        bOutils.AjouterBouton(btFermer);
-    }
-
-    private void ecouterMenContA(java.awt.event.MouseEvent evt, int tab) {
-        if (evt.getButton() == MouseEvent.BUTTON3) {
-            switch (tab) {
-                case 0: //Tab Monnaie
-                    menuContextuel.afficher(scrollListeEleves, evt.getX(), evt.getY());
-                    break;
-                case 1: //Tab classe
-                    menuContextuel.afficher(scrollListeAyantDroit, evt.getX(), evt.getY());
-                    break;
+        if (dataInscription.getParametreInscription().getUtilisateur() != null) {
+            Utilisateur user = dataInscription.getParametreInscription().getUtilisateur();
+            
+            if (user.getDroitInscription() == InterfaceUtilisateur.DROIT_CONTROLER) {
+                bOutils.AjouterBouton(btEnregistrer);
+                bOutils.AjouterBouton(btAjouter);
+                bOutils.AjouterBouton(btEdition);
+                bOutils.AjouterSeparateur();
+                bOutils.AjouterBouton(btSupprimer);
+                bOutils.AjouterBouton(btVider);
             }
-        }
-        switch (tab) {
-            case 0://Tab Eleve
-                InterfaceEleve eleve = modeleListeEleve.getEleve(tableListeEleves.getSelectedRow());
-                if (eleve != null) {
-                    this.ecouteurClose.onActualiser(eleve.getNom() + " " + eleve.getPostnom() + " " + eleve.getPrenom() + ".", icones.getClient_01());
-                }
-                break;
-            case 1://Tab Ayant-Droit
-                InterfaceAyantDroit ayantD = modeleListeAyantDroit.getAyantDroit(tableListeAyantDroit.getSelectedRow());
-                if (ayantD != null) {
-                    this.ecouteurClose.onActualiser(ayantD.getEleve(), icones.getAdministrateur_01());
-                }
-                break;
-        }
-
-    }
-
-    public void init() {
-        this.icones = new Icones();
-        this.moi = this;
-        this.chRecherche.setIcon(icones.getChercher_01());
-        this.labInfos.setIcon(icones.getInfos_01());
-        this.labInfos.setText("Prêt.");
-
-        this.ecouteurClose = new EcouteurUpdateClose() {
-            @Override
-            public void onFermer() {
-                parent.remove(moi);
+            bOutils.AjouterBouton(btActualiser);
+            if (user.getDroitFacture() != InterfaceUtilisateur.DROIT_PAS_ACCES) {
+                bOutils.AjouterBouton(btPaiement);
             }
-
-            @Override
-            public void onActualiser(String texte, ImageIcon icone) {
-                labInfos.setText(texte);
-                labInfos.setIcon(icone);
+            if (user.getDroitLitige() != InterfaceUtilisateur.DROIT_PAS_ACCES) {
+                bOutils.AjouterBouton(btLitiges);
             }
-        };
-
-        this.ecouteurAjout = new EcouteurAjoutInscription() {
-            @Override
-            public void setAjoutEleve(ModeleListeEleve modeleListeEleve) {
-                if (modeleListeEleve != null) {
-                    int index = (modeleListeEleve.getRowCount() + 1);
-                    Date date = new Date();
-                    modeleListeEleve.AjouterEleve(new Eleve(-1, parametreInscription.getEntreprise().getId(), parametreInscription.getIdUtilisateur(), parametreInscription.getExercice().getId(), -1, UtilInscription.generateSignature(), "", "", "(+243)", "Eleve_" + index, "", "", InterfaceEleve.STATUS_ACTIF, InterfaceEleve.SEXE_MASCULIN, date, InterfaceEleve.BETA_NOUVEAU));
-                    //On sélectionne la première ligne
-                    tableListeEleves.setRowSelectionAllowed(true);
-                    tableListeEleves.setRowSelectionInterval(0, 0);
-                }
-            }
-
-            @Override
-            public void setAjoutAyantDroit(ModeleListeAyantDroit modeleListeAyantDroit) {
-                if (modeleListeAyantDroit != null) {
-                    if (editeurEleve != null) {
-                        editeurEleve.initCombo();
-                        if (editeurEleve.getTailleCombo() != 0) {
-                            modeleListeAyantDroit.AjouterAyantDroit(new Ayantdroit(-1, parametreInscription.getEntreprise().getId(), parametreInscription.getIdUtilisateur(), parametreInscription.getExercice().getId(), -1, "", new Vector<LiaisonFraisEleve>(), UtilInscription.generateSignature(), -1, InterfaceAyantDroit.BETA_NOUVEAU));
-                            //On sélectionne la première ligne
-                            tableListeAyantDroit.setRowSelectionAllowed(true);
-                            tableListeAyantDroit.setRowSelectionInterval(0, 0);
-                        } else {
-                            JOptionPane.showMessageDialog(parent, "Désolé, il n'y a plus d'élève à ajouter dans cette liste.", "Pas d'élève à ajouter", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-
-                }
-            }
-        };
-
-        setBoutons();
-        setMenuContextuel();
-    }
-
-    public void activerBoutons(int selectedTab) {
-        this.indexTabSelected = selectedTab;
-    }
-
-    public void ajouter() {
-        switch (indexTabSelected) {
-            case 0: //Tab eleve
-                this.ecouteurAjout.setAjoutEleve(modeleListeEleve);
-                break;
-            case 1: //Tab ayantdroit
-                this.ecouteurAjout.setAjoutAyantDroit(modeleListeAyantDroit);
-                break;
+            bOutils.AjouterBouton(btImprimer);
+            bOutils.AjouterBouton(btPDF);
+            bOutils.AjouterSeparateur();
+            bOutils.AjouterBouton(btFermer);
         }
-    }
-
-    public void supprimer() {
-        switch (indexTabSelected) {
-            case 0: //Tab eleve
-                modeleListeEleve.SupprimerEleve(tableListeEleves.getSelectedRow(), new EcouteurSuppressionElement() {
-                    @Override
-                    public void onSuppressionConfirmee(int idElement) {
-                        ecouteurInscription.onDetruitElements(idElement, indexTabSelected);
-                    }
-                });
-                break;
-            case 1: //Tab ayantdroit
-                modeleListeAyantDroit.SupprimerAyantDroit(tableListeAyantDroit.getSelectedRow(), new EcouteurSuppressionElement() {
-                    @Override
-                    public void onSuppressionConfirmee(int idElement) {
-                        ecouteurInscription.onDetruitElements(idElement, indexTabSelected);
-                    }
-                });
-                break;
-        }
-    }
-
-    public void vider() {
-        this.ecouteurClose.onActualiser("Vidé!", icones.getInfos_01());
-        this.chRecherche.setText("");
-        Date date = new Date();
-        switch (indexTabSelected) {
-            case 0: //eleve
-                modeleListeEleve.viderListe();
-                break;
-            case 1: //ayantdroit
-                modeleListeAyantDroit.viderListe();
-                break;
-        }
-
-    }
-
-    private void setIconesTabs() {
-        this.tabPrincipal.setIconAt(0, icones.getClient_01());  //Elève
-        this.tabPrincipal.setIconAt(1, icones.getAdministrateur_01());  //Ayantdroit
     }
 
     private void setMenuContextuel() {
@@ -667,40 +615,60 @@ public class PanelInscription extends javax.swing.JPanel {
                 actualiser();
             }
         });
-        
+
         mPaiement = new RubriqueSimple("Paiement", 12, false, icones.getCaisse_01(), new RubriqueListener() {
             @Override
             public void OnEcouterLaSelection() {
-                if(ecouteurCrossCanal != null){
+                if (ecouteurCrossCanal != null) {
                     ecouteurCrossCanal.onOuvrirPaiements(selectedEleve);
                 }
             }
         });
         mPaiement.appliquerDroitAccessDynamique(false);
-        
+
         mLitige = new RubriqueSimple("Litiges", 12, false, icones.getFournisseur_01(), new RubriqueListener() {
             @Override
             public void OnEcouterLaSelection() {
-                if(ecouteurCrossCanal != null){
+                if (ecouteurCrossCanal != null) {
                     ecouteurCrossCanal.onOuvrirLitiges(selectedEleve);
                 }
             }
         });
 
+        mEdition = new RubriqueSimple("Editer", 12, false, icones.getModifier_01(), new RubriqueListener() {
+            @Override
+            public void OnEcouterLaSelection() {
+                setEditionMode();
+            }
+        });
+
+        //Il faut respecter les droits d'accès attribué à l'utilisateur actuel!
         menuContextuel = new MenuContextuel();
-        menuContextuel.Ajouter(mEnregistrer);
-        menuContextuel.Ajouter(mPaiement);
-        menuContextuel.Ajouter(mLitige);
-        menuContextuel.Ajouter(new JPopupMenu.Separator());
-        menuContextuel.Ajouter(mAjouter);
-        menuContextuel.Ajouter(mSupprimer);
-        menuContextuel.Ajouter(mVider);
-        menuContextuel.Ajouter(mActualiser);
-        menuContextuel.Ajouter(new JPopupMenu.Separator());
-        menuContextuel.Ajouter(mImprimer);
-        menuContextuel.Ajouter(mPDF);
-        menuContextuel.Ajouter(new JPopupMenu.Separator());
-        menuContextuel.Ajouter(mFermer);
+        if (dataInscription.getParametreInscription().getUtilisateur() != null) {
+            Utilisateur user = dataInscription.getParametreInscription().getUtilisateur();
+
+            if (user.getDroitInscription() == InterfaceUtilisateur.DROIT_CONTROLER) {
+                menuContextuel.Ajouter(mEnregistrer);
+                menuContextuel.Ajouter(mAjouter);
+                menuContextuel.Ajouter(mEdition);
+                menuContextuel.Ajouter(new JPopupMenu.Separator());
+                menuContextuel.Ajouter(mSupprimer);
+                menuContextuel.Ajouter(mVider);
+            }
+            menuContextuel.Ajouter(mActualiser);
+            if (user.getDroitFacture() != InterfaceUtilisateur.DROIT_PAS_ACCES) {
+                menuContextuel.Ajouter(mPaiement);
+            }
+            if (user.getDroitLitige() != InterfaceUtilisateur.DROIT_PAS_ACCES) {
+                menuContextuel.Ajouter(mLitige);
+            }
+            menuContextuel.Ajouter(new JPopupMenu.Separator());
+            menuContextuel.Ajouter(mImprimer);
+            menuContextuel.Ajouter(mPDF);
+            menuContextuel.Ajouter(new JPopupMenu.Separator());
+            menuContextuel.Ajouter(mFermer);
+        }
+
     }
 
     private boolean mustBeSaved() {
@@ -757,8 +725,8 @@ public class PanelInscription extends javax.swing.JPanel {
 
     private SortiesInscription getSortieInscription(Bouton boutonDeclencheur, RubriqueSimple rubriqueDeclencheur) {
         SortiesInscription sortieEA = new SortiesInscription(
-                this.parametreInscription.getListeFraises(),
-                this.parametreInscription.getListeClasses(),
+                this.dataInscription.getParametreInscription().getListeFraises(),
+                this.dataInscription.getParametreInscription().getListeClasses(),
                 this.modeleListeEleve.getListeData(),
                 this.modeleListeAyantDroit.getListeData(),
                 new EcouteurEnregistrement() {
@@ -814,6 +782,40 @@ public class PanelInscription extends javax.swing.JPanel {
 
             SortiesInscription sortie = getSortieInscription(btEnregistrer, mEnregistrer);
             this.ecouteurInscription.onEnregistre(sortie);
+
+            actualiserEditeur();
+        }
+    }
+
+    private void actualiserEditeur() {
+        gestionEdition.reinitialiser();
+        modeleListeEleve.actualiser();
+        modeleListeAyantDroit.actualiser();
+    }
+
+    private void setEditionMode() {
+        switch (indexTabSelected) {
+            case 0:
+                if (selectedEleve != null && gestionEdition != null) {
+                    if (gestionEdition.isEditable(selectedEleve.getId(), indexTabSelected)) {
+                        gestionEdition.setModeEdition(selectedEleve.getId(), indexTabSelected, false);
+                    } else {
+                        gestionEdition.setModeEdition(selectedEleve.getId(), indexTabSelected, true);
+                    }
+                    modeleListeEleve.actualiser();
+                }
+                break;
+            case 1:
+                if (selectedAyantDroit != null && gestionEdition != null) {
+                    if (gestionEdition.isEditable(selectedAyantDroit.getId(), indexTabSelected)) {
+                        gestionEdition.setModeEdition(selectedAyantDroit.getId(), indexTabSelected, false);
+                    } else {
+                        gestionEdition.setModeEdition(selectedAyantDroit.getId(), indexTabSelected, true);
+                    }
+                    modeleListeAyantDroit.actualiser();
+                }
+                break;
+            default:
         }
     }
 
@@ -830,36 +832,8 @@ public class PanelInscription extends javax.swing.JPanel {
     }
 
     public void actualiser() {
-        switch (indexTabSelected) {
-            case 0: //Monnaie
-                modeleListeEleve.actualiser();
-                break;
-            case 1: //Classe
-                modeleListeAyantDroit.actualiser();
-                break;
-        }
-        btPaiement.appliquerDroitAccessDynamique(false);
-        mPaiement.appliquerDroitAccessDynamique(false);
-    }
-
-    private void activerCriteres() {
-        //System.out.println("btCriteres.isSelected() = " + btCriteres.isSelected());
-        btCriteres.setIcon(icones.getParamètres_01());
-        //On reinitialise les combo
-        chClasse.setSelectedIndex(0);
-        chSexe.setSelectedIndex(0);
-        chStatus.setSelectedIndex(0);
-
-        if (btCriteres.isSelected() == true) {
-            chClasse.setVisible(true);
-            chSexe.setVisible(true);
-            chStatus.setVisible(true);
-            btCriteres.setText("Critères [-]");
-        } else {
-            chClasse.setVisible(false);
-            chSexe.setVisible(false);
-            chStatus.setVisible(false);
-            btCriteres.setText("Critères [+]");
+        if (navigateur != null) {
+            navigateur.reload();
         }
     }
 
@@ -880,11 +854,7 @@ public class PanelInscription extends javax.swing.JPanel {
         scrollListeAyantDroit = new javax.swing.JScrollPane();
         tableListeAyantDroit = new javax.swing.JTable();
         labInfos = new javax.swing.JLabel();
-        chRecherche = new UI.JS2bTextField();
-        chClasse = new javax.swing.JComboBox<>();
-        chSexe = new javax.swing.JComboBox<>();
-        chStatus = new javax.swing.JComboBox<>();
-        btCriteres = new javax.swing.JToggleButton();
+        navigateur = new Source.UI.NavigateurPages();
 
         setBackground(new java.awt.Color(255, 255, 255));
 
@@ -929,6 +899,9 @@ public class PanelInscription extends javax.swing.JPanel {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tableListeElevesMouseClicked(evt);
             }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                tableListeElevesMousePressed(evt);
+            }
         });
         scrollListeEleves.setViewportView(tableListeEleves);
 
@@ -962,39 +935,6 @@ public class PanelInscription extends javax.swing.JPanel {
         labInfos.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG_Insc/Facture01.png"))); // NOI18N
         labInfos.setText("Prêt.");
 
-        chRecherche.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG_Insc/Facture01.png"))); // NOI18N
-        chRecherche.setTextInitial("Recherche");
-
-        chClasse.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        chClasse.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                chClasseItemStateChanged(evt);
-            }
-        });
-
-        chSexe.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TOUT GENRE", "MASCULIN", "FEMININ" }));
-        chSexe.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                chSexeItemStateChanged(evt);
-            }
-        });
-
-        chStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TOUT STATUS", "EL. ACTIF", "EL. INACTIF" }));
-        chStatus.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                chStatusItemStateChanged(evt);
-            }
-        });
-
-        btCriteres.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG_Insc/Facture01.png"))); // NOI18N
-        btCriteres.setSelected(true);
-        btCriteres.setText("Critères++");
-        btCriteres.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btCriteresActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -1003,36 +943,19 @@ public class PanelInscription extends javax.swing.JPanel {
             .addComponent(tabPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(labInfos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(chClasse, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(chSexe, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(chStatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(chRecherche, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btCriteres)))
+                .addComponent(labInfos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
+            .addComponent(navigateur, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(barreOutils, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(chRecherche, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btCriteres))
-                .addGap(4, 4, 4)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(chClasse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chSexe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(chStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(tabPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(0, 0, 0)
+                .addComponent(navigateur, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(tabPrincipal, javax.swing.GroupLayout.DEFAULT_SIZE, 273, Short.MAX_VALUE)
+                .addGap(0, 0, 0)
                 .addComponent(labInfos)
                 .addContainerGap())
         );
@@ -1040,22 +963,22 @@ public class PanelInscription extends javax.swing.JPanel {
 
     private void tableListeElevesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableListeElevesMouseClicked
         // TODO add your handling code here:
-        ecouterMenContA(evt, 0);
+        //ecouterMenContA(evt, 0);
     }//GEN-LAST:event_tableListeElevesMouseClicked
 
     private void scrollListeElevesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_scrollListeElevesMouseClicked
         // TODO add your handling code here:
-        ecouterMenContA(evt, 0);
+        //ecouterMenContA(evt, 0);
     }//GEN-LAST:event_scrollListeElevesMouseClicked
 
     private void tableListeAyantDroitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableListeAyantDroitMouseClicked
         // TODO add your handling code here:
-        ecouterMenContA(evt, 1);
+        //ecouterMenContA(evt, 1);
     }//GEN-LAST:event_tableListeAyantDroitMouseClicked
 
     private void scrollListeAyantDroitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_scrollListeAyantDroitMouseClicked
         // TODO add your handling code here:
-        ecouterMenContA(evt, 1);
+        //ecouterMenContA(evt, 1);
     }//GEN-LAST:event_scrollListeAyantDroitMouseClicked
 
     private void tabPrincipalStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tabPrincipalStateChanged
@@ -1063,45 +986,17 @@ public class PanelInscription extends javax.swing.JPanel {
         activerBoutons(((JTabbedPane) evt.getSource()).getSelectedIndex());
     }//GEN-LAST:event_tabPrincipalStateChanged
 
-    private void btCriteresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCriteresActionPerformed
+    private void tableListeElevesMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableListeElevesMousePressed
         // TODO add your handling code here:
-        activerCriteres();
-    }//GEN-LAST:event_btCriteresActionPerformed
 
-    private void chClasseItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_chClasseItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == ItemEvent.SELECTED) {
-            System.out.println("Combo: Selection - " + evt.getItem());
-            gestionnaireRecherche.chercher(chRecherche.getText());
-        }
-    }//GEN-LAST:event_chClasseItemStateChanged
-
-    private void chSexeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_chSexeItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == ItemEvent.SELECTED) {
-            System.out.println("Combo: Selection - " + evt.getItem());
-            gestionnaireRecherche.chercher(chRecherche.getText());
-        }
-    }//GEN-LAST:event_chSexeItemStateChanged
-
-    private void chStatusItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_chStatusItemStateChanged
-        // TODO add your handling code here:
-        if (evt.getStateChange() == ItemEvent.SELECTED) {
-            System.out.println("Combo: Selection - " + evt.getItem());
-            gestionnaireRecherche.chercher(chRecherche.getText());
-        }
-    }//GEN-LAST:event_chStatusItemStateChanged
+    }//GEN-LAST:event_tableListeElevesMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToolBar barreOutils;
-    private javax.swing.JToggleButton btCriteres;
-    private javax.swing.JComboBox<String> chClasse;
-    private UI.JS2bTextField chRecherche;
-    private javax.swing.JComboBox<String> chSexe;
-    private javax.swing.JComboBox<String> chStatus;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel labInfos;
+    private Source.UI.NavigateurPages navigateur;
     private javax.swing.JScrollPane scrollListeAyantDroit;
     private javax.swing.JScrollPane scrollListeEleves;
     private javax.swing.JTabbedPane tabPrincipal;
