@@ -76,6 +76,7 @@ public class Principal_Insc extends javax.swing.JFrame {
         //Chargement des Frais
         //Un très petit ajustement dd rien du tout.
         //RAS
+        //ENCORE RIEN
         this.listeMonnaies = new Vector<>();
         this.listeMonnaies.add(new Monnaie(12, entreprise.getId(), utilisateur.getId(), anneescolaire.getId(), "USD - Dollars", "USD", InterfaceMonnaie.NATURE_MONNAIE_ETRANGERE, 1620, 1010101010, InterfaceMonnaie.BETA_EXISTANT));
         this.listeMonnaies.add(new Monnaie(13, entreprise.getId(), utilisateur.getId(), anneescolaire.getId(), "CDF - Francs", "CDF", InterfaceMonnaie.NATURE_MONNAIE_LOCALE, 1, 0455, InterfaceMonnaie.BETA_EXISTANT));
