@@ -8,7 +8,7 @@ package SOURCES.Utilitaires_Insc;
 
 import Source.Objet.Classe;
 import Source.Objet.Entreprise;
-import Source.Objet.Exercice;
+import Source.Objet.Annee;
 import Source.Objet.Frais;
 import Source.Objet.Monnaie;
 import Source.Objet.Utilisateur;
@@ -24,10 +24,10 @@ public class ParametreInscription {
     public Vector<Frais> listeFraises;
     public Vector<Monnaie> listeMonnaies;
     public Entreprise entreprise;
-    public Exercice exercice;
+    public Annee exercice;
     public Utilisateur utilisateur;
 
-    public ParametreInscription(Vector<Monnaie> listeMonnaies, Vector<Classe> listeClasses, Vector<Frais> listeFraises, Entreprise entreprise, Exercice exercice, Utilisateur utilisateur) {
+    public ParametreInscription(Vector<Monnaie> listeMonnaies, Vector<Classe> listeClasses, Vector<Frais> listeFraises, Entreprise entreprise, Annee exercice, Utilisateur utilisateur) {
         this.listeMonnaies = listeMonnaies;
         this.listeClasses = listeClasses;
         this.listeFraises = listeFraises;
@@ -68,11 +68,11 @@ public class ParametreInscription {
         this.entreprise = entreprise;
     }
 
-    public Exercice getExercice() {
+    public Annee getExercice() {
         return exercice;
     }
 
-    public void setExercice(Exercice exercice) {
+    public void setExercice(Annee exercice) {
         this.exercice = exercice;
     }
 

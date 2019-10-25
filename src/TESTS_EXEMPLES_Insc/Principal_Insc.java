@@ -18,7 +18,6 @@ import Source.Callbacks.EcouteurNavigateurPages;
 import Source.Interface.InterfaceAyantDroit;
 import Source.Interface.InterfaceClasse;
 import Source.Interface.InterfaceEleve;
-import Source.Interface.InterfaceExercice;
 import Source.Interface.InterfaceMonnaie;
 import Source.Interface.InterfaceUtilisateur;
 import Source.Objet.Ayantdroit;
@@ -26,7 +25,7 @@ import Source.Objet.Classe;
 import Source.Objet.CouleurBasique;
 import Source.Objet.Eleve;
 import Source.Objet.Entreprise;
-import Source.Objet.Exercice;
+import Source.Objet.Annee;
 import Source.Objet.Frais;
 import Source.Objet.LiaisonFraisClasse;
 import Source.Objet.LiaisonFraisEleve;
@@ -41,6 +40,7 @@ import Sources.UI.JS2BPanelPropriete;
 import static java.lang.Thread.sleep;
 import java.util.Date;
 import java.util.Vector;
+import Source.Interface.InterfaceAnnee;
 
 /**
  *
@@ -61,7 +61,7 @@ public class Principal_Insc extends javax.swing.JFrame {
     
     public Entreprise entreprise = new Entreprise(1, "ECOLE CARESIENNE DE KINSHASA", "7e Rue Limeté Industrielle, Kinshasa/RDC", "+243844803514", "infos@cartesien.org", "wwww.cartesien.org", "logo.png", "RCCM/KD/CD/4513", "IDN00111454", "IMP00124100", "Equity Bank Congo SA", "AIB RDC Sarl", "000000121212400", "IBANNN0012", "SWIFTCDK");
     public Utilisateur utilisateur = new Utilisateur(12, entreprise.getId(), "SULA", "BOSIO", "Serge", "sulabosiog@gmail.com", "abc", InterfaceUtilisateur.TYPE_ADMIN, UtilInscription.generateSignature(), InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.BETA_EXISTANT);
-    public Exercice anneescolaire = new Exercice(12, entreprise.getId(), utilisateur.getId(), "Année 2019-2020", new Date(), UtilInscription.getDate_AjouterAnnee(new Date(), 1), UtilObjet.getSignature(), InterfaceExercice.BETA_EXISTANT);
+    public Annee anneescolaire = new Annee(12, entreprise.getId(), utilisateur.getId(), "Année 2019-2020", new Date(), UtilInscription.getDate_AjouterAnnee(new Date(), 1), UtilObjet.getSignature(), InterfaceAnnee.BETA_EXISTANT);
     
     public Vector<Eleve> listeElevesExistants = new Vector<>();
     public Vector<Ayantdroit> listeAyantDroitsExistants = new Vector<>();
