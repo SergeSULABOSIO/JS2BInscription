@@ -14,6 +14,7 @@ import SOURCES.Utilitaires_Insc.SortiesInscription;
 import SOURCES.Utilitaires_Insc.UtilInscription;
 import Source.Callbacks.ConstructeurCriteres;
 import Source.Callbacks.EcouteurCrossCanal;
+import Source.Callbacks.EcouteurFreemium;
 import Source.Callbacks.EcouteurNavigateurPages;
 import Source.Interface.InterfaceAyantDroit;
 import Source.Interface.InterfaceClasse;
@@ -58,11 +59,11 @@ public class Principal_Insc extends javax.swing.JFrame {
 
     private Frais Frais_Inscription, Frais_Minervale, Frais_TravailManul = null;
     private Classe classe_G1, classe_G2, classe_G3, classe_L1 = null;
-    
+
     public Entreprise entreprise = new Entreprise(1, "ECOLE CARESIENNE DE KINSHASA", "7e Rue Limeté Industrielle, Kinshasa/RDC", "+243844803514", "infos@cartesien.org", "wwww.cartesien.org", "logo.png", "RCCM/KD/CD/4513", "IDN00111454", "IMP00124100", "Equity Bank Congo SA", "AIB RDC Sarl", "000000121212400", "IBANNN0012", "SWIFTCDK");
     public Utilisateur utilisateur = new Utilisateur(12, entreprise.getId(), "SULA", "BOSIO", "Serge", "sulabosiog@gmail.com", "abc", InterfaceUtilisateur.TYPE_ADMIN, UtilInscription.generateSignature(), InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.DROIT_CONTROLER, InterfaceUtilisateur.BETA_EXISTANT);
     public Annee anneescolaire = new Annee(12, entreprise.getId(), utilisateur.getId(), "Année 2019-2020", new Date(), UtilInscription.getDate_AjouterAnnee(new Date(), 1), UtilObjet.getSignature(), InterfaceAnnee.BETA_EXISTANT);
-    
+
     public Vector<Eleve> listeElevesExistants = new Vector<>();
     public Vector<Ayantdroit> listeAyantDroitsExistants = new Vector<>();
 
@@ -123,7 +124,6 @@ public class Principal_Insc extends javax.swing.JFrame {
         this.listeFraises.add(Frais_Minervale);
         this.listeFraises.add(Frais_TravailManul);
 
-        
         return new ParametreInscription(listeMonnaies, listeClasses, listeFraises, entreprise, anneescolaire, utilisateur);
     }
 
@@ -147,7 +147,12 @@ public class Principal_Insc extends javax.swing.JFrame {
     private void initParametres() {
         ParametreInscription parametre = getParametres();
 
-        this.gestionnaireExercice = new PanelInscription(new CouleurBasique(), this.tabPrincipale, new DataInscription(parametre), null, new EcouteurInscription() {
+        this.gestionnaireExercice = new PanelInscription(new EcouteurFreemium() {
+            @Override
+            public boolean onVerifie() {
+                return true;
+            }
+        }, new CouleurBasique(), this.tabPrincipale, new DataInscription(parametre), null, new EcouteurInscription() {
             @Override
             public void onDetruitExercice(int idExercice) {
                 System.out.println("RAS=" + idExercice);
@@ -214,8 +219,7 @@ public class Principal_Insc extends javax.swing.JFrame {
         });
 
     }
-    
-    
+
     private boolean verifierNomEleve(String motCle, Eleve Ieleve) {
         boolean reponse = false;
         if (motCle.trim().length() == 0) {
@@ -230,7 +234,7 @@ public class Principal_Insc extends javax.swing.JFrame {
         int index = 1;
         gestionnaireExercice.reiniliserEleves();
         gestionnaireExercice.reiniliserAyantDroit();
-        
+
         for (Eleve ee : listeElevesExistants) {
             if (index == taillePage) {
                 break;
@@ -293,12 +297,12 @@ public class Principal_Insc extends javax.swing.JFrame {
             }
             if (repMotCle == true && repSexe == true && repStat == true && repClasse == true) {
                 gestionnaireExercice.setDonneesEleves(ee);
-                for(Ayantdroit ayd: listeAyantDroitsExistants){
-                    if(ayd.getIdEleve() == ee.getId()){
+                for (Ayantdroit ayd : listeAyantDroitsExistants) {
+                    if (ayd.getIdEleve() == ee.getId()) {
                         gestionnaireExercice.setDonneesAyantDroit(ayd);
                     }
                 }
-                
+
             }
             index++;
         }

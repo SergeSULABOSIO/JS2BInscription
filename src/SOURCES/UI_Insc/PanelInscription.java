@@ -29,6 +29,7 @@ import SOURCES.Utilitaires_Insc.SortiesInscription;
 import SOURCES.Utilitaires_Insc.UtilInscription;
 import Source.Callbacks.EcouteurCrossCanal;
 import Source.Callbacks.EcouteurEnregistrement;
+import Source.Callbacks.EcouteurFreemium;
 import Source.Callbacks.EcouteurSuppressionElement;
 import Source.Callbacks.EcouteurUpdateClose;
 import Source.Callbacks.EcouteurValeursChangees;
@@ -90,9 +91,11 @@ public class PanelInscription extends javax.swing.JPanel {
     public Ayantdroit selectedAyantDroit = null;
     public JProgressBar progress;
     private GestionEdition gestionEdition = new GestionEdition();
+    private EcouteurFreemium ef = null;
 
-    public PanelInscription(CouleurBasique couleurBasique, JTabbedPane parent, DataInscription dataInscription, JProgressBar progress, EcouteurInscription ecouteurInscription, EcouteurCrossCanal ecouteurCrossCanal) {
+    public PanelInscription(EcouteurFreemium ef, CouleurBasique couleurBasique, JTabbedPane parent, DataInscription dataInscription, JProgressBar progress, EcouteurInscription ecouteurInscription, EcouteurCrossCanal ecouteurCrossCanal) {
         this.initComponents();
+        this.ef = ef;
         this.progress = progress;
         this.ecouteurCrossCanal = ecouteurCrossCanal;
         this.parent = parent;
@@ -536,7 +539,7 @@ public class PanelInscription extends javax.swing.JPanel {
         bOutils = new BarreOutils(barreOutils);
         if (dataInscription.getParametreInscription().getUtilisateur() != null) {
             Utilisateur user = dataInscription.getParametreInscription().getUtilisateur();
-            
+
             if (user.getDroitInscription() == InterfaceUtilisateur.DROIT_CONTROLER) {
                 bOutils.AjouterBouton(btEnregistrer);
                 bOutils.AjouterBouton(btAjouter);
@@ -708,15 +711,20 @@ public class PanelInscription extends javax.swing.JPanel {
     }
 
     public void imprimer() {
-        int dialogResult = JOptionPane.showConfirmDialog(this, "Etes-vous sûr de vouloir imprimer ce document?", "Avertissement", JOptionPane.YES_NO_OPTION);
-        if (dialogResult == JOptionPane.YES_OPTION) {
-            try {
-                SortiesInscription sortie = getSortieInscription(btImprimer, mImprimer);
-                DocumentPDFInscription documentPDF = new DocumentPDFInscription(this, DocumentPDFInscription.ACTION_IMPRIMER, sortie);
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (ef != null) {
+            if (ef.onVerifie() == true) {
+                int dialogResult = JOptionPane.showConfirmDialog(this, "Etes-vous sûr de vouloir imprimer ce document?", "Avertissement", JOptionPane.YES_NO_OPTION);
+                if (dialogResult == JOptionPane.YES_OPTION) {
+                    try {
+                        SortiesInscription sortie = getSortieInscription(btImprimer, mImprimer);
+                        DocumentPDFInscription documentPDF = new DocumentPDFInscription(this, DocumentPDFInscription.ACTION_IMPRIMER, sortie);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
+
     }
 
     public String getNomfichierPreuve() {
@@ -820,15 +828,20 @@ public class PanelInscription extends javax.swing.JPanel {
     }
 
     public void exporterPDF() {
-        int dialogResult = JOptionPane.showConfirmDialog(this, "Voulez-vous les exporter dans un fichier PDF?", "Avertissement", JOptionPane.YES_NO_OPTION);
-        if (dialogResult == JOptionPane.YES_OPTION) {
-            try {
-                SortiesInscription sortie = getSortieInscription(btPDF, mPDF);
-                DocumentPDFInscription docpdf = new DocumentPDFInscription(this, DocumentPDFInscription.ACTION_OUVRIR, sortie);
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (ef != null) {
+            if (ef.onVerifie() == true) {
+                int dialogResult = JOptionPane.showConfirmDialog(this, "Voulez-vous les exporter dans un fichier PDF?", "Avertissement", JOptionPane.YES_NO_OPTION);
+                if (dialogResult == JOptionPane.YES_OPTION) {
+                    try {
+                        SortiesInscription sortie = getSortieInscription(btPDF, mPDF);
+                        DocumentPDFInscription docpdf = new DocumentPDFInscription(this, DocumentPDFInscription.ACTION_OUVRIR, sortie);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
+
     }
 
     public void actualiser() {
