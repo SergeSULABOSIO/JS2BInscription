@@ -44,6 +44,7 @@ import Source.Objet.Classe;
 import Source.Objet.CouleurBasique;
 import Source.Objet.Eleve;
 import Source.Objet.LiaisonFraisEleve;
+import Source.Objet.UtilObjet;
 import Source.Objet.Utilisateur;
 import Source.UI.NavigateurPages;
 import java.awt.Color;
@@ -403,7 +404,11 @@ public class PanelInscription extends javax.swing.JPanel {
     public void ajouter() {
         switch (indexTabSelected) {
             case 0: //Tab eleve
-                this.ecouteurAjout.setAjoutEleve(modeleListeEleve);
+                if(ef != null){
+                    if(ef.onVerifieNombre(UtilObjet.DOSSIER_ELEVE) == true){
+                        this.ecouteurAjout.setAjoutEleve(modeleListeEleve);
+                    }
+                }
                 break;
             case 1: //Tab ayantdroit
                 this.ecouteurAjout.setAjoutAyantDroit(modeleListeAyantDroit);
