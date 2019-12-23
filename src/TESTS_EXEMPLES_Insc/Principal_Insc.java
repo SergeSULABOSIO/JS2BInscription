@@ -152,6 +152,11 @@ public class Principal_Insc extends javax.swing.JFrame {
             public boolean onVerifie() {
                 return true;
             }
+
+            @Override
+            public boolean onVerifieNombre(String nomTable) {
+                return true;
+            }
         }, new CouleurBasique(), this.tabPrincipale, new DataInscription(parametre), null, new EcouteurInscription() {
             @Override
             public void onDetruitExercice(int idExercice) {
