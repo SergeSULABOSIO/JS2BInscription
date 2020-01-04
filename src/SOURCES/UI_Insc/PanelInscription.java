@@ -703,13 +703,22 @@ public class PanelInscription extends javax.swing.JPanel {
             int dialogResult = JOptionPane.showConfirmDialog(this, "Voulez-vous enregistrer les modifications et/ou ajouts apportés à ces données?", "Avertissement", JOptionPane.YES_NO_CANCEL_OPTION);
             if (dialogResult == JOptionPane.YES_OPTION) {
                 this.ecouteurInscription.onEnregistre(getSortieInscription(btEnregistrer, mEnregistrer));
+                if(ecouteurInscription != null){
+                    ecouteurInscription.onClose();
+                }
                 this.ecouteurClose.onFermer();
             } else if (dialogResult == JOptionPane.NO_OPTION) {
+                if(ecouteurInscription != null){
+                    ecouteurInscription.onClose();
+                }
                 this.ecouteurClose.onFermer();
             }
         } else {
             int dialogResult = JOptionPane.showConfirmDialog(this, "Etes-vous sûr de vouloir fermer cette fenêtre?", "Avertissement", JOptionPane.YES_NO_OPTION);
             if (dialogResult == JOptionPane.YES_OPTION) {
+                if(ecouteurInscription != null){
+                    ecouteurInscription.onClose();
+                }
                 this.ecouteurClose.onFermer();
             }
         }

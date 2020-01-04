@@ -17,5 +17,6 @@ public abstract class EcouteurInscription {
     public abstract void onEnregistre(SortiesInscription sortiesFacture);
     public abstract void onDetruitExercice(int idExercice);
     public abstract void onDetruitElements(int idElement, int index, long signature);
+    public abstract void onClose(); 
 }
 

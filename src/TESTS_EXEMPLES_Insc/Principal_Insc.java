@@ -206,6 +206,11 @@ public class Principal_Insc extends javax.swing.JFrame {
                 th.start();
 
             }
+
+            @Override
+            public void onClose() {
+                
+            }
         }, new EcouteurCrossCanal() {
             @Override
             public void onOuvrirLitiges(Eleve eleve) {
