@@ -404,8 +404,8 @@ public class PanelInscription extends javax.swing.JPanel {
     public void ajouter() {
         switch (indexTabSelected) {
             case 0: //Tab eleve
-                if(ef != null){
-                    if(ef.onVerifieNombre(UtilObjet.DOSSIER_ELEVE) == true){
+                if (ef != null) {
+                    if (ef.onVerifieNombre(UtilObjet.DOSSIER_ELEVE) == true) {
                         this.ecouteurAjout.setAjoutEleve(modeleListeEleve);
                     }
                 }
@@ -421,16 +421,26 @@ public class PanelInscription extends javax.swing.JPanel {
             case 0: //Tab eleve
                 modeleListeEleve.SupprimerEleve(tableListeEleves.getSelectedRow(), new EcouteurSuppressionElement() {
                     @Override
-                    public void onSuppressionConfirmee(int idElement, long signature) {
+                    public void onDeletionComplete(int idElement, long signature) {
                         ecouteurInscription.onDetruitElements(idElement, indexTabSelected, signature);
+                    }
+
+                    @Override
+                    public boolean onCanDelete(int idElement, long signature) {
+                        return ecouteurInscription.onCanDelete(idElement, indexTabSelected, signature);
                     }
                 });
                 break;
             case 1: //Tab ayantdroit
                 modeleListeAyantDroit.SupprimerAyantDroit(tableListeAyantDroit.getSelectedRow(), new EcouteurSuppressionElement() {
                     @Override
-                    public void onSuppressionConfirmee(int idElement, long signature) {
+                    public void onDeletionComplete(int idElement, long signature) {
                         ecouteurInscription.onDetruitElements(idElement, indexTabSelected, signature);
+                    }
+
+                    @Override
+                    public boolean onCanDelete(int idElement, long signature) {
+                        return ecouteurInscription.onCanDelete(idElement, indexTabSelected, signature);
                     }
                 });
                 break;
@@ -703,12 +713,12 @@ public class PanelInscription extends javax.swing.JPanel {
             int dialogResult = JOptionPane.showConfirmDialog(this, "Voulez-vous enregistrer les modifications et/ou ajouts apportés à ces données?", "Avertissement", JOptionPane.YES_NO_CANCEL_OPTION);
             if (dialogResult == JOptionPane.YES_OPTION) {
                 this.ecouteurInscription.onEnregistre(getSortieInscription(btEnregistrer, mEnregistrer));
-                if(ecouteurInscription != null){
+                if (ecouteurInscription != null) {
                     ecouteurInscription.onClose();
                 }
                 this.ecouteurClose.onFermer();
             } else if (dialogResult == JOptionPane.NO_OPTION) {
-                if(ecouteurInscription != null){
+                if (ecouteurInscription != null) {
                     ecouteurInscription.onClose();
                 }
                 this.ecouteurClose.onFermer();
@@ -716,7 +726,7 @@ public class PanelInscription extends javax.swing.JPanel {
         } else {
             int dialogResult = JOptionPane.showConfirmDialog(this, "Etes-vous sûr de vouloir fermer cette fenêtre?", "Avertissement", JOptionPane.YES_NO_OPTION);
             if (dialogResult == JOptionPane.YES_OPTION) {
-                if(ecouteurInscription != null){
+                if (ecouteurInscription != null) {
                     ecouteurInscription.onClose();
                 }
                 this.ecouteurClose.onFermer();

@@ -211,6 +211,11 @@ public class Principal_Insc extends javax.swing.JFrame {
             public void onClose() {
                 
             }
+
+            @Override
+            public boolean onCanDelete(int idElement, int index, long signature) {
+                return true;
+            }
         }, new EcouteurCrossCanal() {
             @Override
             public void onOuvrirLitiges(Eleve eleve) {
